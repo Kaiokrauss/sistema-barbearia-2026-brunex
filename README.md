@@ -1,0 +1,1 @@
+# sistema-barbearia-2026-brunex
