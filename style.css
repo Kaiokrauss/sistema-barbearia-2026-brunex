@@ -1,9 +1,9 @@
 :root {
     --primary: #c08f2c; /* Dourado/Bronze */
     --bg: #121212;
-    --card-bg: #1e1e1e;
+    --card-bg: #070707;
     --text: #ffffff;
-    --text-muted: #a0a0a0;
+    --text-muted: #868686;
 }
 
 body {
