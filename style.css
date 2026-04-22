@@ -1,131 +1,134 @@
 :root {
-    --primary: #c08f2c; /* Dourado/Bronze */
-    --bg: #121212;
-    --card-bg: #070707;
-    --text: #ffffff;
-    --text-muted: #868686;
+    --primary: #1a1a1a;
+    --secondary: #d4af37; /* Dourado Barbearia */
+    --bg: #f4f4f4;
+    --white: #ffffff;
+    --text: #333;
+    --danger: #dc3545;
+    --success: #28a745;
+    --info: #007bff;
 }
 
 body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.container {
-    width: 100%;
-    max-width: 500px;
-    padding: 19px;
+    padding: 0;
 }
 
 header {
+    background: var(--primary);
+    color: var(--white);
+    padding: 1.5rem;
     text-align: center;
-    margin-bottom: 34px;
+    border-bottom: 4px solid var(--secondary);
 }
 
-header h1 {
-    font-size: 2.5rem;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-header h1 span {
-    color: var(--primary);
-}
-
-.booking-card {
-    background: var(--card-bg);
-    padding: 22px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border-top: 4px solid var(--primary);
-}
-
-h3 {
-    font-size: 1.1rem;
-    margin-bottom: 13px;
-    color: var(--primary);
-}
-
-/* Opções de Serviço */
-.options {
+nav {
     display: flex;
-    flex-direction: column;
-    gap: 9px;
-    margin-bottom: 21px;
+    justify-content: center;
+    background: #333;
+    padding: 0.7rem;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.option-item {
+button {
+    background: var(--secondary);
+    color: var(--primary);
+    border: none;
+    padding: 10px 18px;
     cursor: pointer;
-}
-
-.option-item input {
-    display: none;
-}
-
-.card-content {
-    background: #2a2a2a;
-    padding: 12px;
+    font-weight: bold;
     border-radius: 5px;
+    transition: transform 0.1s;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.btn-danger { background: var(--danger); color: white; }
+.btn-success { background: var(--success); color: white; }
+
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    background: var(--white);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.badge {
+    background: var(--danger);
+    color: white;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 11px;
+    vertical-align: top;
+    margin-left: 5px;
+}
+
+.list-item {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 12px;
     display: flex;
     justify-content: space-between;
-    transition: 0.3s;
-    border: 1px solid transparent;
+    align-items: center;
+    border-radius: 8px;
+    background: #fafafa;
 }
 
-.option-item input:checked + .card-content {
-    border-color: var(--primary);
-    background: #332d22;
-}
-
-/* Inputs de Data e Hora */
-.inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 26px;
-}
-
-input[type="date"], 
-input[type="text"], 
-input[type="tel"], 
-select {
-    width: 100%;
-    padding: 13px;
-    background: #2a2a2a;
-    border: 2px solid #3d3d3d;
-    color: white;
-    border-radius: 6px;
-    outline: none;
-    box-sizing: border-box;
-}
-
-.client-info input {
-    margin-bottom: 15px;
-}
-
-/* Botão */
-.btn-confirm {
-    width: 100%;
+.alert-success {
+    margin-top: 20px;
     padding: 15px;
-    background: var(--primary);
-    border: none;
+    background: #e8f5e9;
+    color: #2e7d32;
     border-radius: 6px;
-    color: #000;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
+    border-left: 5px solid var(--success);
 }
 
-.btn-confirm:hover {
-    background: #ffa600;
-    transform: translateY(-2px);
+#admin-lock {
+    text-align: center;
+    padding: 40px 0;
 }

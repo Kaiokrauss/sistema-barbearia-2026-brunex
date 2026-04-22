@@ -1,71 +1,116 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BarberShop | Agendamento</title>
+    <title>Barbearia VIP - Sistema de Agendamento</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Vintage <span>BarberShop</span></h1>
-            <p>Escolha o seu estilo e reserve seu horário</p>
-        </header>
 
-        <main class="booking-card">
-            <section class="services">
-                <h3>1. Selecione o Serviço</h3>
-                <div class="options">
-                    <label class="option-item">
-                        <input type="radio" name="service" value="cabelo" checked>
-                        <div class="card-content">
-                            <span>Corte de Cabelo</span>
-                            <small>R$ 45,00</small>
-                        </div>
-                    </label>
-                    <label class="option-item">
-                        <input type="radio" name="service" value="barba">
-                        <div class="card-content">
-                            <span>Barba Completa</span>
-                            <small>R$ 35,00</small>
-                        </div>
-                    </label>
-                    <label class="option-item">
-                        <input type="radio" name="service" value="combo">
-                        <div class="card-content">
-                            <span>Combo (Cabelo + Barba)</span>
-                            <small>R$ 100,00</small>
-                        </div>
-                    </label>
-                </div>
-            </section>
+<header>
+    <h1>Barbearia VIP</h1>
+</header>
 
-            <section class="datetime">
-                <h3>2. Data e Hora</h3>
-                <div class="inputs">
-                    <input type="date" id="date">
-                    <select id="time">
-                        <option value="09:00">09:00</option>
-                        <option value="10:00">10:00</option>
-                        <option value="14:00">14:00</option>
-                        <option value="16:00">16:00</option>
-                        <option value="17:00">17:30</option>
-                        <option value="18:00">18:00</option>
-                         <option value="19:00">19:00</option>
-                          <option value="20:00">20:00</option>
-                           <option value="21:00">21:00</option>
-                    </select>
-                </div>
-            </section>
+<nav>
+    <button onclick="showTab('tab-agendar')">Agendar</button>
+    <button onclick="showTab('tab-cancelar')">Cancelar (Cliente)</button>
+    <button onclick="checkAdminAuth('tab-horarios')">Admin: Horários</button>
+    <button onclick="checkAdminAuth('tab-agendamentos')">Admin: Agendamentos <span id="badge-count" class="badge" style="display:none;">0</span></button>
+    <button onclick="checkAdminAuth('tab-lembretes')">Admin: Lembretes</button>
+    <button onclick="checkAdminAuth('tab-config')">Configurar</button>
+    <button id="btn-sair" onclick="logoutAdmin()" style="display:none;" class="btn-danger">Sair</button>
+</nav>
 
-            <section class="client-info">
-                <h3>3. Seus Dados</h3>
-                <input type="text" placeholder="Seu Nome Completo">
-                <input type="tel" placeholder="(00) 00000-0000">
-                <button type="submit" class="btn-confirm">Confirmar Agendamento</button>
-            </section>
-        </main>
+<div class="container">
+    <div id="tab-login" class="tab-content">
+        <div id="admin-lock">
+            <h2>Área Restrita</h2>
+            <p>Digite a senha para acessar o painel administrativo.</p>
+            <div class="form-group">
+                <input type="password" id="admin-senha" placeholder="Senha padrão: 1234">
+            </div>
+            <button onclick="loginAdmin()">Entrar</button>
+        </div>
     </div>
+
+    <div id="tab-agendar" class="tab-content active">
+        <h2>Fazer Agendamento</h2>
+        <div class="form-group">
+            <label>Seu Nome:</label>
+            <input type="text" id="cliente-nome" placeholder="Digite seu nome">
+        </div>
+        
+        <div class="form-group">
+            <label>Serviço:</label>
+            <select id="cliente-servico">
+                <option value="">Selecione o que deseja fazer...</option>
+                <option value="Corte de Cabelo">Corte de Cabelo - R$ 40,00</option>
+                <option value="Barba">Barba - R$ 30,00</option>
+                <option value="Corte e Barba">Corte e Barba - R$ 60,00</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Data:</label>
+            <input type="date" id="cliente-data" onchange="loadAvailableSlots()">
+        </div>
+        <div class="form-group">
+            <label>Horário Disponível:</label>
+            <select id="cliente-horario">
+                <option value="">Selecione uma data primeiro</option>
+            </select>
+        </div>
+        <button class="btn-success" onclick="agendar()">Confirmar Agendamento</button>
+        <div id="agendamento-sucesso" class="alert-success" style="display:none;"></div>
+    </div>
+
+    <div id="tab-cancelar" class="tab-content">
+        <h2>Cancelar Agendamento</h2>
+        <p>Insira o código de 4 letras que você recebeu no momento do agendamento.</p>
+        <div class="form-group">
+            <input type="text" id="codigo-cancelamento" placeholder="Ex: A7B9" maxlength="4" style="text-transform: uppercase;">
+        </div>
+        <button class="btn-danger" onclick="cancelarAgendamento()">Cancelar Meu Horário</button>
+    </div>
+
+    <div id="tab-horarios" class="tab-content">
+        <h2>Gerenciar Horários</h2>
+        <div class="form-group">
+            <label>Data:</label>
+            <input type="date" id="admin-data" onchange="renderAdminHorarios()">
+        </div>
+        <div id="lista-horarios-admin"></div>
+    </div>
+
+    <div id="tab-agendamentos" class="tab-content">
+        <h2>Agendamentos do Dia</h2>
+        <div id="resumo-faturamento" style="margin-bottom: 15px; font-size: 18px; color: var(--success); font-weight: bold;"></div>
+        <div id="lista-agendamentos"></div>
+    </div>
+
+    <div id="tab-lembretes" class="tab-content">
+        <h2>Lembretes (WhatsApp)</h2>
+        <p>Acompanhe os horários de hoje:</p>
+        <div id="lista-lembretes"></div>
+    </div>
+
+    <div id="tab-config" class="tab-content">
+        <h2>Configurações</h2>
+        <div class="form-group">
+            <label>Nova Senha Admin:</label>
+            <input type="password" id="nova-senha">
+        </div>
+        <button onclick="mudarSenha()">Salvar Nova Senha</button>
+        <hr>
+        <div class="form-group">
+            <label>Seu número de WhatsApp (com DDD):</label>
+            <input type="text" id="admin-whatsapp" placeholder="Ex: 5511999999999">
+        </div>
+        <button onclick="salvarConfig()">Salvar Configurações</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
