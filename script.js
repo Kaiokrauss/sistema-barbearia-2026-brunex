@@ -238,3 +238,18 @@ setInterval(() => {
         renderAdminLembretes();
     }
 }, 30000);
+
+
+
+// --- CONTROLE DO MENU HAMBÚRGUER ---
+function toggleMenu() {
+    // Adiciona ou tira a classe 'mostrar' (que revela a coluna de botões)
+    document.getElementById('navLinks').classList.toggle('mostrar');
+}
+
+function closeMenu() {
+    // Se estiver no celular, fecha o menu automaticamente após clicar em uma opção
+    if (window.innerWidth <= 768) {
+        document.getElementById('navLinks').classList.remove('mostrar');
+    }
+}
