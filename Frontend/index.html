@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barbearias na Região</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #121212;
+    }
+    .card-hover:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100">
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <header class="mb-10 rounded-[32px] border border-white/10 bg-white/5 p-8 shadow-[0_30px_60px_-35px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-sm uppercase tracking-[0.35em] text-[#D4AF37]">Descubra sua barbearia</p>
+          <h1 class="mt-4 text-4xl font-semibold text-white sm:text-5xl">Barbearias na Região</h1>
+          <p class="mt-3 max-w-2xl text-base text-slate-300 sm:text-lg">Escolha a unidade mais próxima de você e agende um corte perfeito com estilo.</p>
+        </div>
+        <a href="login.html" class="inline-flex items-center justify-center rounded-3xl bg-[#D4AF37] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Acessar Login</a>
+      </div>
+    </header>
+
+    <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,interior&sig=1" alt="Barber Shop Guntendorfer" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Barber Shop Guntendorfer</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Referência em cortes clássicos e acabamento premium para clientes exigentes.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Av. Washington Luiz, 1950 (Jd. Paulista)</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,barber&sig=2" alt="Companhia da Barba" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Companhia da Barba</span>
+            <span class="rounded-full bg-red-600/15 px-3 py-1 text-sm font-medium text-red-300">Agenda lotada</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Especialistas em barbas longas e cortes clássicos com serviço muito concorrido.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Av. Washington Luiz, 2336 (Jd. Paulista)</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barber,face&sig=3" alt="Seu Zé Barbearia" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Seu Zé Barbearia</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Atendimento ágil e ambiente acolhedor para quem busca estilo e conforto.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Rua Paulistas, 656 (Jd. Paulista)</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,chair&sig=4" alt="515 Barbearia" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">515 Barbearia</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Cortes executivos e barboterapia em ambiente sofisticado no Novo Bongiovani.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Rua José Esteves, 214 (Jd. Novo Bongiovani)</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,mirrors&sig=5" alt="Alisson Hair e Barbearia" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Alisson Hair e Barbearia</span>
+            <span class="rounded-full bg-red-600/15 px-3 py-1 text-sm font-medium text-red-300">Agenda lotada</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Corte moderno e serviços exclusivos em um ambiente premium.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Rua Quintino Bocaiúva, 1049 (Vila Marcondes)</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,razor&sig=6" alt="Antunes Barbearia" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Antunes Barbearia</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Ambiente local com cortes clássicos e serviços personalizados.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Rua Juracy Bravo, 146 (Jd. Everest)</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,outdoor&sig=7" alt="Barbearia Gunten" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Barbearia Gunten</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Duas unidades de destaque na região para quem busca qualidade máxima.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Centro e Damha</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,chair,mirror&sig=8" alt="Dark Prete's Barbearia" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Dark Prete's Barbearia</span>
+            <span class="rounded-full bg-red-600/15 px-3 py-1 text-sm font-medium text-red-300">Agenda lotada</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Atendimento sofisticado em um ambiente dark luxury.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Vila Roberto</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?modernbarber,style&sig=9" alt="Freitas Barber Shop" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Freitas Barber Shop</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Especializada em cortes modernos e acabamentos com muita personalidade.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Rua Quintino Bocaiúva, 1049 (Vila Marcondes)</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barber,tools&sig=10" alt="SEU Candinho Barbearia" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">SEU Candinho Barbearia</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Profissionais experientes e atendimento personalizado para cada cliente.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Área central</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,classic&sig=11" alt="Don Victor Barbershop" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Don Victor Barbershop</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Ambiente tradicional com atendimento experiente e foco em acabamento.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Av. 14 de Setembro, 1.900</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+
+      <article class="card-hover group overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/80 shadow-lg shadow-black/30 transition duration-300 ease-out hover:shadow-2xl hover:border-[#D4AF37]/30">
+        <img src="https://source.unsplash.com/640x480/?barbershop,barberpole&sig=12" alt="Barbearia Mr. Bento" class="h-48 w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <div class="p-6">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span class="text-xl font-semibold text-white">Barbearia Mr. Bento</span>
+            <span class="rounded-full bg-[#D4AF37]/15 px-3 py-1 text-sm font-medium text-[#D4AF37]">Disponível agora</span>
+          </div>
+          <p class="text-sm leading-6 text-slate-300">Excelente localização e serviço rápido para quem está na área central.</p>
+          <div class="mt-5 flex items-center gap-2 text-sm text-slate-400">
+            <span>📍</span>
+            <span>Área central</span>
+          </div>
+          <button class="mt-6 inline-flex w-full items-center justify-center rounded-3xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e1b12c]">Ver Horários</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</body>
+</html>

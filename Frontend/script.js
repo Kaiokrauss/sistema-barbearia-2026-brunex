@@ -10,6 +10,8 @@ let appState = JSON.parse(localStorage.getItem('barbeariaState')) || {
 
 let isAdminLogged = false;
 let currentAdminTab = '';
+let ocupacaoChart = null;
+let proporcaoChart = null;
 
 function saveState() {
     localStorage.setItem('barbeariaState', JSON.stringify(appState));
@@ -155,22 +157,166 @@ function renderAdminHorarios() {
 }
 
 function renderAdminAgendamentos() {
-    const container = document.getElementById('lista-agendamentos');
     const hoje = new Date().toISOString().split('T')[0];
-    
-    const ativosHoje = appState.agendamentos.filter(a => a.data === hoje && a.status === 'ativo');
-    
-    if (ativosHoje.length === 0) {
-        container.innerHTML = '<p>Nenhum agendamento pendente para hoje.</p>';
-        return;
+    const agendamentosHoje = appState.agendamentos.filter(a => a.data === hoje);
+    const ativosHoje = agendamentosHoje.filter(a => a.status === 'ativo');
+    const canceladosHoje = agendamentosHoje.filter(a => a.status === 'cancelado');
+    const bloqueiosHoje = appState.bloqueios[hoje] || [];
+    const disponiveisHoje = defaultHorarios.filter(h => !ativosHoje.some(a => a.horario === h) && !bloqueiosHoje.includes(h));
+
+    document.getElementById('card-total-agendamentos').textContent = appState.agendamentos.filter(a => a.status === 'ativo').length;
+    document.getElementById('card-cancelamentos').textContent = appState.agendamentos.filter(a => a.status === 'cancelado').length;
+    document.getElementById('card-horarios-disponiveis').textContent = disponiveisHoje.length;
+    document.getElementById('resumo-faturamento').textContent = `Hoje: ${ativosHoje.length} agendados`;
+
+    renderCharts();
+    renderAgendamentosTable(agendamentosHoje, disponiveisHoje);
+}
+
+function renderAgendamentosTable(agendamentosHoje, disponiveisHoje) {
+    const container = document.getElementById('tabela-agendamentos-body');
+    const rows = [];
+
+    agendamentosHoje.sort((a, b) => a.horario.localeCompare(b.horario)).forEach(a => {
+        const statusLabel = a.status === 'ativo' ? '✅ Marcado' : '❌ Cancelado';
+        const action = a.status === 'ativo'
+            ? `<button onclick="cancelarAgendamentoAdmin('${a.id}')" class="text-red-600 hover:underline">Cancelar</button>`
+            : `<button onclick="reativarAgendamento('${a.id}')" class="text-green-600 hover:underline">Reativar</button>`;
+
+        rows.push(`
+            <tr class="border-t border-slate-200">
+                <td class="py-3 px-3">${a.nome}</td>
+                <td class="py-3 px-3">${a.horario}</td>
+                <td class="py-3 px-3">${statusLabel}</td>
+                <td class="py-3 px-3">${action}</td>
+            </tr>
+        `);
+    });
+
+    disponiveisHoje.slice(0, 3).forEach(hora => {
+        rows.push(`
+            <tr class="border-t border-slate-200">
+                <td class="py-3 px-3">--</td>
+                <td class="py-3 px-3">${hora}</td>
+                <td class="py-3 px-3">🔓 Disponível</td>
+                <td class="py-3 px-3"><button onclick="reservarHorario('${hora}')" class="text-blue-600 hover:underline">Reservar</button></td>
+            </tr>
+        `);
+    });
+
+    if (rows.length === 0) {
+        container.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
+    } else {
+        container.innerHTML = rows.join('');
+    }
+}
+
+function renderCharts() {
+    const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const weekData = getWeekOccupancy();
+    const activeCount = appState.agendamentos.filter(a => a.status === 'ativo').length;
+    const canceledCount = appState.agendamentos.filter(a => a.status === 'cancelado').length;
+
+    const ocupacaoCtx = document.getElementById('ocupacaoChart').getContext('2d');
+    const proporcaoCtx = document.getElementById('proporcaoChart').getContext('2d');
+
+    if (ocupacaoChart) {
+        ocupacaoChart.data.labels = labels;
+        ocupacaoChart.data.datasets[0].data = weekData;
+        ocupacaoChart.update();
+    } else {
+        ocupacaoChart = new Chart(ocupacaoCtx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Agendamentos ativos',
+                    data: weekData,
+                    backgroundColor: '#D4AF37',
+                    borderRadius: 12,
+                    maxBarThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, grid: { color: '#e2e8f0' } }
+                }
+            }
+        });
     }
 
-    ativosHoje.sort((a,b) => a.horario.localeCompare(b.horario));
-    container.innerHTML = ativosHoje.map(a => `
-        <div class="list-item">
-            <div><strong>${a.horario}</strong> - ${a.nome}<br><small>Serviço: <strong>${a.servico}</strong> (Cód: ${a.id})</small></div>
-        </div>
-    `).join('');
+    if (proporcaoChart) {
+        proporcaoChart.data.datasets[0].data = [activeCount, canceledCount];
+        proporcaoChart.update();
+    } else {
+        proporcaoChart = new Chart(proporcaoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Marcados', 'Cancelados'],
+                datasets: [{
+                    data: [activeCount, canceledCount],
+                    backgroundColor: ['#D4AF37', '#dc3545'],
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 18 } }
+                }
+            }
+        });
+    }
+}
+
+function getWeekOccupancy() {
+    const today = new Date();
+    const monday = getWeekStart(today);
+    return Array.from({ length: 6 }, (_, index) => {
+        const date = addDays(monday, index);
+        const dateKey = formatDate(date);
+        return appState.agendamentos.filter(a => a.data === dateKey && a.status === 'ativo').length;
+    });
+}
+
+function formatDate(date) {
+    return date.toISOString().split('T')[0];
+}
+
+function getWeekStart(date) {
+    const current = new Date(date);
+    const day = current.getDay();
+    const diff = (day + 6) % 7;
+    return addDays(current, -diff);
+}
+
+function addDays(date, days) {
+    const copy = new Date(date);
+    copy.setDate(copy.getDate() + days);
+    return copy;
+}
+
+function cancelarAgendamentoAdmin(id) {
+    const item = appState.agendamentos.find(a => a.id === id);
+    if (!item) return;
+    item.status = 'cancelado';
+    saveState();
+    renderAdminAgendamentos();
+}
+
+function reativarAgendamento(id) {
+    const item = appState.agendamentos.find(a => a.id === id);
+    if (!item) return;
+    item.status = 'ativo';
+    saveState();
+    renderAdminAgendamentos();
+}
+
+function reservarHorario(hora) {
+    alert(`Reservar horário ${hora} pode ser feito pela aba de agendamento.`);
 }
 
 function renderAdminLembretes() {

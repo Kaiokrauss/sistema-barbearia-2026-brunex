@@ -1,12 +1,12 @@
 :root {
-    --primary: #1a1a1a;
+    --primary: #121212;
     --secondary: #d4af37; /* Dourado Barbearia */
-    --bg: #1a1a1a;
+    --bg: #121212;
     --white: #ffffff;
-    --text: #1a1a1a;
+    --text: #f4f4f5;
     --danger: #dc3545;
     --success: #28a745;
-    --info: #007bff;
+    --info: #0ea5e9;
 }
 
 body {
@@ -20,9 +20,34 @@ body {
 header {
     background: var(--primary);
     color: var(--white);
-    padding: 1.4rem;
-    text-align: center;
-    border-bottom: 4px solid var(--secondary);
+    padding: 1.4rem 1rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.brand .logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.08);
+    padding: 0.5rem;
+    object-fit: contain;
 }
 
 nav {
