@@ -83,19 +83,17 @@ button:hover {
 
 .container {
     max-width: 800px;
-    margin: 14px auto; /* Margem um pouco menor para aproveitar a tela */
-    background: var(--white);
+    margin: 14px auto; 
+    /* 👇 RESOLVIDO 1: Tirei o fundo branco e a sombra! 👇 */
+    background: transparent; 
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     
-    /* A mágica do App Nativo acontece aqui: */
     flex: 1; 
-    overflow-y: auto; /* Libera a rolagem só aqui dentro se a lista crescer */
-    width: 90%; /* Garante que não vai encostar nas bordas do celular */
+    overflow-y: auto; 
+    width: 90%; 
 }
 
-/* Esconde a barra de rolagem de dentro do container também */
 .container::-webkit-scrollbar {
     display: none;
 }
@@ -103,7 +101,6 @@ button:hover {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
-
 
 .tab-content {
     display: none;
@@ -127,12 +124,17 @@ label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
+    /* 👇 RESOLVIDO 2: Textos dos labels agora são claros 👇 */
+    color: #e4e4e7;
 }
 
 input, select {
     width: 100%;
     padding: 11px;
-    border: 1px solid #ddd;
+    /* 👇 RESOLVIDO 3: Caixas de texto agora são escuras com letras brancas 👇 */
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white; 
     border-radius: 6px;
     box-sizing: border-box;
     font-size: 16px;
@@ -149,33 +151,30 @@ input, select {
 }
 
 .list-item {
-    border: 1px solid #eee;
+    border: 1px solid rgba(255,255,255,0.1);
     padding: 14px;
     margin-bottom: 11px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: 9px;
-    background: #fafafa;
+    background: rgba(255,255,255,0.05);
 }
 
 .alert-success {
     margin-top: 20px;
     padding: 15px;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: rgba(40, 167, 69, 0.1);
+    color: #4ade80;
     border-radius: 6px;
     border-left: 5px solid var(--success);
 }
 
-
-/* --- CONFIGURAÇÃO PARA O PC (Em Linha) --- */
 .navbar {
     background: #202020;
     padding: 10px 20px;
 }
 
-/* Oculta o botão de "☰ Menu" no PC */
 .menu-toggle {
     display: none; 
     width: 100%;
@@ -185,10 +184,9 @@ input, select {
     padding: 12px;
 }
 
-/* Botões em LINHA no PC */
 .nav-links {
     display: flex;
-    flex-direction: row; /* Ficam em linha */
+    flex-direction: row; 
     justify-content: center;
     gap: 15px;
     flex-wrap: wrap;
@@ -209,25 +207,23 @@ input, select {
     opacity: 0.9;
 }
 
-/* --- CONFIGURAÇÃO PARA O CELULAR (Quando Aperta, vira Coluna) --- */
 @media (max-width: 768px) {
     .menu-toggle {
-        display: block; /* O botão "☰ Menu" aparece no celular */
+        display: block; 
     }
 
     .nav-links {
-        display: none; /* Esconde os botões por padrão no celular */
-        flex-direction: column; /* Quando aparecerem, será em COLUNA */
+        display: none; 
+        flex-direction: column; 
         margin-top: 10px;
         gap: 8px;
     }
 
     .nav-links button {
-        width: 100%; /* Botões esticam de lado a lado */
-        padding: 15px; /* Ficam mais fáceis de tocar com o dedo */
+        width: 100%; 
+        padding: 15px; 
     }
 
-    /* Esta classe faz o menu aparecer quando o botão for apertado */
     .nav-links.mostrar {
         display: flex;
     }
