@@ -4,15 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Borcelle Barbearia</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background: #121212;
+            background: var(--bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(22, 22, 22, 0.88);
             backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.35);
+        }
+        .tab-button {
+            padding-bottom: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: rgba(226, 232, 240, 0.85);
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab-button.active {
+            color: white;
+            border-color: #D4AF37;
+        }
+        .link-muted {
+            color: #D4AF37;
+        }
+        .link-muted:hover {
+            color: #fff;
         }
         .input-focus:focus {
             border-color: #D4AF37;
@@ -32,13 +53,14 @@
 
         <!-- Abas -->
         <div class="flex gap-2 mb-6 border-b border-white/10">
-            <button onclick="showLogin()" id="tabLogin" class="flex-1 pb-3 text-sm font-semibold text-white border-b-2 border-[#D4AF37] cursor-pointer transition">
+            <button onclick="showLogin()" id="tabLogin" class="flex-1 tab-button active cursor-pointer">
                 Entrar
             </button>
-            <button onclick="showRegister()" id="tabRegister" class="flex-1 pb-3 text-sm font-semibold text-gray-400 border-b-2 border-transparent cursor-pointer transition hover:text-white">
+            <button onclick="showRegister()" id="tabRegister" class="flex-1 tab-button cursor-pointer">
                 Criar Conta
             </button>
         </div>
+        <div id="alertBox" class="mb-6 hidden rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white"></div>
 
         <!-- LOGIN -->
         <form id="loginSection" class="space-y-6">
@@ -61,8 +83,8 @@
                 Entrar
             </button>
 
-            <div class="text-sm text-yellow-300">
-                <a href="#" class="hover:text-white">Esqueceu a senha?</a>
+            <div class="text-sm">
+                <a href="#" class="link-muted hover:text-white">Esqueceu a senha?</a>
             </div>
         </form>
 
@@ -111,6 +133,24 @@
     </div>
 
     <script>
+        const alertBox = document.getElementById('alertBox');
+        const loginForm = document.getElementById('loginSection');
+        const registerForm = document.getElementById('registerSection');
+
+        function showAlert(message, type = 'success') {
+            alertBox.textContent = message;
+            alertBox.classList.remove('hidden', 'bg-red-500/20', 'text-red-200', 'bg-green-500/20', 'text-green-200');
+            if (type === 'error') {
+                alertBox.classList.add('bg-red-500/20', 'text-red-200');
+            } else {
+                alertBox.classList.add('bg-green-500/20', 'text-green-200');
+            }
+        }
+
+        function hideAlert() {
+            alertBox.classList.add('hidden');
+        }
+
         function togglePass(inputId, eyeId) {
             const input = document.getElementById(inputId);
             const eye = document.getElementById(eyeId);
@@ -124,22 +164,71 @@
         }
 
         function showLogin() {
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('tabLogin').classList.add('border-[#D4AF37]', 'text-white');
-            document.getElementById('tabLogin').classList.remove('border-transparent', 'text-gray-400');
-            document.getElementById('tabRegister').classList.remove('border-[#D4AF37]', 'text-white');
-            document.getElementById('tabRegister').classList.add('border-transparent', 'text-gray-400');
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            document.getElementById('tabLogin').classList.add('active');
+            document.getElementById('tabRegister').classList.remove('active');
+            hideAlert();
         }
 
         function showRegister() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('registerSection').style.display = 'block';
-            document.getElementById('tabLogin').classList.remove('border-[#D4AF37]', 'text-white');
-            document.getElementById('tabLogin').classList.add('border-transparent', 'text-gray-400');
-            document.getElementById('tabRegister').classList.add('border-[#D4AF37]', 'text-white');
-            document.getElementById('tabRegister').classList.remove('border-transparent', 'text-gray-400');
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            document.getElementById('tabLogin').classList.remove('active');
+            document.getElementById('tabRegister').classList.add('active');
+            hideAlert();
         }
+
+        registerForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('emailReg').value.trim().toLowerCase();
+            const telefone = document.getElementById('telefone').value.trim();
+            const senha = document.getElementById('senhaReg').value;
+            const senha2 = document.getElementById('senhaReg2').value;
+
+            const response = await fetch('api/register.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ nome, email, telefone, senha, senha2 })
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                showAlert(data.error || 'Erro no cadastro.', 'error');
+                return;
+            }
+
+            showAlert(data.success || 'Cadastro realizado com sucesso.');
+            showLogin();
+            registerForm.reset();
+        });
+
+        loginForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const identifier = document.getElementById('email').value.trim().toLowerCase();
+            const senha = document.getElementById('senha').value;
+
+            const response = await fetch('api/login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ identifier, senha })
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                showAlert(data.error || 'Erro no login.', 'error');
+                return;
+            }
+
+            showAlert(data.success || 'Login realizado com sucesso.');
+            loginForm.reset();
+            window.location.href = 'dashboard.php';
+        });
+
+        window.addEventListener('load', showLogin);
     </script>
 </body>
 </html>
