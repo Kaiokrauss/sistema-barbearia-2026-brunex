@@ -187,7 +187,7 @@
             const senha = document.getElementById('senhaReg').value;
             const senha2 = document.getElementById('senhaReg2').value;
 
-            const response = await fetch('api/register.php', {
+            const response = await fetch('../api/register.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',
@@ -210,7 +210,7 @@
             const identifier = document.getElementById('email').value.trim().toLowerCase();
             const senha = document.getElementById('senha').value;
 
-            const response = await fetch('api/login.php', {
+            const response = await fetch('../api/login.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',
