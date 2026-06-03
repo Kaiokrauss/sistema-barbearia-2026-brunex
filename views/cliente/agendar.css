@@ -1,0 +1,182 @@
+/* ==========================================================================
+   ADIÇÕES AO style.css — Tab de Agendamento
+   Adicione este bloco ao final do seu style.css existente.
+========================================================================== */
+
+/* ---------- Cabeçalho da seção ---------- */
+.agendar-header {
+    margin-bottom: 24px;
+}
+
+.agendar-subtitulo {
+    color: #a1a1aa;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* ---------- Campos ---------- */
+.obrigatorio {
+    color: var(--danger);
+    margin-left: 2px;
+}
+
+.label-hint {
+    font-size: 12px;
+    font-weight: 400;
+    color: #71717a;
+    margin-left: 6px;
+}
+
+/* ---------- Wrapper do horário (spinner ao lado do select) ---------- */
+.horario-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.horario-wrapper select {
+    flex: 1;
+}
+
+.horario-spinner {
+    font-size: 13px;
+    color: #a1a1aa;
+    white-space: nowrap;
+    animation: pulso 1.2s ease-in-out infinite;
+}
+
+@keyframes pulso {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+/* ---------- Grade visual de horários ---------- */
+.grade-horarios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.horario-btn {
+    background: rgba(255,255,255,0.06);
+    color: #e4e4e7;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    min-width: 76px;
+    text-align: center;
+}
+
+.horario-btn:hover {
+    background: rgba(212,175,55,0.15);
+    border-color: rgba(212,175,55,0.5);
+}
+
+.horario-btn--ativo {
+    background: var(--secondary);
+    color: #121212;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.25);
+}
+
+/* ---------- Card de resumo ---------- */
+.resumo-card {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: rgba(212,175,55,0.07);
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 12px;
+    animation: fadeIn 0.25s ease;
+}
+
+.resumo-titulo {
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.resumo-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.resumo-lista li {
+    font-size: 14px;
+    color: #d4d4d8;
+}
+
+.resumo-lista strong {
+    color: #e4e4e7;
+    margin-right: 4px;
+}
+
+.codigo-destaque {
+    display: inline-block;
+    background: var(--secondary);
+    color: #121212;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    letter-spacing: 0.1em;
+}
+
+/* ---------- Botão confirmar ---------- */
+.btn-confirmar {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    border-radius: 12px;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn-confirmar:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ---------- Flash messages ---------- */
+.flash-msg {
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    animation: fadeIn 0.3s ease;
+}
+
+.flash-success {
+    background: rgba(40, 167, 69, 0.1);
+    color: #4ade80;
+    border-left: 4px solid var(--success);
+}
+
+.flash-erro {
+    background: rgba(220, 53, 69, 0.1);
+    color: #f87171;
+    border-left: 4px solid var(--danger);
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 480px) {
+    .horario-btn {
+        min-width: 64px;
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+}
