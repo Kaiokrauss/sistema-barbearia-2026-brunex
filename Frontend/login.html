@@ -126,6 +126,15 @@
                 </button>
             </div>
 
+            <div>
+                <label for="perfil" class="block text-sm font-medium text-gray-300">Tipo de Conta</label>
+                <select id="perfil" class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition duration-200">
+                    <option value="cliente" style="background: #1a1a2e; color: white;">👤 Cliente</option>
+                    <option value="barbeiro" style="background: #1a1a2e; color: white;">✂️ Barbeiro</option>
+                    <option value="admin" style="background: #1a1a2e; color: white;">🔐 Admin</option>
+                </select>
+            </div>
+
             <button type="submit" class="w-full rounded-2xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#E1B12C]">
                 Criar Conta
             </button>
@@ -186,12 +195,13 @@
             const telefone = document.getElementById('telefone').value.trim();
             const senha = document.getElementById('senhaReg').value;
             const senha2 = document.getElementById('senhaReg2').value;
+            const perfil = document.getElementById('perfil').value;
 
             const response = await fetch('../api/register.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',
-                body: JSON.stringify({ nome, email, telefone, senha, senha2 })
+                body: JSON.stringify({ nome, email, telefone, senha, senha2, perfil })
             });
             const data = await response.json();
 
@@ -225,7 +235,9 @@
 
             showAlert(data.success || 'Login realizado com sucesso.');
             loginForm.reset();
-            window.location.href = 'dashboard.php';
+            setTimeout(() => {
+                window.location.href = data.redirect || 'dashboard.php';
+            }, 1000);
         });
 
         window.addEventListener('load', showLogin);

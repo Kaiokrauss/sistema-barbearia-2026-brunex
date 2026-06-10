@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gerenciar Serviços</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .form-group { margin: 15px 0; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+        button.delete { background: #dc3545; }
+        button.delete:hover { background: #c82333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; font-weight: bold; }
+        tr:hover { background: #f9f9f9; }
+        .actions { display: flex; gap: 5px; }
+        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Gerenciar Serviços</h1>
+        <a href="../dashboard.php" style="text-decoration: none; color: #007bff;">← Voltar</a>
+
+        <div id="message"></div>
+
+        <h2>Novo Serviço</h2>
+        <form id="formServico">
+            <div class="form-group">
+                <label>Nome do Serviço</label>
+                <input type="text" id="nome" required>
+            </div>
+            <div class="form-group">
+                <label>Preço (R$)</label>
+                <input type="number" id="preco" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Duração (minutos)</label>
+                <input type="number" id="duracao_minutos" value="30" required>
+            </div>
+            <button type="submit">Adicionar Serviço</button>
+        </form>
+
+        <h2>Serviços Cadastrados</h2>
+        <table id="tabelaServicos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Duração (min)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="servicos"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const API = '/api/servico.php';
+
+        function mostrarMensagem(msg, tipo) {
+            const div = document.getElementById('message');
+            div.className = `message ${tipo}`;
+            div.textContent = msg;
+            setTimeout(() => div.textContent = '', 4000);
+        }
+
+        function carregarServicos() {
+            fetch(API)
+                .then(r => r.json())
+                .then(data => {
+                    const tbody = document.getElementById('servicos');
+                    tbody.innerHTML = '';
+                    (data.data || []).forEach(s => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${s.id}</td>
+                            <td>${s.nome}</td>
+                            <td>R$ ${parseFloat(s.preco).toFixed(2)}</td>
+                            <td>${s.duracao_minutos}</td>
+                            <td class="actions">
+                                <button onclick="editarServico(${s.id}, '${s.nome}', ${s.preco}, ${s.duracao_minutos})">Editar</button>
+                                <button class="delete" onclick="deletarServico(${s.id})">Deletar</button>
+                            </td>
+                        `;
+                    });
+                });
+        }
+
+        function editarServico(id, nome, preco, duracao) {
+            document.getElementById('nome').value = nome;
+            document.getElementById('preco').value = preco;
+            document.getElementById('duracao_minutos').value = duracao;
+            document.getElementById('formServico').dataset.id = id;
+            document.querySelector('button[type="submit"]').textContent = 'Atualizar Serviço';
+        }
+
+        document.getElementById('formServico').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = this.dataset.id;
+            const dados = {
+                nome: document.getElementById('nome').value,
+                preco: document.getElementById('preco').value,
+                duracao_minutos: document.getElementById('duracao_minutos').value
+            };
+
+            const method = id ? 'PUT' : 'POST';
+            if (id) dados.id = id;
+
+            fetch(API, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarMensagem(data.success, 'success');
+                    this.reset();
+                    delete this.dataset.id;
+                    document.querySelector('button[type="submit"]').textContent = 'Adicionar Serviço';
+                    carregarServicos();
+                } else {
+                    mostrarMensagem(data.error, 'error');
+                }
+            });
+        });
+
+        function deletarServico(id) {
+            if (!confirm('Tem certeza que deseja deletar?')) return;
+            fetch(API, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(r => r.json())
+            .then(data => {
+                mostrarMensagem(data.success || data.error, data.success ? 'success' : 'error');
+                carregarServicos();
+            });
+        }
+
+        carregarServicos();
+    </script>
+</body>
+</html>

@@ -35,5 +35,23 @@ class Servico {
     }
     
     // Futuramente você pode adicionar aqui o atualizar() e deletar()
+    // Método UPDATE (Atualizar serviço existente)
+    public function atualizar() {
+        $query = "UPDATE " . $this->table_name . " SET nome = :nome, preco = :preco, duracao_minutos = :duracao_minutos WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':nome', $this->nome);
+        $stmt->bindParam(':preco', $this->preco);
+        $stmt->bindParam(':duracao_minutos', $this->duracao_minutos);
+        $stmt->bindParam(':id', $this->id);
+        return $stmt->execute();
+    }
+
+    // Método DELETE (Remover serviço)
+    public function deletar() {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        return $stmt->execute();
+    }
 }
 ?>

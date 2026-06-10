@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "nome": "João Barbeiro",
+    "email": "joao@barbearia.com",
+    "telefone": "11987654321",
+    "senha": "$2y$10$q6eSE6Gf8l7uV9kL8mN2O.uP1q2R3s4T5u6V7w8X9y0Z1a2B3c4D5",
+    "perfil": "barbeiro",
+    "createdAt": "2026-06-09T10:00:00+00:00"
+  },
+  {
+    "nome": "Maria Cliente",
+    "email": "maria@email.com",
+    "telefone": "11912345678",
+    "senha": "$2y$10$q6eSE6Gf8l7uV9kL8mN2O.uP1q2R3s4T5u6V7w8X9y0Z1a2B3c4D5",
+    "perfil": "cliente",
+    "createdAt": "2026-06-09T10:00:00+00:00"
+  }
+]

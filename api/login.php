@@ -1,6 +1,9 @@
 <?php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/UsuarioFactory.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Método não permitido.']);
@@ -23,37 +26,52 @@ if (!$identifier || !$senha) {
     exit;
 }
 
-$usersFile = __DIR__ . '/users.json';
-if (!file_exists($usersFile)) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Usuário ou senha inválidos.']);
-    exit;
-}
+try {
+    $dbObj = new Database();
+    $conn = $dbObj->getConnection();
 
-$users = json_decode(file_get_contents($usersFile), true);
-if (!is_array($users)) {
-    $users = [];
-}
+    // Buscar usuário por email ou telefone
+    $sql = "SELECT id, nome, email, telefone, senha, perfil FROM usuarios 
+            WHERE (email = :identifier OR telefone = :identifier) AND ativo = 1 LIMIT 1";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(':identifier', $identifier);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$foundUser = null;
-foreach ($users as $user) {
-    if ((isset($user['email']) && strtolower($user['email']) === $identifier) ||
-        (isset($user['telefone']) && $user['telefone'] === $identifier)) {
-        $foundUser = $user;
-        break;
+    if (!$user || !password_verify($senha, $user['senha'])) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Email/telefone ou senha inválidos.']);
+        exit;
     }
+
+    // Usuário autenticado
+    $_SESSION['user'] = [
+        'id' => $user['id'],
+        'nome' => $user['nome'],
+        'email' => $user['email'],
+        'telefone' => $user['telefone'],
+        'perfil' => $user['perfil']
+    ];
+
+    // Obter redirecionamento via Factory
+    $redirect = null;
+    try {
+        $usuarioObj = UsuarioFactory::criarUsuario($user['perfil']);
+        $redirect = $usuarioObj->getPainelRedirecionamento();
+    } catch (Exception $e) {
+        $redirect = 'Frontend/dashboard.php';
+    }
+
+    echo json_encode([
+        'success' => 'Login realizado com sucesso!',
+        'user' => $_SESSION['user'],
+        'redirect' => $redirect
+    ]);
+
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Erro ao acessar o banco de dados.']);
 }
 
-if (!$foundUser || !password_verify($senha, $foundUser['senha'])) {
-    http_response_code(401);
-    echo json_encode(['error' => 'E-mail/telefone ou senha inválidos.']);
-    exit;
-}
-
-$_SESSION['user'] = [
-    'nome' => $foundUser['nome'],
-    'email' => $foundUser['email'],
-    'telefone' => $foundUser['telefone']
-];
-
-echo json_encode(['success' => 'Bem-vindo, ' . $foundUser['nome'] . '!']);
+?>

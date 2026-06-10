@@ -6,13 +6,19 @@ interface Usuario {
 
 class Cliente implements Usuario {
     public function getPainelRedirecionamento() { 
-        return "views/cliente/agendar.php"; // Painel do cliente
+        return "Frontend/dashboard.php"; // Painel do cliente
     }
 }
 
 class Barbeiro implements Usuario {
     public function getPainelRedirecionamento() { 
-        return "views/admin/dashboard.php"; // Painel do barbeiro
+        return "Frontend/dashboard.php?perfil=barbeiro"; // Painel do barbeiro
+    }
+}
+
+class Admin implements Usuario {
+    public function getPainelRedirecionamento() { 
+        return "Frontend/dashboard.php?perfil=admin"; // Painel do admin
     }
 }
 
@@ -24,6 +30,8 @@ class UsuarioFactory {
                 return new Cliente();
             case 'barbeiro':
                 return new Barbeiro();
+            case 'admin':
+                return new Admin();
             default:
                 throw new Exception("Perfil não encontrado no sistema.");
         }
