@@ -23,9 +23,11 @@ function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     
-    if(tabId === 'tab-agendar') loadAvailableSlots();
-    if(tabId === 'tab-agendamentos') renderAdminAgendamentos();
-    if(tabId === 'tab-lembretes') renderAdminLembretes();
+    if (tabId === 'tab-agendar') loadAvailableSlots();
+    if (tabId === 'tab-agendamentos') renderAdminAgendamentos();
+    if (tabId === 'tab-lembretes') renderAdminLembretes();
+    if (tabId === 'tab-historico') renderAdminHistorico();
+    if (tabId === 'tab-horarios') renderAdminHorarios();
 }
 
 function checkAdminAuth(targetTab) {
@@ -105,6 +107,7 @@ function agendar() {
     document.getElementById('cliente-nome').value = '';
     document.getElementById('cliente-servico').value = '';
     loadAvailableSlots();
+    showTab('tab-agendamentos');
 }
 
 function cancelarAgendamento() {
@@ -317,6 +320,58 @@ function reativarAgendamento(id) {
 
 function reservarHorario(hora) {
     alert(`Reservar horário ${hora} pode ser feito pela aba de agendamento.`);
+}
+
+function toggleBlock(data, horario) {
+    if (!appState.bloqueios[data]) {
+        appState.bloqueios[data] = [];
+    }
+
+    const bloqueios = appState.bloqueios[data];
+    const index = bloqueios.indexOf(horario);
+
+    if (index === -1) {
+        bloqueios.push(horario);
+    } else {
+        bloqueios.splice(index, 1);
+    }
+
+    saveState();
+    renderAdminHorarios();
+}
+
+function renderAdminHistorico() {
+    const mes = document.getElementById('admin-mes').value;
+    const resumo = document.getElementById('resumo-historico');
+    const lista = document.getElementById('lista-historico');
+
+    if (!mes) {
+        resumo.textContent = 'Selecione um mês para ver o histórico.';
+        lista.innerHTML = '';
+        return;
+    }
+
+    const [ano, mesNum] = mes.split('-');
+    const historico = appState.agendamentos
+        .filter(a => a.data.startsWith(`${ano}-${mesNum}`))
+        .sort((a, b) => a.data.localeCompare(b.data) || a.horario.localeCompare(b.horario));
+
+    const ativos = historico.filter(a => a.status === 'ativo').length;
+    const cancelados = historico.filter(a => a.status === 'cancelado').length;
+
+    resumo.textContent = `Mês selecionado: ${mes} — ${ativos} ativos, ${cancelados} cancelados (${historico.length} registros).`;
+
+    if (historico.length === 0) {
+        lista.innerHTML = '<p>Nenhum agendamento encontrado para este mês.</p>';
+        return;
+    }
+
+    lista.innerHTML = historico.map(a => `
+        <div class="list-item">
+            <strong>${a.data} ${a.horario}</strong><br>
+            ${a.nome} — ${a.servico} — <span style="font-weight:700;">${a.status}</span>
+        </div>
+    `).join('');
 }
 
 function renderAdminLembretes() {

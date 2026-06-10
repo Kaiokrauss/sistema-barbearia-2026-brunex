@@ -6,6 +6,19 @@
  *   $mensagem      → string de feedback (opcional)
  *   $tipoMensagem  → 'success' | 'erro'
  */
+if (!isset($servicos)) {
+    require_once __DIR__ . '/../../Models/Database.php';
+    require_once __DIR__ . '/../../Models/Servico.php';
+
+    $dbObj = new Database();
+    $conn = $dbObj->getConnection();
+    $servicoModel = new Servico($conn);
+    $stmt = $servicoModel->lerTodos();
+    $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+$mensagem = $mensagem ?? '';
+$tipoMensagem = $tipoMensagem ?? 'success';
 ?>
 
 <div id="tab-agendar" class="tab-content active">
@@ -15,6 +28,8 @@
         <h2>Fazer Agendamento</h2>
         <p class="agendar-subtitulo">Escolha seu serviço, data e horário disponível.</p>
     </div>
+
+    <div id="message" class="flash-msg" style="display:none;"></div>
 
     <!-- ===== MENSAGEM DE FEEDBACK (flash) ===== -->
     <?php if (!empty($mensagem)): ?>
@@ -26,7 +41,7 @@
     <!-- ===== FORMULÁRIO PRINCIPAL ===== -->
     <form
         id="form-agendamento"
-        action="/barbearia-vip/public/index.php?acao=agendar"
+        action=""
         method="POST"
         novalidate
     >
@@ -58,11 +73,11 @@
             <input
                 type="tel"
                 id="cliente-tel"
-                name="cliente_tel"
+                name="cliente_telefone"
                 placeholder="Ex: (11) 9 9999-9999"
                 maxlength="20"
                 autocomplete="tel"
-                value="<?= htmlspecialchars($_POST['cliente_tel'] ?? '', ENT_QUOTES) ?>"
+                value="<?= htmlspecialchars($_POST['cliente_telefone'] ?? '', ENT_QUOTES) ?>"
             >
         </div>
 
@@ -169,7 +184,11 @@
     const selectServico   = document.getElementById('cliente-servico');
 
     /* ---- Endpoint JSON ---- */
-    const ENDPOINT_HORARIOS = '/barbearia-vip/public/index.php?acao=horarios_livres&data=';
+    const basePath = window.location.pathname.includes('/views/')
+        ? window.location.pathname.split('/views/')[0]
+        : window.location.pathname.replace(/\/[^/]*$/, '');
+    const API_BASE = `${window.location.origin}${basePath}`;
+    const ENDPOINT_HORARIOS = `${API_BASE}/api/agendamento.php?disponiveis=1&data=`;
 
     /* ---- Formata data YYYY-MM-DD → DD/MM/YYYY ---- */
     function formatarData(iso) {
@@ -282,6 +301,52 @@
             btn.classList.toggle('horario-btn--ativo', btn.dataset.horario === this.value);
         });
         atualizarResumo();
+    });
+
+    const formAgendamento = document.getElementById('form-agendamento');
+    const messageBox = document.getElementById('message');
+
+    function mostrarMensagem(text, type = 'success') {
+        if (!messageBox) return;
+        messageBox.className = `flash-msg flash-${type}`;
+        messageBox.textContent = text;
+        messageBox.style.display = 'block';
+        setTimeout(() => {
+            messageBox.style.display = 'none';
+            messageBox.textContent = '';
+        }, 6000);
+    }
+
+    formAgendamento.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        if (btnConfirmar.disabled) return;
+
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch(`${API_BASE}/api/agendamento.php`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                const codigoTexto = data.codigo ? ` Código do agendamento: ${data.codigo}` : '';
+                mostrarMensagem(data.success + codigoTexto, 'success');
+                this.reset();
+                selectHorario.innerHTML = '<option value="">Selecione uma data primeiro</option>';
+                selectHorario.disabled = true;
+                gradeHorarios.innerHTML = '';
+                gradeHorarios.style.display = 'none';
+                resumoCard.style.display = 'none';
+                btnConfirmar.disabled = true;
+            } else {
+                mostrarMensagem(data.error || 'Erro ao criar agendamento.', 'erro');
+            }
+        } catch (err) {
+            console.error('Erro ao enviar agendamento:', err);
+            mostrarMensagem('Falha ao cadastrar agendamento. Tente novamente.', 'erro');
+        }
     });
 
     /* ---- Eventos gerais ---- */

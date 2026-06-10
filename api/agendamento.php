@@ -9,6 +9,24 @@ $ag = new Agendamento($conn);
 
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
+    // Retorna horários disponíveis para uma data ou lista de agendamentos
+    if (isset($_GET['disponiveis']) || (isset($_GET['acao']) && $_GET['acao'] === 'horarios_livres')) {
+        $data = $_GET['data'] ?? null;
+        if (!$data) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Data é obrigatória.']);
+            exit;
+        }
+
+        $defaultHorarios = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+        $ocupados = $ag->getHorariosOcupados($data);
+        $bloqueados = $ag->getHorariosBloqueados($data);
+        $disponiveis = array_values(array_diff($defaultHorarios, array_merge($ocupados, $bloqueados)));
+
+        echo json_encode(['horarios' => $disponiveis]);
+        exit;
+    }
+
     // Suporta filtros: ?data=YYYY-MM-DD ou ?cliente=nome
     $data = $_GET['data'] ?? null;
     $cliente = $_GET['cliente'] ?? null;
