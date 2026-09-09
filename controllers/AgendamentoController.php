@@ -7,8 +7,7 @@ class AgendamentoController {
     private $agendamento;
 
     public function __construct() {
-        $dbObj = new Database();
-        $this->db = $dbObj->getConnection();
+        $this->db = Database::getInstance()->getConnection();
         $this->agendamento = new Agendamento($this->db);
     }
 

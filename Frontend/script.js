@@ -18,15 +18,50 @@ function saveState() {
     updateBadge();
 }
 
+function sincronizarAgendamentosApi() {
+    fetch('../api/agendamento.php')
+        .then(r => r.json())
+        .then(res => {
+            if (res.data && Array.isArray(res.data)) {
+                const apiAgendamentos = res.data.map(item => ({
+                    id: item.codigo || String(item.id),
+                    dbId: item.id,
+                    nome: item.cliente_nome,
+                    telefone: item.cliente_telefone || '',
+                    data: item.data_agendada,
+                    horario: item.horario ? item.horario.substring(0, 5) : '',
+                    servico: item.servico_nome || 'Atendimento',
+                    status: item.status || 'ativo'
+                }));
+                appState.agendamentos = apiAgendamentos;
+                saveState();
+                updateBadge();
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab && activeTab.id === 'tab-agendamentos') renderAdminAgendamentos();
+                if (activeTab && activeTab.id === 'tab-lembretes') renderAdminLembretes();
+            }
+        })
+        .catch(e => console.log('Erro ao sincronizar com banco:', e));
+}
+
 // --- NAVEGAÇÃO E LOGIN ---
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     
     if (tabId === 'tab-agendar') loadAvailableSlots();
-    if (tabId === 'tab-agendamentos') renderAdminAgendamentos();
-    if (tabId === 'tab-lembretes') renderAdminLembretes();
-    if (tabId === 'tab-historico') renderAdminHistorico();
+    if (tabId === 'tab-agendamentos') {
+        sincronizarAgendamentosApi();
+        renderAdminAgendamentos();
+    }
+    if (tabId === 'tab-lembretes') {
+        sincronizarAgendamentosApi();
+        renderAdminLembretes();
+    }
+    if (tabId === 'tab-historico') {
+        sincronizarAgendamentosApi();
+        renderAdminHistorico();
+    }
     if (tabId === 'tab-horarios') renderAdminHorarios();
 }
 
@@ -61,60 +96,185 @@ function logoutAdmin() {
 function loadAvailableSlots() {
     const data = document.getElementById('cliente-data').value;
     const select = document.getElementById('cliente-horario');
-    select.innerHTML = '';
+    select.innerHTML = '<option value="">Buscando horários disponíveis...</option>';
 
     if (!data) {
         select.innerHTML = '<option value="">Selecione uma data primeiro</option>';
         return;
     }
 
-    const bloqueadosHoje = appState.bloqueios[data] || [];
-    const ocupadosHoje = appState.agendamentos
-        .filter(a => a.data === data && a.status === 'ativo')
-        .map(a => a.horario);
+    fetch(`../api/agendamento.php?disponiveis=1&data=${data}`)
+        .then(r => r.json())
+        .then(res => {
+            select.innerHTML = '';
+            if (res.horarios && res.horarios.length > 0) {
+                res.horarios.forEach(h => {
+                    let opt = document.createElement('option');
+                    opt.value = h;
+                    opt.textContent = `${h} - Livre`;
+                    select.appendChild(opt);
+                });
+            } else {
+                select.innerHTML = '<option value="">Lotado para este dia</option>';
+            }
+        })
+        .catch(() => {
+            const bloqueadosHoje = appState.bloqueios[data] || [];
+            const ocupadosHoje = appState.agendamentos
+                .filter(a => a.data === data && a.status === 'ativo')
+                .map(a => a.horario);
 
-    let disponiveis = defaultHorarios.filter(h => !bloqueadosHoje.includes(h) && !ocupadosHoje.includes(h));
-
-    if (disponiveis.length === 0) {
-        select.innerHTML = '<option value="">Lotado para este dia</option>';
-    } else {
-        disponiveis.forEach(h => {
-            let opt = document.createElement('option');
-            opt.value = h; opt.textContent = h;
-            select.appendChild(opt);
+            let disponiveis = defaultHorarios.filter(h => !bloqueadosHoje.includes(h) && !ocupadosHoje.includes(h));
+            select.innerHTML = '';
+            if (disponiveis.length === 0) {
+                select.innerHTML = '<option value="">Lotado para este dia</option>';
+            } else {
+                disponiveis.forEach(h => {
+                    let opt = document.createElement('option');
+                    opt.value = h; opt.textContent = h;
+                    select.appendChild(opt);
+                });
+            }
         });
-    }
 }
 
-function agendar() {
-    const nome = document.getElementById('cliente-nome').value;
-    const servico = document.getElementById('cliente-servico').value; // Pegando o serviço
+function carregarServicosApi() {
+    const select = document.getElementById('cliente-servico');
+    if (!select) return;
+    fetch('../api/servico.php')
+        .then(r => r.json())
+        .then(res => {
+            if (res.data && res.data.length > 0) {
+                select.innerHTML = '<option value="">Selecione o que deseja fazer...</option>';
+                res.data.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = `${s.nome} - R$ ${parseFloat(s.preco).toFixed(2)}`;
+                    opt.dataset.id = s.id;
+                    opt.textContent = `${s.nome} - R$ ${parseFloat(s.preco).toFixed(2)} (${s.duracao_minutos} min)`;
+                    select.appendChild(opt);
+                });
+            }
+        })
+        .catch(e => console.log('Servicos API:', e));
+}
+
+async function agendar() {
+    const nome = document.getElementById('cliente-nome').value.trim();
+    const telInput = document.getElementById('cliente-telefone');
+    const telefone = telInput ? telInput.value.trim() : '';
+    const servicoSelect = document.getElementById('cliente-servico');
+    const servico = servicoSelect.value;
+    const servicoId = servicoSelect.options[servicoSelect.selectedIndex]?.dataset?.id || 1;
     const data = document.getElementById('cliente-data').value;
     const horario = document.getElementById('cliente-horario').value;
 
-    if (!nome || !servico || !data || !horario) return alert('Por favor, preencha todos os campos.');
-
-    const codigo = Math.random().toString(36).substring(2, 6).toUpperCase();
-    
-    // Salvando o serviço no banco de dados do navegador
-    appState.agendamentos.push({ id: codigo, data, horario, nome, servico, status: 'ativo' });
-    saveState();
+    if (!nome || !servico || !data || !horario) {
+        return alert('Por favor, preencha todos os campos obrigatórios.');
+    }
 
     const msgBox = document.getElementById('agendamento-sucesso');
-    msgBox.innerHTML = `<strong>Tudo certo, ${nome}!</strong><br>Serviço: ${servico}<br>Horário: ${horario} no dia ${data}.<br>Código para cancelar: <strong>${codigo}</strong>`;
     msgBox.style.display = 'block';
+    msgBox.innerHTML = '<em>Processando agendamento e gerando link do WhatsApp...</em>';
 
-    document.getElementById('cliente-nome').value = '';
-    document.getElementById('cliente-servico').value = '';
-    loadAvailableSlots();
-    showTab('tab-agendamentos');
+    try {
+        const resp = await fetch('../api/agendamento.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                cliente_nome: nome,
+                cliente_telefone: telefone,
+                servico_id: servicoId,
+                data_agendada: data,
+                horario: horario
+            })
+        });
+
+        const res = await resp.json();
+
+        if (resp.ok && res.success) {
+            const codigo = res.codigo || Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            // Salvando no estado local
+            appState.agendamentos.push({ 
+                id: codigo, 
+                data, 
+                horario, 
+                nome, 
+                servico, 
+                telefone,
+                status: 'ativo' 
+            });
+            saveState();
+
+            let zapButtons = '';
+            if (res.whatsapp_url_cliente) {
+                zapButtons += `
+                    <a href="${res.whatsapp_url_cliente}" target="_blank" style="display:inline-block; margin-top:8px; margin-right:8px; padding:8px 14px; background:#25D366; color:#000; font-weight:bold; border-radius:8px; text-decoration:none;">
+                        📲 Enviar Confirmação via WhatsApp
+                    </a>
+                `;
+            }
+            if (res.whatsapp_url_barbeiro) {
+                zapButtons += `
+                    <a href="${res.whatsapp_url_barbeiro}" target="_blank" style="display:inline-block; margin-top:8px; padding:8px 14px; background:#333; color:#fff; font-weight:600; border-radius:8px; text-decoration:none;">
+                        💬 Notificar Barbeiro
+                    </a>
+                `;
+            }
+
+            msgBox.innerHTML = `
+                <div style="font-size:1.05rem;"><strong>🎉 Agendamento confirmado, ${nome}!</strong></div>
+                <div style="margin-top:4px;">Serviço: <strong>${servico}</strong></div>
+                <div>Data & Horário: <strong>${data} às ${horario}</strong></div>
+                <div style="margin-top:4px;">Código de cancelamento: <strong style="color:#d4af37; background:#000; padding:2px 6px; border-radius:4px;">${codigo}</strong></div>
+                <div style="margin-top:8px;">${zapButtons}</div>
+                <div style="margin-top:10px;">
+                    <button onclick="showTab('tab-agendamentos')" style="padding:6px 12px; font-size:0.85rem; background:#444; color:#fff; border-radius:6px; border:none; cursor:pointer;">Ver na Tabela de Agendamentos &rarr;</button>
+                </div>
+            `;
+
+            // Abre o WhatsApp do cliente automaticamente se preenchido
+            if (res.whatsapp_url_cliente && telefone) {
+                window.open(res.whatsapp_url_cliente, '_blank');
+            }
+
+            document.getElementById('cliente-nome').value = '';
+            if (telInput) telInput.value = '';
+            loadAvailableSlots();
+            sincronizarAgendamentosApi();
+        } else {
+            msgBox.style.display = 'block';
+            msgBox.innerHTML = `<span style="color:#dc3545;">❌ ${res.error || 'Erro ao realizar agendamento.'}</span>`;
+            alert(res.error || 'Não foi possível confirmar o agendamento.');
+        }
+    } catch (e) {
+        console.error('Sync API erro:', e);
+        const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
+        appState.agendamentos.push({ id: codigo, data, horario, nome, servico, telefone, status: 'ativo' });
+        saveState();
+
+        msgBox.innerHTML = `<strong>Tudo certo (modo local), ${nome}!</strong><br>Serviço: ${servico}<br>Horário: ${horario} no dia ${data}.<br>Código: <strong>${codigo}</strong>`;
+        document.getElementById('cliente-nome').value = '';
+        if (telInput) telInput.value = '';
+        loadAvailableSlots();
+    }
 }
 
 function cancelarAgendamento() {
     const codigo = document.getElementById('codigo-cancelamento').value.toUpperCase();
     const index = appState.agendamentos.findIndex(a => a.id === codigo && a.status === 'ativo');
 
-    if (index === -1) return alert('Código não encontrado.');
+    // Sincroniza cancelamento na API MySQL
+    fetch('../api/agendamento.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: codigo })
+    }).catch(e => console.log('Sync cancel erro:', e));
+
+    if (index === -1) {
+        alert('Código verificado e cancelamento solicitado.');
+        return;
+    }
 
     const agendamento = appState.agendamentos[index];
     appState.agendamentos[index].status = 'cancelado';
@@ -186,12 +346,18 @@ function renderAgendamentosTable(agendamentosHoje, disponiveisHoje) {
             ? `<button onclick="cancelarAgendamentoAdmin('${a.id}')" class="text-red-600 hover:underline">Cancelar</button>`
             : `<button onclick="reativarAgendamento('${a.id}')" class="text-green-600 hover:underline">Reativar</button>`;
 
+        const telLimpo = (a.telefone || a.cliente_telefone || '').replace(/\D/g, '');
+        const telComDdi = telLimpo ? (telLimpo.length <= 11 && !telLimpo.startsWith('55') ? '55' + telLimpo : telLimpo) : '';
+        const zapMsg = encodeURIComponent(`Olá ${a.nome}! Confirmando seu agendamento na Barbearia VIP para o dia ${a.data} às ${a.horario} (${a.servico || 'Atendimento'}).`);
+        const zapUrl = telComDdi ? `https://api.whatsapp.com/send?phone=${telComDdi}&text=${zapMsg}` : `https://api.whatsapp.com/send?text=${zapMsg}`;
+        const zapBtn = `<a href="${zapUrl}" target="_blank" style="background:#25D366; color:#000; font-weight:600; padding:3px 8px; border-radius:6px; text-decoration:none; margin-right:8px; font-size:12px; display:inline-block;">📲 WhatsApp</a>`;
+
         rows.push(`
             <tr class="border-t border-slate-200">
                 <td class="py-3 px-3">${a.nome}</td>
                 <td class="py-3 px-3">${a.horario}</td>
                 <td class="py-3 px-3">${statusLabel}</td>
-                <td class="py-3 px-3">${action}</td>
+                <td class="py-3 px-3">${zapBtn}${action}</td>
             </tr>
         `);
     });
@@ -393,13 +559,17 @@ function renderAdminLembretes() {
         const diffMins = Math.floor((hAgend - agora) / 60000);
         
         let tempoTxt = diffMins < 0 ? "Já passou" : `Faltam ${diffMins} min`;
-        // Mensagem de zap agora inclui o serviço
-        const msg = encodeURIComponent(`Olá ${a.nome}, confirmando seu horário hoje às ${a.horario} para ${a.servico}. Te aguardamos!`);
+        const msg = encodeURIComponent(`Olá ${a.nome}, confirmando seu horário hoje às ${a.horario} para ${a.servico || 'atendimento'}. Te aguardamos na Barbearia VIP!`);
+        const telLimpo = (a.telefone || a.cliente_telefone || '').replace(/\D/g, '');
+        const phoneWithCountry = telLimpo ? (telLimpo.length <= 11 && !telLimpo.startsWith('55') ? '55' + telLimpo : telLimpo) : '';
+        const zapUrl = phoneWithCountry
+            ? `https://api.whatsapp.com/send?phone=${phoneWithCountry}&text=${msg}`
+            : `https://api.whatsapp.com/send?text=${msg}`;
 
         return `
             <div class="list-item">
-                <div><strong>${a.horario}</strong> - ${a.nome} (${a.servico})<br><small>${tempoTxt}</small></div>
-                <button class="btn-success" onclick="window.open('https://wa.me/?text=${msg}')">Enviar Lembrete</button>
+                <div><strong>${a.horario}</strong> - ${a.nome} (${a.servico || 'Serviço'})<br><small>${tempoTxt}</small></div>
+                <button class="btn-success" onclick="window.open('${zapUrl}', '_blank')">📲 Enviar Lembrete WhatsApp</button>
             </div>`;
     }).join('');
 }
@@ -432,6 +602,8 @@ document.getElementById('cliente-data').min = new Date().toISOString().split('T'
 document.getElementById('admin-data').value = new Date().toISOString().split('T')[0];
 document.getElementById('admin-whatsapp').value = appState.whatsappAdmin;
 updateBadge();
+carregarServicosApi();
+sincronizarAgendamentosApi();
 
 setInterval(() => {
     updateBadge();

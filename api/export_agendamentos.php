@@ -1,16 +1,56 @@
 <?php
-// Exporta agendamentos em CSV por data ou intervalo
+/**
+ * Exportador de Agendamentos
+ * Demonstração dos padrões de projeto:
+ * - Singleton: conexão centralizada com Database::getInstance()->getConnection()
+ * - Adapter: exportação de XML adaptada para JSON através de XmlParaJsonAdapter
+ */
 require_once __DIR__ . '/../Models/Database.php';
+require_once __DIR__ . '/../Models/ExportadorXml.php';
+require_once __DIR__ . '/../Models/XmlParaJsonAdapter.php';
 
-$dbObj = new Database();
-$conn = $dbObj->getConnection();
+// Conexão obtida pelo padrão Singleton
+$conn = Database::getInstance()->getConnection();
 
 $from = $_GET['from'] ?? null; // YYYY-MM-DD
 $to = $_GET['to'] ?? null;
-$date = $_GET['date'] ?? null; // alternativa
+$date = $_GET['date'] ?? null; // alternativa para data específica
+$formato = strtolower($_GET['formato'] ?? ($_GET['format'] ?? 'csv'));
 
-if ($date) { $from = $date; $to = $date; }
+if ($date) {
+    $from = $date;
+    $to = $date;
+}
 
+// 1. Exportação em JSON via Padrão ADAPTER (XML -> JSON)
+if ($formato === 'json') {
+    // Instancia o Adaptee (Exportador nativo em XML)
+    $exportadorXml = new ExportadorXml($from, $to, $conn);
+
+    // Instancia o Adapter (converte o XML gerado em JSON)
+    $adapter = new XmlParaJsonAdapter($exportadorXml);
+
+    header('Content-Type: ' . $adapter->getTipoConteudo());
+    if (!isset($_GET['inline'])) {
+        header('Content-Disposition: attachment; filename="agendamentos_export.json"');
+    }
+    echo $adapter->exportar();
+    exit;
+}
+
+// 2. Exportação em XML via Adaptee direto
+if ($formato === 'xml') {
+    $exportadorXml = new ExportadorXml($from, $to, $conn);
+
+    header('Content-Type: ' . $exportadorXml->getTipoConteudo());
+    if (!isset($_GET['inline'])) {
+        header('Content-Disposition: attachment; filename="agendamentos_export.xml"');
+    }
+    echo $exportadorXml->exportar();
+    exit;
+}
+
+// 3. Exportação padrão em CSV (legado/retrocompatibilidade)
 $sql = "SELECT * FROM agendamentos";
 $conds = [];
 $params = [];
@@ -22,10 +62,14 @@ if ($from && $to) {
     $conds[] = "data_agendada = :from";
     $params[':from'] = $from;
 }
-if (count($conds)) $sql .= ' WHERE ' . implode(' AND ', $conds);
+if (count($conds)) {
+    $sql .= ' WHERE ' . implode(' AND ', $conds);
+}
 
 $stmt = $conn->prepare($sql);
-foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+foreach ($params as $k => $v) {
+    $stmt->bindValue($k, $v);
+}
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -34,8 +78,9 @@ header('Content-Disposition: attachment; filename="agendamentos_export.csv"');
 
 $out = fopen('php://output', 'w');
 fputcsv($out, array_keys($rows[0] ?? ['id','cliente_nome','cliente_telefone','servico_id','data_agendada','horario','status','codigo','criado_em']));
-foreach ($rows as $r) fputcsv($out, $r);
+foreach ($rows as $r) {
+    fputcsv($out, $r);
+}
 fclose($out);
 exit;
-
 ?>

@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barbearia VIP - Sistema de Agendamento</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Configuração de cores customizadas do Tailwind baseadas no seu layout -->
     <script>
         tailwind.config = {
             theme: {
@@ -21,155 +19,234 @@
         }
     </script>
     <style>
-        /* Oculta as abas inativas suavemente */
-        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content { display: none; animation: fadeIn 0.25s ease-in-out; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Estilo padrão para inputs no modo escuro */
         .dark-input { 
-            @apply w-full bg-[#2A2A2A] border border-gray-700 text-white rounded-lg p-3 mt-1 focus:outline-none focus:border-barberYellow focus:ring-1 focus:ring-barberYellow transition; 
+            width: 100%;
+            background: #2A2A2A;
+            border: 1px solid #374151;
+            color: #fff;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-top: 0.25rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .dark-input:focus {
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
         }
     </style>
 </head>
-<body class="text-gray-300 font-sans antialiased min-h-screen flex flex-col">
+<body class="text-gray-300 font-sans antialiased min-h-screen flex flex-col bg-[#121212]">
 
-<!-- CABEÇALHO -->
+<!-- CABEÇALHO GLOBAL -->
 <header class="bg-barberDark border-b border-gray-800 p-4 sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-[#2A2A2A] rounded-full flex items-center justify-center text-xl">💈</div>
+            <div class="w-12 h-12 bg-[#2A2A2A] rounded-full flex items-center justify-center text-xl border border-gray-700">💈</div>
             <div>
                 <p class="text-xs uppercase tracking-widest text-barberYellow font-bold">Borcelle</p>
                 <h1 class="text-xl font-semibold text-white">Barbearia VIP</h1>
             </div>
         </div>
-        <button class="text-sm font-semibold text-barberYellow hover:text-white transition">Entrar / Painel</button>
+        <div class="flex items-center gap-3 flex-wrap">
+            <button onclick="changeTab('tab-horarios')" class="text-sm font-semibold text-white bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+                ⏰ Gerenciar Horários
+            </button>
+            <a href="login.html" class="text-sm font-semibold text-black bg-barberYellow hover:bg-barberYellowHover px-4 py-2 rounded-xl transition shadow-md">🔐 Entrar / Cadastrar</a>
+        </div>
     </div>
 </header>
 
-<!-- MENU DE NAVEGAÇÃO (BOTÕES DE MUDAR TELA) -->
+<!-- MENU DE NAVEGAÇÃO ENTRE ABAS E ARQUIVOS -->
 <nav class="bg-[#181818] border-b border-gray-800 px-4 overflow-x-auto">
-    <div class="max-w-6xl mx-auto flex gap-2 py-3">
-        <button onclick="changeTab('tab-agendar')" class="nav-btn bg-barberYellow text-black px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">Agendar</button>
-        <button onclick="changeTab('tab-cancelar')" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">Cancelar</button>
-        <button onclick="changeTab('tab-horarios')" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">Horários</button>
-        <button onclick="changeTab('tab-agendamentos')" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">Dashboard</button>
+    <div class="max-w-6xl mx-auto flex gap-2 py-3 items-center">
+        <button onclick="changeTab('tab-agendar')" id="btn-tab-agendar" class="nav-btn bg-barberYellow text-black px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">📅 Agendar</button>
+        <button onclick="changeTab('tab-cancelar')" id="btn-tab-cancelar" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">❌ Cancelar</button>
+        <button onclick="changeTab('tab-horarios')" id="btn-tab-horarios" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">⏰ Gerenciar Horários</button>
+        <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">📊 Resumo</button>
+        <span class="text-gray-600 px-1">|</span>
+        <a href="../views/admin/servicos.html" class="nav-btn text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg font-semibold whitespace-nowrap transition">📋 Gerenciar Serviços</a>
+        <a href="../views/admin/agendamentos.html" class="nav-btn text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg font-semibold whitespace-nowrap transition">📥 Exportar (CSV/XML/JSON)</a>
     </div>
 </nav>
 
 <!-- CONTAINER PRINCIPAL -->
 <main class="flex-grow max-w-6xl mx-auto w-full p-4 md:p-6">
 
-    <!-- TELA: AGENDAR -->
+    <!-- ALERTA DE STATUS / FEEDBACK -->
+    <div id="statusAlert" class="mb-6 hidden p-4 rounded-xl text-sm font-medium"></div>
+
+    <!-- TELA 1: AGENDAR -->
     <div id="tab-agendar" class="tab-content active">
-        <div class="bg-barberDark p-6 md:p-8 rounded-2xl border border-gray-800 max-w-2xl mx-auto">
-            <h2 class="text-2xl font-bold text-white mb-6">Fazer Agendamento</h2>
+        <div class="bg-barberDark p-6 md:p-8 rounded-2xl border border-gray-800 max-w-2xl mx-auto shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-2">Fazer Agendamento</h2>
+            <p class="text-sm text-gray-400 mb-6">Escolha o serviço desejado, a data e um dos horários livres.</p>
             
-            <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-400">Seu Nome</label>
-                <input type="text" id="cliente-nome" class="dark-input" placeholder="Ex: Carlos Silva">
-            </div>
-            
-            <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-400">Serviço</label>
-                <select id="cliente-servico" class="dark-input text-gray-400">
-                    <option value="">Selecione o que deseja fazer...</option>
-                    <option value="Corte">Corte de Cabelo - R$ 40,00</option>
-                    <option value="Barba">Barba - R$ 30,00</option>
-                    <option value="Completo">Corte e Barba - R$ 60,00</option>
-                </select>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400">Data</label>
-                    <input type="date" id="cliente-data" class="dark-input">
+            <form id="formAgendarIndex" onsubmit="realizarAgendamento(event)">
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-400">Seu Nome Completo *</label>
+                    <input type="text" id="cliente-nome" class="dark-input" placeholder="Ex: Carlos Silva" required>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400">Horário</label>
-                    <select id="cliente-horario" class="dark-input text-gray-400">
-                        <option value="">Selecione uma data antes</option>
-                        <option value="09:00">09:00 - Disponível</option>
-                        <option value="10:00">10:00 - Disponível</option>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-400">Telefone / WhatsApp</label>
+                    <input type="tel" id="cliente-tel" class="dark-input" placeholder="Ex: (11) 98888-7777">
+                </div>
+                
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-400">Serviço *</label>
+                    <select id="cliente-servico" class="dark-input text-gray-200" required>
+                        <option value="">Carregando serviços do banco...</option>
                     </select>
                 </div>
-            </div>
-            
-            <button class="w-full bg-barberYellow hover:bg-barberYellowHover text-black font-bold py-4 rounded-xl transition shadow-lg">
-                Confirmar Agendamento
-            </button>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400">Data *</label>
+                        <input type="date" id="cliente-data" class="dark-input" onchange="carregarHorariosDisponiveis()" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400">Horário Disponível *</label>
+                        <select id="cliente-horario" class="dark-input text-gray-200" required>
+                            <option value="">Selecione a data primeiro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" id="btnConfirmarAgendamento" class="w-full bg-barberYellow hover:bg-barberYellowHover text-black font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                    <span>Confirmar Agendamento</span>
+                </button>
+            </form>
+
+            <div id="boxSucessoAgendamento" class="mt-6 hidden bg-green-900/30 border border-green-700/50 p-5 rounded-xl text-green-200"></div>
         </div>
     </div>
 
-    <!-- TELA: CANCELAR -->
+    <!-- TELA 2: CANCELAR -->
     <div id="tab-cancelar" class="tab-content">
-        <div class="bg-barberDark p-6 rounded-2xl border border-gray-800 max-w-md mx-auto text-center">
+        <div class="bg-barberDark p-6 md:p-8 rounded-2xl border border-gray-800 max-w-md mx-auto text-center shadow-2xl">
             <h2 class="text-2xl font-bold text-white mb-2">Cancelar Horário</h2>
-            <p class="text-gray-400 text-sm mb-6">Insira o código de 4 letras recebido no agendamento.</p>
+            <p class="text-gray-400 text-sm mb-6">Insira o código de agendamento que você recebeu.</p>
             
-            <div class="mb-6">
-                <input type="text" placeholder="Ex: A7B9" maxlength="4" class="dark-input text-center text-2xl uppercase tracking-widest">
-            </div>
-            <button class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition">
-                Cancelar Meu Horário
-            </button>
+            <form onsubmit="executarCancelamento(event)">
+                <div class="mb-6">
+                    <input type="text" id="codigo-cancelar-input" placeholder="Ex: TST443" maxlength="8" class="dark-input text-center text-2xl uppercase tracking-widest font-mono" required>
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition shadow-md">
+                    Cancelar Meu Horário
+                </button>
+            </form>
+            <div id="boxCancelamentoFeedback" class="mt-5 hidden p-4 rounded-xl text-sm"></div>
         </div>
     </div>
 
-    <!-- TELA: DASHBOARD (Agendamentos Admin) -->
-    <div id="tab-agendamentos" class="tab-content">
-        <div class="flex justify-between items-end mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-white">Dashboard</h2>
-                <p class="text-sm text-gray-400">Visão geral dos agendamentos de hoje.</p>
+    <!-- TELA 3: GERENCIAR HORÁRIOS DISPONÍVEIS E BLOQUEADOS -->
+    <div id="tab-horarios" class="tab-content">
+        <div class="bg-barberDark p-6 md:p-8 rounded-2xl border border-gray-800 max-w-4xl mx-auto shadow-2xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-1">⏰ Gerenciador de Horários</h2>
+                    <p class="text-sm text-gray-400">Clique para alternar qualquer horário entre <strong class="text-green-400">Disponível</strong> e <strong class="text-red-400">Bloqueado</strong>.</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="bloquearDiaInteiro()" class="text-xs bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold px-3.5 py-2 rounded-xl border border-red-500/30 transition flex items-center gap-1.5">
+                        🚫 Bloquear Dia Todo
+                    </button>
+                    <button type="button" onclick="liberarDiaInteiro()" class="text-xs bg-green-500/20 hover:bg-green-500/30 text-green-300 font-semibold px-3.5 py-2 rounded-xl border border-green-500/30 transition flex items-center gap-1.5">
+                        ✅ Liberar Dia Todo
+                    </button>
+                </div>
             </div>
-            <div class="text-green-400 font-bold text-lg">Caixa: R$ 450,00</div>
+
+            <div class="flex flex-wrap items-center gap-3 mb-6 bg-[#222] p-4 rounded-xl border border-gray-800">
+                <label class="text-sm font-medium text-gray-300">Escolha a Data:</label>
+                <input type="date" id="data-gerenciar-horarios" class="dark-input !w-auto !mt-0" onchange="carregarGradeGerenciador()">
+                <button type="button" onclick="hojeGerenciador()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Hoje</button>
+                <button type="button" onclick="amanhaGerenciador()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Amanhã</button>
+                <span id="feedback-horarios" class="text-xs text-barberYellow ml-auto font-medium transition-all"></span>
+            </div>
+
+            <!-- Legenda explicativa -->
+            <div class="flex flex-wrap gap-4 text-xs mb-4 text-gray-400 bg-white/5 p-3 rounded-xl">
+                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span> <strong class="text-white">Disponível:</strong> Livre para agendamento</span>
+                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> <strong class="text-white">Bloqueado:</strong> Oculto para clientes</span>
+                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> <strong class="text-white">Ocupado:</strong> Já reservado</span>
+            </div>
+
+            <!-- Grade de Horários -->
+            <div id="gradeGerenciadorContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <p class="text-gray-500 col-span-full">Carregando horários...</p>
+            </div>
+
+            <!-- Seção de Adicionar Horário ao Expediente da Barbearia -->
+            <div class="mt-8 pt-6 border-t border-gray-800">
+                <h3 class="text-base font-semibold text-white mb-1">⚙️ Configuração do Expediente Padrão</h3>
+                <p class="text-xs text-gray-400 mb-4">Adicione horários de atendimento extras à barbearia (ex: 08:00, 18:00, 19:00):</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="time" id="novo-horario-expediente" class="dark-input !w-auto !mt-0" value="08:00">
+                    <button type="button" onclick="adicionarHorarioExpediente()" class="bg-barberYellow hover:bg-barberYellowHover text-black text-xs font-bold px-4 py-2.5 rounded-xl transition shadow">
+                        ➕ Adicionar Horário
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 4: RESUMO / DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white">Resumo do Sistema</h2>
+                <p class="text-sm text-gray-400">Visão geral dos agendamentos no banco de dados.</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="../views/admin/agendamentos.html" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-2 rounded-lg font-medium transition">
+                    Ver Tabela Completa & Exportações →
+                </a>
+            </div>
         </div>
 
-        <!-- Cards de Resumo estilo o layout que você gostou -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="bg-barberDark p-5 rounded-xl border border-gray-800 flex justify-between items-center">
                 <div>
-                    <p class="text-gray-400 text-sm">Total de Agendamentos</p>
-                    <p class="text-3xl font-bold text-white mt-1">12</p>
+                    <p class="text-gray-400 text-sm">Agendamentos Totais</p>
+                    <p id="card-total-count" class="text-3xl font-bold text-white mt-1">0</p>
                 </div>
                 <div class="text-3xl">📅</div>
             </div>
             <div class="bg-barberDark p-5 rounded-xl border border-gray-800 flex justify-between items-center">
                 <div>
-                    <p class="text-gray-400 text-sm">Cancelamentos</p>
-                    <p class="text-3xl font-bold text-white mt-1">2</p>
+                    <p class="text-gray-400 text-sm">Ativos</p>
+                    <p id="card-ativos-count" class="text-3xl font-bold text-green-400 mt-1">0</p>
                 </div>
-                <div class="text-3xl opacity-50">⚠️</div>
+                <div class="text-3xl opacity-75">✅</div>
             </div>
             <div class="bg-barberDark p-5 rounded-xl border border-gray-800 flex justify-between items-center">
                 <div>
-                    <p class="text-gray-400 text-sm">Horários Livres</p>
-                    <p class="text-3xl font-bold text-white mt-1">4</p>
+                    <p class="text-gray-400 text-sm">Cancelados</p>
+                    <p id="card-cancelados-count" class="text-3xl font-bold text-red-400 mt-1">0</p>
                 </div>
-                <div class="text-3xl opacity-50">⏰</div>
+                <div class="text-3xl opacity-50">⚠️</div>
             </div>
         </div>
         
-        <!-- Tabela -->
         <div class="bg-barberDark rounded-xl border border-gray-800 overflow-hidden">
             <table class="w-full text-left text-sm">
                 <thead class="bg-[#252525] text-gray-400">
                     <tr>
                         <th class="p-4 font-medium">Cliente</th>
-                        <th class="p-4 font-medium">Serviço</th>
+                        <th class="p-4 font-medium">Data</th>
                         <th class="p-4 font-medium">Horário</th>
                         <th class="p-4 font-medium">Status</th>
+                        <th class="p-4 font-medium">Código</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-800">
-                    <tr class="hover:bg-[#2A2A2A] transition">
-                        <td class="p-4 font-semibold text-white">João Pedro</td>
-                        <td class="p-4 text-gray-400">Corte e Barba</td>
-                        <td class="p-4 text-barberYellow">09:00</td>
-                        <td class="p-4"><span class="bg-green-900 text-green-300 px-2 py-1 rounded text-xs">Confirmado</span></td>
-                    </tr>
+                <tbody id="tabela-resumo-body" class="divide-y divide-gray-800 text-gray-300">
+                    <tr><td colspan="5" class="p-4 text-center text-gray-500">Carregando agendamentos...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -177,29 +254,471 @@
 
 </main>
 
-<script>
-    // Lógica simples para fazer os botões de navegação funcionarem no visual
-    function changeTab(tabId) {
-        // Esconde todas as abas
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Mostra a aba clicada
-        document.getElementById(tabId).classList.add('active');
+<footer class="bg-barberDark border-t border-gray-800 p-6 text-center text-xs text-gray-500 mt-10">
+    <p>Barbearia VIP © 2026 — Desenvolvido com Padrões de Projeto Singleton, Adapter e Factory.</p>
+    <div class="flex justify-center gap-4 mt-2">
+        <a href="index.html" class="hover:text-barberYellow">Início</a>
+        <a href="javascript:void(0)" onclick="changeTab('tab-horarios')" class="hover:text-barberYellow">Gerenciar Horários</a>
+        <a href="../views/admin/servicos.html" class="hover:text-barberYellow">Serviços</a>
+        <a href="../views/admin/agendamentos.html" class="hover:text-barberYellow">Exportação</a>
+        <a href="login.html" class="hover:text-barberYellow">Entrar</a>
+    </div>
+</footer>
 
-        // Atualiza a cor dos botões do menu
+<script>
+    const basePath = window.location.pathname.replace(/\/Frontend\/[^\/]*$/, '');
+    const API_SERVICOS = `${basePath}/api/servico.php`;
+    const API_AGENDAMENTOS = `${basePath}/api/agendamento.php`;
+
+    // Navegação por Abas
+    function changeTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        const target = document.getElementById(tabId);
+        if (target) target.classList.add('active');
+
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.className = 'nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition';
+            if (btn.tagName === 'BUTTON') {
+                btn.className = 'nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition';
+            }
         });
         
-        // Pinta o botão clicado de amarelo
-        const clickedBtn = event.currentTarget;
-        clickedBtn.className = 'nav-btn bg-barberYellow text-black px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition';
+        const activeBtn = document.getElementById(`btn-${tabId}`);
+        if (activeBtn) {
+            activeBtn.className = 'nav-btn bg-barberYellow text-black px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition';
+        }
+
+        if (tabId === 'tab-horarios') carregarGradeGerenciador();
+        if (tabId === 'tab-dashboard') carregarResumoAgendamentos();
+    }
+
+    // Carregar Serviços do Banco de Dados
+    async function carregarServicosSelect() {
+        try {
+            const resp = await fetch(API_SERVICOS);
+            const data = await resp.json();
+            const select = document.getElementById('cliente-servico');
+            select.innerHTML = '<option value="">Selecione o serviço...</option>';
+
+            if (data && data.data && data.data.length > 0) {
+                data.data.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = `${s.nome} — R$ ${parseFloat(s.preco).toFixed(2)} (${s.duracao_minutos} min)`;
+                    select.appendChild(opt);
+                });
+            } else {
+                select.innerHTML = '<option value="">Nenhum serviço disponível</option>';
+            }
+        } catch (e) {
+            console.error('Erro ao carregar serviços:', e);
+        }
+    }
+
+    // Carregar Horários Livres para a data selecionada
+    async function carregarHorariosDisponiveis() {
+        const data = document.getElementById('cliente-data').value;
+        const select = document.getElementById('cliente-horario');
+        select.innerHTML = '<option value="">Buscando horários disponíveis...</option>';
+
+        if (!data) {
+            select.innerHTML = '<option value="">Selecione a data primeiro</option>';
+            return;
+        }
+
+        try {
+            const resp = await fetch(`${API_AGENDAMENTOS}?disponiveis=1&data=${data}`);
+            const res = await resp.json();
+            select.innerHTML = '';
+
+            if (res.horarios && res.horarios.length > 0) {
+                res.horarios.forEach(h => {
+                    const opt = document.createElement('option');
+                    opt.value = h;
+                    opt.textContent = `${h} - Livre`;
+                    select.appendChild(opt);
+                });
+            } else {
+                select.innerHTML = '<option value="">Nenhum horário livre nesta data</option>';
+            }
+        } catch (e) {
+            select.innerHTML = '<option value="">Erro ao buscar horários</option>';
+        }
+    }
+
+    // Realizar Agendamento via API
+    async function realizarAgendamento(event) {
+        event.preventDefault();
+        const nome = document.getElementById('cliente-nome').value.trim();
+        const telefone = document.getElementById('cliente-tel').value.trim();
+        const servico_id = document.getElementById('cliente-servico').value;
+        const data_agendada = document.getElementById('cliente-data').value;
+        const horario = document.getElementById('cliente-horario').value;
+
+        if (!nome || !servico_id || !data_agendada || !horario) {
+            alert('Por favor, preencha todos os campos obrigatórios.');
+            return;
+        }
+
+        const btn = document.getElementById('btnConfirmarAgendamento');
+        btn.disabled = true;
+        btn.textContent = 'Processando agendamento...';
+
+        try {
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cliente_nome: nome,
+                    cliente_telefone: telefone,
+                    servico_id: servico_id,
+                    data_agendada: data_agendada,
+                    horario: horario
+                })
+            });
+
+            const result = await resp.json();
+
+            if (resp.ok && result.success) {
+                const box = document.getElementById('boxSucessoAgendamento');
+                box.innerHTML = `
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">🎉</span>
+                        <h3 class="font-bold text-lg text-white">Agendamento Confirmado com Sucesso!</h3>
+                    </div>
+                    <div class="space-y-1 text-sm text-gray-200">
+                        <p>👤 Cliente: <strong>${nome}</strong></p>
+                        <p>📅 Data & Horário: <strong>${data_agendada} às ${horario}</strong></p>
+                        <p>🔑 Código de cancelamento: <span class="bg-black/40 px-2 py-0.5 rounded font-mono font-bold text-[#D4AF37] text-base">${result.codigo}</span></p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-green-700/40 flex flex-wrap gap-2.5">
+                        ${result.whatsapp_url_cliente ? `
+                            <a href="${result.whatsapp_url_cliente}" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-sm py-2.5 px-4 rounded-xl transition shadow">
+                                <span>📲 Enviar Confirmação via WhatsApp</span>
+                            </a>
+                        ` : ''}
+                        ${result.whatsapp_url_barbeiro ? `
+                            <a href="${result.whatsapp_url_barbeiro}" target="_blank" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-sm py-2.5 px-4 rounded-xl transition">
+                                <span>💬 Notificar Barbeiro</span>
+                            </a>
+                        ` : ''}
+                    </div>
+                `;
+                box.classList.remove('hidden');
+
+                // Se houver URL do WhatsApp para o cliente, abre automaticamente em nova aba
+                if (result.whatsapp_url_cliente && telefone) {
+                    window.open(result.whatsapp_url_cliente, '_blank');
+                }
+
+                document.getElementById('formAgendarIndex').reset();
+                carregarHorariosDisponiveis();
+            } else {
+                alert(result.error || 'Erro ao realizar agendamento.');
+            }
+        } catch (e) {
+            alert('Falha na conexão com a API.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Confirmar Agendamento';
+        }
+    }
+
+    // Cancelar Agendamento via API
+    async function executarCancelamento(event) {
+        event.preventDefault();
+        const codigo = document.getElementById('codigo-cancelar-input').value.trim().toUpperCase();
+        if (!codigo) return;
+
+        const box = document.getElementById('boxCancelamentoFeedback');
+
+        try {
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codigo: codigo })
+            });
+            const result = await resp.json();
+
+            box.classList.remove('hidden', 'bg-red-500/20', 'text-red-200', 'bg-green-500/20', 'text-green-200');
+            if (resp.ok && result.success) {
+                box.classList.add('bg-green-500/20', 'text-green-200');
+                box.textContent = `✅ ${result.success}`;
+                document.getElementById('codigo-cancelar-input').value = '';
+            } else {
+                box.classList.add('bg-red-500/20', 'text-red-200');
+                box.textContent = `❌ ${result.error || 'Código não encontrado.'}`;
+            }
+        } catch (e) {
+            box.classList.remove('hidden');
+            box.classList.add('bg-red-500/20', 'text-red-200');
+            box.textContent = 'Erro de comunicação ao cancelar.';
+        }
+    }
+
+    // Gerenciador de Horários (Disponíveis e Bloqueados)
+    async function carregarGradeGerenciador() {
+        const inputData = document.getElementById('data-gerenciar-horarios');
+        const data = inputData ? inputData.value : new Date().toISOString().split('T')[0];
+        const container = document.getElementById('gradeGerenciadorContainer');
+        if (!container || !data) return;
+
+        container.innerHTML = '<p class="text-gray-400 col-span-full py-4 text-center">Consultando horários no banco de dados...</p>';
+
+        try {
+            const resp = await fetch(`${API_AGENDAMENTOS}?grade_completa=1&data=${data}`);
+            const res = await resp.json();
+            const grade = res.grade || [];
+
+            container.innerHTML = '';
+            if (grade.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 col-span-full py-4 text-center">Nenhum horário configurado no expediente.</p>';
+                return;
+            }
+
+            grade.forEach(item => {
+                const card = document.createElement('div');
+                let borderClass = '';
+                let badgeHtml = '';
+                let btnActionHtml = '';
+
+                if (item.status === 'ocupado') {
+                    borderClass = 'bg-blue-950/20 border-blue-800/40 text-blue-300';
+                    badgeHtml = `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-blue-900/60 text-blue-200">👤 Reservado</span>`;
+                    btnActionHtml = `
+                        <div class="text-[11px] text-gray-400 mt-2 truncate font-normal" title="${item.cliente_nome} (${item.servico_nome})">
+                            ${item.cliente_nome} <span class="text-gray-500">| ${item.servico_nome}</span>
+                        </div>
+                    `;
+                } else if (item.status === 'bloqueado') {
+                    borderClass = 'bg-red-950/30 border-red-800/50 text-red-300';
+                    badgeHtml = `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-red-900/60 text-red-200">🔒 Bloqueado</span>`;
+                    btnActionHtml = `
+                        <button type="button" onclick="toggleHorarioBloqueio('${data}', '${item.horario}')" class="mt-3 w-full bg-green-700/30 hover:bg-green-700/50 text-green-300 border border-green-700/40 text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center justify-center gap-1">
+                            ✅ Liberar Horário
+                        </button>
+                    `;
+                } else {
+                    borderClass = 'bg-green-950/20 border-green-800/40 text-green-300';
+                    badgeHtml = `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-green-900/60 text-green-200">🔓 Disponível</span>`;
+                    btnActionHtml = `
+                        <button type="button" onclick="toggleHorarioBloqueio('${data}', '${item.horario}')" class="mt-3 w-full bg-red-700/30 hover:bg-red-700/50 text-red-300 border border-red-700/40 text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center justify-center gap-1">
+                            ⛔ Bloquear
+                        </button>
+                    `;
+                }
+
+                const deleteSlotBtn = `<button type="button" onclick="removerHorarioExpediente('${item.horario}')" title="Remover este horário do expediente" class="text-gray-500 hover:text-red-400 text-xs p-1">✕</button>`;
+
+                card.className = `p-3.5 rounded-xl border transition flex flex-col justify-between ${borderClass}`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold text-white tracking-wide font-mono">${item.horario}</span>
+                            <div class="flex items-center gap-1.5">
+                                ${badgeHtml}
+                                ${deleteSlotBtn}
+                            </div>
+                        </div>
+                    </div>
+                    ${btnActionHtml}
+                `;
+                container.appendChild(card);
+            });
+        } catch (e) {
+            container.innerHTML = '<p class="text-red-400 col-span-full py-4 text-center">Erro ao carregar horários do banco.</p>';
+        }
+    }
+
+    async function toggleHorarioBloqueio(data, horario) {
+        const feedback = document.getElementById('feedback-horarios');
+        if (feedback) feedback.textContent = 'Salvando alteração...';
+
+        try {
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    acao: 'toggle_bloqueio',
+                    data: data,
+                    horario: horario
+                })
+            });
+            const res = await resp.json();
+            if (resp.ok && res.success) {
+                if (feedback) feedback.textContent = `✓ ${res.mensagem || 'Horário atualizado!'}`;
+                setTimeout(() => { if (feedback) feedback.textContent = ''; }, 3000);
+                carregarGradeGerenciador();
+                carregarHorariosDisponiveis();
+            } else {
+                alert(res.error || 'Erro ao alterar horário.');
+            }
+        } catch (e) {
+            alert('Falha na comunicação com o servidor.');
+        }
+    }
+
+    async function bloquearDiaInteiro() {
+        const data = document.getElementById('data-gerenciar-horarios').value;
+        if (!data) return alert('Selecione uma data.');
+        if (!confirm(`Deseja realmente BLOQUEAR todos os horários do dia ${data}?`)) return;
+
+        try {
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ acao: 'bloquear_dia', data: data })
+            });
+            const res = await resp.json();
+            if (resp.ok && res.success) {
+                carregarGradeGerenciador();
+                carregarHorariosDisponiveis();
+            } else {
+                alert(res.error || 'Erro ao bloquear dia.');
+            }
+        } catch (e) {
+            alert('Erro de comunicação.');
+        }
+    }
+
+    async function liberarDiaInteiro() {
+        const data = document.getElementById('data-gerenciar-horarios').value;
+        if (!data) return alert('Selecione uma data.');
+        if (!confirm(`Deseja liberar todos os horários do dia ${data}?`)) return;
+
+        try {
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ acao: 'desbloquear_dia', data: data })
+            });
+            const res = await resp.json();
+            if (resp.ok && res.success) {
+                carregarGradeGerenciador();
+                carregarHorariosDisponiveis();
+            } else {
+                alert(res.error || 'Erro ao liberar dia.');
+            }
+        } catch (e) {
+            alert('Erro de comunicação.');
+        }
+    }
+
+    function hojeGerenciador() {
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('data-gerenciar-horarios').value = hoje;
+        carregarGradeGerenciador();
+    }
+
+    function amanhaGerenciador() {
+        const amanha = new Date();
+        amanha.setDate(amanha.getDate() + 1);
+        document.getElementById('data-gerenciar-horarios').value = amanha.toISOString().split('T')[0];
+        carregarGradeGerenciador();
+    }
+
+    async function adicionarHorarioExpediente() {
+        const novo = document.getElementById('novo-horario-expediente').value;
+        if (!novo) return alert('Informe o horário (HH:MM).');
+
+        try {
+            const respExp = await fetch(`${API_AGENDAMENTOS}?expediente=1`);
+            const resExp = await respExp.json();
+            const lista = resExp.horarios || [];
+            if (lista.includes(novo)) return alert('Este horário já existe no expediente.');
+            lista.push(novo);
+
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ acao: 'salvar_horarios_expediente', horarios: lista })
+            });
+            if (resp.ok) {
+                alert(`Horário ${novo} adicionado ao expediente com sucesso!`);
+                carregarGradeGerenciador();
+                carregarHorariosDisponiveis();
+            }
+        } catch (e) {
+            alert('Erro ao salvar novo horário.');
+        }
+    }
+
+    async function removerHorarioExpediente(horario) {
+        if (!confirm(`Remover permanentemente o horário ${horario} do expediente?`)) return;
+        try {
+            const respExp = await fetch(`${API_AGENDAMENTOS}?expediente=1`);
+            const resExp = await respExp.json();
+            const lista = (resExp.horarios || []).filter(h => h !== horario);
+
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ acao: 'salvar_horarios_expediente', horarios: lista })
+            });
+            if (resp.ok) {
+                carregarGradeGerenciador();
+                carregarHorariosDisponiveis();
+            }
+        } catch (e) {
+            alert('Erro ao remover horário.');
+        }
+    }
+
+    // Carregar Resumo Geral de Agendamentos
+    async function carregarResumoAgendamentos() {
+        const tbody = document.getElementById('tabela-resumo-body');
+        try {
+            const resp = await fetch(API_AGENDAMENTOS);
+            const res = await resp.json();
+            const dados = res.data || [];
+
+            document.getElementById('card-total-count').textContent = dados.length;
+            document.getElementById('card-ativos-count').textContent = dados.filter(a => a.status === 'ativo').length;
+            document.getElementById('card-cancelados-count').textContent = dados.filter(a => a.status === 'cancelado').length;
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado no banco de dados.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = dados.slice(0, 10).map(a => `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="p-4 font-medium text-white">${a.cliente_nome}</td>
+                    <td class="p-4">${a.data_agendada}</td>
+                    <td class="p-4 text-barberYellow font-semibold">${a.horario}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${
+                            a.status === 'ativo' ? 'bg-green-900/60 text-green-300' : 'bg-red-900/60 text-red-300'
+                        }">${a.status}</span>
+                    </td>
+                    <td class="p-4 font-mono text-xs text-gray-400">${a.codigo}</td>
+                </tr>
+            `).join('');
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-400">Falha ao consultar agendamentos.</td></tr>';
+        }
+    }
+
+    // Configuração inicial de datas
+    const hojeStr = new Date().toISOString().split('T')[0];
+    document.getElementById('cliente-data').min = hojeStr;
+    document.getElementById('cliente-data').value = hojeStr;
+    const inputGerenciar = document.getElementById('data-gerenciar-horarios');
+    if (inputGerenciar) {
+        inputGerenciar.min = hojeStr;
+        inputGerenciar.value = hojeStr;
+    }
+
+    // Inicialização
+    carregarServicosSelect();
+    carregarHorariosDisponiveis();
+    carregarGradeGerenciador();
+
+    // Se houver hash na URL (ex: #tab-horarios ou #tab-cancelar)
+    if (window.location.hash) {
+        const hashTab = window.location.hash.replace('#', '');
+        if (document.getElementById(hashTab)) changeTab(hashTab);
     }
 </script>
-
-<!-- Seu script original pode vir aqui embaixo depois -->
-<!-- <script src="script.js"></script> -->
 </body>
 </html>

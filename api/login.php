@@ -27,8 +27,7 @@ if (!$identifier || !$senha) {
 }
 
 try {
-    $dbObj = new Database();
-    $conn = $dbObj->getConnection();
+    $conn = Database::getInstance()->getConnection();
 
     // Buscar usuário por email ou telefone
     $sql = "SELECT id, nome, email, telefone, senha, perfil FROM usuarios 

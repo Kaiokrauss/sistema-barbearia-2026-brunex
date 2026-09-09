@@ -19,7 +19,11 @@
                 <h1 class="text-xl font-semibold text-white">Barbearia VIP</h1>
             </div>
         </div>
-        <a href="login.html" class="text-sm font-semibold text-[#D4AF37] hover:text-white">Entrar / Painel</a>
+        <div style="display:flex; align-items:center; gap: 12px;">
+            <a href="index.html" class="text-sm font-semibold text-gray-300 hover:text-white transition">🏠 Início</a>
+            <a href="dashboard.php" class="text-sm font-semibold text-[#D4AF37] hover:text-white transition">📊 Dashboard</a>
+            <a href="login.html" class="text-sm font-semibold text-gray-300 hover:text-white transition">🔐 Entrar</a>
+        </div>
     </div>
 </header>
 
@@ -34,6 +38,8 @@
         <button onclick="checkAdminAuth('tab-lembretes'); closeMenu()">Lembretes</button>
         <button onclick="checkAdminAuth('tab-historico'); closeMenu()">Histórico</button>
         <button onclick="checkAdminAuth('tab-config'); closeMenu()">Configurar</button>
+        <a href="../views/admin/servicos.html" style="color:var(--secondary); text-decoration:none; padding:8px 12px; font-weight:bold; display:inline-flex; align-items:center;">📋 Serviços</a>
+        <a href="../views/admin/agendamentos.html" style="color:var(--secondary); text-decoration:none; padding:8px 12px; font-weight:bold; display:inline-flex; align-items:center;">📥 Exportar (CSV/XML/JSON)</a>
         <button id="btn-sair" onclick="logoutAdmin(); closeMenu()" style="display:none;" class="btn-danger">Sair</button>
     </div>
 </nav>
@@ -55,6 +61,10 @@
         <div class="form-group">
             <label>Seu Nome:</label>
             <input type="text" id="cliente-nome" placeholder="Digite seu nome">
+        </div>
+        <div class="form-group">
+            <label>WhatsApp / Telefone:</label>
+            <input type="tel" id="cliente-telefone" placeholder="Ex: (11) 98888-7777">
         </div>
         <div class="form-group">
             <label>Serviço:</label>

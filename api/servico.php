@@ -3,8 +3,7 @@ header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../Models/Database.php';
 require_once __DIR__ . '/../Models/Servico.php';
 
-$dbObj = new Database();
-$conn = $dbObj->getConnection();
+$conn = Database::getInstance()->getConnection();
 $servico = new Servico($conn);
 
 $method = $_SERVER['REQUEST_METHOD'];

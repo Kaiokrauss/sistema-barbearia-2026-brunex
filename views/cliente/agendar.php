@@ -10,8 +10,7 @@ if (!isset($servicos)) {
     require_once __DIR__ . '/../../Models/Database.php';
     require_once __DIR__ . '/../../Models/Servico.php';
 
-    $dbObj = new Database();
-    $conn = $dbObj->getConnection();
+    $conn = Database::getInstance()->getConnection();
     $servicoModel = new Servico($conn);
     $stmt = $servicoModel->lerTodos();
     $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -20,8 +19,48 @@ if (!isset($servicos)) {
 $mensagem = $mensagem ?? '';
 $tipoMensagem = $tipoMensagem ?? 'success';
 ?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Atendimento - Barbearia VIP</title>
+    <link rel="stylesheet" href="../../Frontend/style.css">
+    <link rel="stylesheet" href="agendar.css">
+    <style>
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+        }
+        .container-agendar {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-agendar">
+        <!-- BARRA DE NAVEGAÇÃO INTEGRADA -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; gap: 10px;">
+            <div style="display:flex; align-items:center; gap: 10px;">
+                <span style="font-size: 1.4rem;">💈</span>
+                <strong style="color: var(--secondary); font-size: 1.1rem;">Barbearia VIP</strong>
+            </div>
+            <div style="display:flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <a href="../../Frontend/index.html" style="color:var(--text); text-decoration:none;">🏠 Início</a>
+                <a href="../../Frontend/index.html#tab-horarios" style="color:var(--text); text-decoration:none;">⏰ Gerenciar Horários</a>
+                <a href="../../Frontend/login.html" style="color:var(--secondary); text-decoration:none;">🔐 Entrar</a>
+                <a href="../../Frontend/logout.php" style="color:var(--danger); text-decoration:none;">🚪 Sair</a>
+            </div>
+        </div>
 
-<div id="tab-agendar" class="tab-content active">
+        <div id="tab-agendar" class="tab-content active">
 
     <!-- ===== CABEÇALHO DA SEÇÃO ===== -->
     <div class="agendar-header">
@@ -306,15 +345,11 @@ $tipoMensagem = $tipoMensagem ?? 'success';
     const formAgendamento = document.getElementById('form-agendamento');
     const messageBox = document.getElementById('message');
 
-    function mostrarMensagem(text, type = 'success') {
+    function mostrarMensagem(html, type = 'success') {
         if (!messageBox) return;
         messageBox.className = `flash-msg flash-${type}`;
-        messageBox.textContent = text;
+        messageBox.innerHTML = html;
         messageBox.style.display = 'block';
-        setTimeout(() => {
-            messageBox.style.display = 'none';
-            messageBox.textContent = '';
-        }, 6000);
     }
 
     formAgendamento.addEventListener('submit', async function (event) {
@@ -331,8 +366,28 @@ $tipoMensagem = $tipoMensagem ?? 'success';
             const data = await response.json();
 
             if (response.ok && data.success) {
-                const codigoTexto = data.codigo ? ` Código do agendamento: ${data.codigo}` : '';
-                mostrarMensagem(data.success + codigoTexto, 'success');
+                const codigoTexto = data.codigo ? ` | Código do agendamento: <span class="codigo-destaque">${data.codigo}</span>` : '';
+                let zapHtml = '';
+                if (data.whatsapp_url_cliente) {
+                    zapHtml += `<div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+                        <a href="${data.whatsapp_url_cliente}" target="_blank" style="background:#25D366; color:#000; font-weight:bold; padding:10px 16px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            <span>📲 Enviar Confirmação via WhatsApp</span>
+                        </a>`;
+                }
+                if (data.whatsapp_url_barbeiro) {
+                    zapHtml += `<a href="${data.whatsapp_url_barbeiro}" target="_blank" style="background:rgba(255,255,255,0.12); color:#fff; font-weight:600; padding:10px 16px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            <span>💬 Notificar Barbeiro no WhatsApp</span>
+                        </a></div>`;
+                } else if (zapHtml) {
+                    zapHtml += `</div>`;
+                }
+
+                mostrarMensagem(`<div><strong>🎉 ${data.success}</strong> ${codigoTexto}</div>${zapHtml}`, 'success');
+
+                if (data.whatsapp_url_cliente && formData.get('cliente_telefone')) {
+                    window.open(data.whatsapp_url_cliente, '_blank');
+                }
+
                 this.reset();
                 selectHorario.innerHTML = '<option value="">Selecione uma data primeiro</option>';
                 selectHorario.disabled = true;
@@ -359,3 +414,6 @@ $tipoMensagem = $tipoMensagem ?? 'success';
 
 })();
 </script>
+    </div>
+</body>
+</html>

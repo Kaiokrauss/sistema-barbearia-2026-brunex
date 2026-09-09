@@ -144,9 +144,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>📋 Gerenciar Serviços</h1>
-        <a href="../dashboard.php" style="text-decoration: none; color: #007bff;">← Voltar</a>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 14px; border: 1px solid var(--border); flex-wrap: wrap; gap: 10px;">
+            <div style="display:flex; align-items:center; gap: 10px;">
+                <span style="font-size: 1.4rem;">💈</span>
+                <strong style="color: var(--secondary); font-size: 1.1rem;">Barbearia VIP</strong>
+            </div>
+            <div style="display:flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <a href="../../Frontend/index.html">🏠 Início</a>
+                <a href="../../Frontend/index.html#tab-horarios">⏰ Gerenciar Horários</a>
+                <a href="servicos.html" style="color:#fff; font-weight:bold; border-bottom: 2px solid var(--secondary);">📋 Serviços</a>
+                <a href="agendamentos.html">📅 Agendamentos</a>
+                <a href="../../Frontend/logout.php" style="color:var(--danger);">🚪 Sair</a>
+            </div>
+        </div>
 
+        <h1>📋 Gerenciar Serviços</h1>
         <div id="message"></div>
 
         <h2>Novo Serviço</h2>

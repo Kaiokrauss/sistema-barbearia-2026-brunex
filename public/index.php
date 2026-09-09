@@ -47,12 +47,6 @@ $acao = trim($_GET['acao'] ?? 'formulario');
 // Ações que pertencem ao AgendamentoController
 $acoesAgendamento = ['formulario', 'agendar', 'horarios_livres', 'cancelar'];
 
-if (in_array($acao, $acoesAgendamento, true)) {
-    $controller = new AgendamentoController();
-    $controller->executar($acao);
-    exit;
-}
-
-// Fallback — redireciona para o formulário padrão
-header('Location: /barbearia-vip/public/index.php');
+// Redireciona para o Frontend da barbearia
+header('Location: ../Frontend/index.html');
 exit;

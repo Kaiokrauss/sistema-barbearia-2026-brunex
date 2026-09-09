@@ -62,8 +62,7 @@ if (!in_array($perfil, ['cliente', 'barbeiro', 'admin'])) {
 }
 
 try {
-    $dbObj = new Database();
-    $conn = $dbObj->getConnection();
+    $conn = Database::getInstance()->getConnection();
 
     // Verificar se email ou telefone já existe
     $checkSql = "SELECT id FROM usuarios WHERE email = :email OR telefone = :telefone LIMIT 1";

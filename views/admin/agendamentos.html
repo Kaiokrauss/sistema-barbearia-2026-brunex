@@ -86,6 +86,16 @@
             color: white;
         }
 
+        button.export-xml {
+            background: #0284c7;
+            color: white;
+        }
+
+        button.export-json {
+            background: #7c3aed;
+            color: white;
+        }
+
         button.cancel {
             background: var(--danger);
             color: white;
@@ -148,9 +158,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>📅 Agendamentos</h1>
-        <a href="../dashboard.php" style="text-decoration: none; color: #007bff;">← Voltar</a>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 14px; border: 1px solid var(--border); flex-wrap: wrap; gap: 10px;">
+            <div style="display:flex; align-items:center; gap: 10px;">
+                <span style="font-size: 1.4rem;">💈</span>
+                <strong style="color: var(--secondary); font-size: 1.1rem;">Barbearia VIP</strong>
+            </div>
+            <div style="display:flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <a href="../../Frontend/index.html">🏠 Início</a>
+                <a href="../../Frontend/index.html#tab-horarios">⏰ Gerenciar Horários</a>
+                <a href="servicos.html">📋 Serviços</a>
+                <a href="agendamentos.html" style="color:#fff; font-weight:bold; border-bottom: 2px solid var(--secondary);">📅 Agendamentos (Exportação)</a>
+                <a href="../../Frontend/logout.php" style="color:var(--danger);">🚪 Sair</a>
+            </div>
+        </div>
 
+        <h1>📅 Gerenciamento de Agendamentos</h1>
         <div id="message"></div>
 
         <div class="filtros">
@@ -158,6 +180,8 @@
             <input type="text" id="filtroCliente" placeholder="Nome do cliente">
             <button onclick="filtrar()">Filtrar</button>
             <button class="export" onclick="exportarCSV()">📥 Exportar CSV</button>
+            <button class="export-xml" onclick="exportarXML()">📄 Exportar XML (Adaptee)</button>
+            <button class="export-json" onclick="exportarJSON()">⚡ Exportar JSON (Adapter)</button>
         </div>
 
         <table>
@@ -198,16 +222,23 @@
                     tbody.innerHTML = '';
                     (data.data || []).forEach(a => {
                         const row = tbody.insertRow();
+                        const telLimpo = (a.cliente_telefone || '').replace(/\D/g, '');
+                        const telComDdi = telLimpo ? (telLimpo.length <= 11 && !telLimpo.startsWith('55') ? '55' + telLimpo : telLimpo) : '';
+                        const zapMsg = encodeURIComponent(`Olá ${a.cliente_nome}, confirmando seu agendamento na Barbearia VIP para o dia ${a.data_agendada} às ${a.horario}. Código: ${a.codigo}.`);
+                        const zapUrl = telComDdi ? `https://api.whatsapp.com/send?phone=${telComDdi}&text=${zapMsg}` : `https://api.whatsapp.com/send?text=${zapMsg}`;
+                        const zapBtn = `<a href="${zapUrl}" target="_blank" style="background:#25D366; color:#000; font-weight:700; padding:6px 10px; border-radius:8px; text-decoration:none; display:inline-block; font-size:0.8rem; margin-right:6px;">💬 WhatsApp</a>`;
+
                         row.innerHTML = `
                             <td>${a.id}</td>
                             <td>${a.cliente_nome}</td>
-                            <td>${a.cliente_telefone}</td>
+                            <td>${a.cliente_telefone || '-'}</td>
                             <td>${a.data_agendada}</td>
                             <td>${a.horario}</td>
                             <td><span class="status ${a.status}">${a.status}</span></td>
                             <td>${a.codigo}</td>
                             <td>
-                                ${a.status === 'ativo' ? `<button class="cancel" onclick="cancelar('${a.codigo}')">Cancelar</button>` : '-'}
+                                ${zapBtn}
+                                ${a.status === 'ativo' ? `<button class="cancel" onclick="cancelar('${a.codigo}')">Cancelar</button>` : ''}
                             </td>
                         `;
                     });
@@ -237,11 +268,23 @@
             });
         }
 
-        function exportarCSV() {
+        function exportarFormato(formato) {
             const data = document.getElementById('filtroData').value;
-            let url = `${window.location.origin}${basePath}/api/export_agendamentos.php`;
-            if (data) url += `?date=${data}`;
+            let url = `${window.location.origin}${basePath}/api/export_agendamentos.php?formato=${formato}`;
+            if (data) url += `&date=${data}`;
             window.location.href = url;
+        }
+
+        function exportarCSV() {
+            exportarFormato('csv');
+        }
+
+        function exportarXML() {
+            exportarFormato('xml');
+        }
+
+        function exportarJSON() {
+            exportarFormato('json');
         }
 
         carregarAgendamentos();

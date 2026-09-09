@@ -26,7 +26,7 @@ class Agendamento {
      * Retorna todos os horários JÁ ocupados (status = 'ativo') em uma data.
      */
     public function getHorariosOcupados(string $data): array {
-        $sql = "SELECT horario FROM {$this->table}
+        $sql = "SELECT TIME_FORMAT(horario, '%H:%i') FROM {$this->table}
                 WHERE data_agendada = :data AND status = 'ativo'";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':data', $data);
@@ -40,7 +40,7 @@ class Agendamento {
      */
     public function getHorariosBloqueados(string $data): array {
         try {
-            $sql = "SELECT horario FROM bloqueios_horario WHERE data_bloqueio = :data";
+            $sql = "SELECT TIME_FORMAT(horario, '%H:%i') FROM bloqueios_horario WHERE data_bloqueio = :data";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':data', $data);
             $stmt->execute();
@@ -48,6 +48,93 @@ class Agendamento {
         } catch (PDOException $e) {
             // Tabela pode não existir ainda — retorna vazio silenciosamente
             return [];
+        }
+    }
+
+    /**
+     * Bloqueia um horário específico para uma data no banco de dados.
+     */
+    public function bloquearHorario(string $data, string $horario, string $motivo = 'Bloqueado pelo barbeiro'): bool {
+        try {
+            $sql = "INSERT INTO bloqueios_horario (data_bloqueio, horario, motivo)
+                    VALUES (:data, :horario, :motivo)
+                    ON DUPLICATE KEY UPDATE motivo = VALUES(motivo)";
+            $stmt = $this->conn->prepare($sql);
+            $horarioFmt = substr(trim($horario), 0, 5) . ':00';
+            $stmt->bindParam(':data', $data);
+            $stmt->bindParam(':horario', $horarioFmt);
+            $stmt->bindParam(':motivo', $motivo);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Desbloqueia (libera) um horário de uma data no banco de dados.
+     */
+    public function desbloquearHorario(string $data, string $horario): bool {
+        try {
+            $sql = "DELETE FROM bloqueios_horario 
+                    WHERE data_bloqueio = :data 
+                    AND TIME_FORMAT(horario, '%H:%i') = :horario";
+            $stmt = $this->conn->prepare($sql);
+            $horarioFmt = substr(trim($horario), 0, 5);
+            $stmt->bindParam(':data', $data);
+            $stmt->bindParam(':horario', $horarioFmt);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Alterna o estado de um horário (bloqueado <-> liberado).
+     */
+    public function toggleBloqueio(string $data, string $horario): array {
+        $bloqueados = $this->getHorariosBloqueados($data);
+        $horarioFmt = substr(trim($horario), 0, 5);
+        if (in_array($horarioFmt, $bloqueados)) {
+            $this->desbloquearHorario($data, $horarioFmt);
+            return [
+                'status' => 'livre',
+                'bloqueado' => false,
+                'mensagem' => "Horário {$horarioFmt} liberado com sucesso!"
+            ];
+        } else {
+            $this->bloquearHorario($data, $horarioFmt);
+            return [
+                'status' => 'bloqueado',
+                'bloqueado' => true,
+                'mensagem' => "Horário {$horarioFmt} bloqueado com sucesso!"
+            ];
+        }
+    }
+
+    /**
+     * Bloqueia todos os horários de uma data.
+     */
+    public function bloquearDia(string $data, array $horarios, string $motivo = 'Dia bloqueado'): bool {
+        $ok = true;
+        foreach ($horarios as $h) {
+            if (!$this->bloquearHorario($data, $h, $motivo)) {
+                $ok = false;
+            }
+        }
+        return $ok;
+    }
+
+    /**
+     * Desbloqueia todos os horários de uma data.
+     */
+    public function desbloquearDia(string $data): bool {
+        try {
+            $sql = "DELETE FROM bloqueios_horario WHERE data_bloqueio = :data";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':data', $data);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
         }
     }
 
