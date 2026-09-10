@@ -3,9 +3,19 @@ header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../Models/Database.php';
 require_once __DIR__ . '/../Models/Agendamento.php';
 require_once __DIR__ . '/../Models/WhatsAppService.php';
+require_once __DIR__ . '/../Models/ObserverInterface.php';
+require_once __DIR__ . '/../Models/AuditoriaObserver.php';
+require_once __DIR__ . '/../Models/NotificacaoWhatsAppObserver.php';
 
 $conn = Database::getInstance()->getConnection();
 $ag = new Agendamento($conn);
+
+function getAgendamentoSubject(): AgendamentoSubject {
+    $subject = new AgendamentoSubject();
+    $subject->attach(new AuditoriaObserver());
+    $subject->attach(new NotificacaoWhatsAppObserver());
+    return $subject;
+}
 
 function getHorariosExpediente(): array {
     $file = __DIR__ . '/config_horarios.json';
@@ -276,6 +286,13 @@ if ($method === 'POST') {
             $whatsappUrlCliente = WhatsAppService::gerarLinkConfirmacaoCliente($dadosAgendamento);
             $whatsappUrlBarbeiro = WhatsAppService::gerarLinkNovoAgendamentoBarbeiro($dadosAgendamento);
 
+            // Padrão GoF Observer: Notifica observadores (Auditoria e WhatsApp)
+            try {
+                getAgendamentoSubject()->dispararEvento('AGENDAMENTO_CRIADO', $dadosAgendamento);
+            } catch (Throwable $t) {
+                error_log("Erro no Observer: " . $t->getMessage());
+            }
+
             echo json_encode([
                 'success' => 'Agendamento confirmado com sucesso!',
                 'codigo' => $ag->codigo,
@@ -356,8 +373,19 @@ if ($method === 'DELETE') {
         exit;
     }
     $res = $ag->cancelarPorCodigo($codigo);
-    if ($res) echo json_encode(['success' => 'Agendamento cancelado.']);
-    else { http_response_code(404); echo json_encode(['error' => 'Agendamento não encontrado ou já cancelado.']); }
+    if ($res) {
+        // Padrão GoF Observer: Notifica observadores sobre o cancelamento
+        try {
+            getAgendamentoSubject()->dispararEvento('AGENDAMENTO_CANCELADO', $res);
+        } catch (Throwable $t) {
+            error_log("Erro no Observer: " . $t->getMessage());
+        }
+
+        echo json_encode(['success' => 'Agendamento cancelado.']);
+    } else {
+        http_response_code(404);
+        echo json_encode(['error' => 'Agendamento não encontrado ou já cancelado.']);
+    }
     exit;
 }
 
