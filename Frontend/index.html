@@ -452,6 +452,23 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- CAMPO DE CUPOM DE DESCONTO VIP (PADRÃO STRATEGY) -->
+                <div class="mb-6 p-4 rounded-2xl bg-white/[0.02] border border-white/10">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                            <span>🏷️</span> Cupom de Desconto VIP (Opcional)
+                        </label>
+                        <span class="text-[10px] text-zinc-400">Ex: VIP10, BEMVINDO15</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="cliente-cupom" placeholder="Digite seu cupom..." class="dark-input uppercase font-mono tracking-wider text-sm flex-grow">
+                        <button type="button" onclick="aplicarCupomFrontend()" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs transition flex-shrink-0">
+                            Aplicar
+                        </button>
+                    </div>
+                    <div id="cupom-feedback" class="text-xs mt-2 hidden"></div>
+                </div>
                 
                 <button type="submit" id="btnConfirmarAgendamento" class="w-full gold-btn py-4 rounded-2xl text-base transition flex items-center justify-center gap-2">
                     <span>Confirmar Agendamento</span>
@@ -1100,6 +1117,45 @@
         }
     }
 
+    let cupomAtivo = null;
+
+    // Validação de Cupom Promocional (Padrão GoF Strategy)
+    async function aplicarCupomFrontend() {
+        const input = document.getElementById('cliente-cupom');
+        const feedback = document.getElementById('cupom-feedback');
+        const cupom = input.value.trim().toUpperCase();
+        const servicoId = document.getElementById('cliente-servico').value;
+        const data = document.getElementById('cliente-data').value || '';
+
+        if (!cupom) {
+            feedback.className = 'text-xs mt-2 text-zinc-400 block';
+            feedback.textContent = 'Informe o código do cupom.';
+            feedback.classList.remove('hidden');
+            return;
+        }
+
+        try {
+            const resp = await fetch(`${basePath}/api/cupom.php?cupom=${encodeURIComponent(cupom)}&servico_id=${encodeURIComponent(servicoId)}&data=${encodeURIComponent(data)}`);
+            const res = await resp.json();
+
+            feedback.classList.remove('hidden');
+            if (res.valido) {
+                soundVIP.playChicSuccess();
+                cupomAtivo = res;
+                feedback.className = 'text-xs mt-2 text-emerald-300 font-semibold p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 block';
+                feedback.innerHTML = `🎉 <strong>${res.estrategia_desc}</strong><br>De: <span class="line-through text-zinc-400">R$ ${Number(res.valor_original).toFixed(2)}</span> por <strong>R$ ${Number(res.valor_final).toFixed(2)}</strong> (Economia de R$ ${Number(res.desconto_aplicado).toFixed(2)})`;
+            } else {
+                cupomAtivo = null;
+                feedback.className = 'text-xs mt-2 text-amber-300 font-medium p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 block';
+                feedback.textContent = `⚠️ ${res.mensagem || 'Cupom não encontrado ou inválido.'}`;
+            }
+        } catch (e) {
+            feedback.className = 'text-xs mt-2 text-red-300 block';
+            feedback.textContent = 'Erro ao verificar cupom no servidor.';
+            feedback.classList.remove('hidden');
+        }
+    }
+
     // Realizar Agendamento via API
     async function realizarAgendamento(event) {
         event.preventDefault();
@@ -1108,6 +1164,7 @@
         const servico_id = document.getElementById('cliente-servico').value;
         const data_agendada = document.getElementById('cliente-data').value;
         const horario = document.getElementById('cliente-horario').value;
+        const cupom = document.getElementById('cliente-cupom')?.value.trim() || '';
 
         if (!nome || !servico_id || !data_agendada || !horario) {
             alert('Por favor, preencha todos os campos obrigatórios.');
@@ -1127,7 +1184,8 @@
                     cliente_telefone: telefone,
                     servico_id: servico_id,
                     data_agendada: data_agendada,
-                    horario: horario
+                    horario: horario,
+                    cupom: cupom
                 })
             });
 
@@ -1145,16 +1203,20 @@
                         <p>👤 Cliente: <strong>${nome}</strong></p>
                         <p>📅 Data & Horário: <strong>${data_agendada} às ${horario}</strong></p>
                         <p>🔑 Código de cancelamento: <span class="bg-black/40 px-2 py-0.5 rounded font-mono font-bold text-[#D4AF37] text-base">${result.codigo}</span></p>
+                        ${cupomAtivo ? `<p class="text-xs text-amber-300">🏷️ Benefício aplicado: <strong>${cupomAtivo.estrategia_desc}</strong></p>` : ''}
                     </div>
 
-                    <div class="mt-4 pt-3 border-t border-green-700/40 flex flex-wrap gap-2.5">
+                    <div class="mt-4 pt-3 border-t border-emerald-500/20 flex flex-wrap gap-2.5">
+                        <a href="../api/comprovante.php?codigo=${result.codigo}" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#EAD086] via-[#D4AF37] to-[#B38728] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-lg hover:brightness-110">
+                            <span>🎫 Baixar Voucher VIP (PDF / QR Code)</span>
+                        </a>
                         ${result.whatsapp_url_cliente ? `
-                            <a href="${result.whatsapp_url_cliente}" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-sm py-2.5 px-4 rounded-xl transition shadow">
-                                <span>📲 Enviar Confirmação via WhatsApp</span>
+                            <a href="${result.whatsapp_url_cliente}" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow">
+                                <span>📲 Enviar via WhatsApp</span>
                             </a>
                         ` : ''}
                         ${result.whatsapp_url_barbeiro ? `
-                            <a href="${result.whatsapp_url_barbeiro}" target="_blank" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-sm py-2.5 px-4 rounded-xl transition">
+                            <a href="${result.whatsapp_url_barbeiro}" target="_blank" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-xs py-2.5 px-4 rounded-xl transition">
                                 <span>💬 Notificar Barbeiro</span>
                             </a>
                         ` : ''}
@@ -1168,6 +1230,9 @@
                 }
 
                 document.getElementById('formAgendarIndex').reset();
+                cupomAtivo = null;
+                const feedbackEl = document.getElementById('cupom-feedback');
+                if (feedbackEl) feedbackEl.classList.add('hidden');
                 carregarHorariosDisponiveis();
             } else {
                 alert(result.error || 'Erro ao realizar agendamento.');

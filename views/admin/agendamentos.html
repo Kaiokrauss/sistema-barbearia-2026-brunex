@@ -286,8 +286,9 @@
                             <td class="p-3.5 font-mono text-xs text-zinc-400">${a.codigo}</td>
                             <td class="p-3.5 text-right">
                                 <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                                    <a href="../../api/comprovante.php?codigo=${a.codigo}" target="_blank" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center gap-1" title="Ver Voucher VIP com QR Code">🎫 Voucher</a>
                                     ${zapBtn}
-                                    ${a.status === 'ativo' ? `<button class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition" onclick="cancelar('${a.codigo}')">Cancelar</button>` : ''}
+                                    ${a.status === 'ativo' ? `<button class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition" onclick="cancelar('${a.codigo}')">Cancelar</button>` : ''}
                                     <button class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition" onclick="excluirPermanente(${a.id})">🗑️ Excluir</button>
                                 </div>
                             </td>
