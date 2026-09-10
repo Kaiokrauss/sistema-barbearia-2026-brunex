@@ -181,6 +181,24 @@ class Agendamento {
     }
 
     /**
+     * Exclui permanentemente um agendamento da tabela do banco de dados pelo ID.
+     */
+    public function excluir(int $id): bool {
+        $sql = "DELETE FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
+     * Exclui permanentemente todos os agendamentos com status 'cancelado'.
+     */
+    public function limparCancelados(): bool {
+        $sql = "DELETE FROM {$this->table} WHERE status = 'cancelado'";
+        return $this->conn->exec($sql) !== false;
+    }
+
+    /**
      * DDL de criação das tabelas (útil para setup inicial).
      * Execute apenas uma vez no ambiente de produção.
      */

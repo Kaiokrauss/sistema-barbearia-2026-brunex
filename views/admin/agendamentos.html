@@ -239,6 +239,7 @@
                             <td>
                                 ${zapBtn}
                                 ${a.status === 'ativo' ? `<button class="cancel" onclick="cancelar('${a.codigo}')">Cancelar</button>` : ''}
+                                <button style="background:#dc3545; color:white; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; font-size:12px; margin-left:4px;" onclick="excluirPermanente(${a.id})">🗑️ Excluir</button>
                             </td>
                         `;
                     });
@@ -260,6 +261,20 @@
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ codigo: codigo })
+            })
+            .then(r => r.json())
+            .then(data => {
+                mostrarMensagem(data.success || data.error, data.success ? 'success' : 'error');
+                carregarAgendamentos();
+            });
+        }
+
+        function excluirPermanente(id) {
+            if (!confirm('Deseja realmente excluir este agendamento do banco de dados permanentemente?')) return;
+            fetch(API, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
             })
             .then(r => r.json())
             .then(data => {

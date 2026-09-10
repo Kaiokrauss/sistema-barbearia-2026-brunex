@@ -137,7 +137,7 @@
                     <input type="text" id="codigo-cancelar-input" placeholder="Ex: TST443" maxlength="8" class="dark-input text-center text-2xl uppercase tracking-widest font-mono" required>
                 </div>
                 <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition shadow-md">
-                    Cancelar Meu Horário
+                    Cancelar Horário
                 </button>
             </form>
             <div id="boxCancelamentoFeedback" class="mt-5 hidden p-4 rounded-xl text-sm"></div>
@@ -203,7 +203,10 @@
                 <h2 class="text-2xl font-bold text-white">Resumo do Sistema</h2>
                 <p class="text-sm text-gray-400">Visão geral dos agendamentos no banco de dados.</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="limparCanceladosBanco()" class="bg-red-900/30 hover:bg-red-800/60 text-red-300 border border-red-700/50 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5" title="Exclui definitivamente todos os agendamentos cancelados do banco">
+                    <span>🗑️</span> Limpar Cancelados
+                </button>
                 <a href="../views/admin/agendamentos.html" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-2 rounded-lg font-medium transition">
                     Ver Tabela Completa & Exportações →
                 </a>
@@ -243,10 +246,11 @@
                         <th class="p-4 font-medium">Horário</th>
                         <th class="p-4 font-medium">Status</th>
                         <th class="p-4 font-medium">Código</th>
+                        <th class="p-4 font-medium text-right">Ação</th>
                     </tr>
                 </thead>
                 <tbody id="tabela-resumo-body" class="divide-y divide-gray-800 text-gray-300">
-                    <tr><td colspan="5" class="p-4 text-center text-gray-500">Carregando agendamentos...</td></tr>
+                    <tr><td colspan="6" class="p-4 text-center text-gray-500">Carregando agendamentos...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -677,11 +681,11 @@
             document.getElementById('card-cancelados-count').textContent = dados.filter(a => a.status === 'cancelado').length;
 
             if (dados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado no banco de dados.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado no banco de dados.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = dados.slice(0, 10).map(a => `
+            tbody.innerHTML = dados.map(a => `
                 <tr class="hover:bg-white/5 transition">
                     <td class="p-4 font-medium text-white">${a.cliente_nome}</td>
                     <td class="p-4">${a.data_agendada}</td>
@@ -692,10 +696,59 @@
                         }">${a.status}</span>
                     </td>
                     <td class="p-4 font-mono text-xs text-gray-400">${a.codigo}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="excluirAgendamentoBanco(${a.id})" class="inline-flex items-center gap-1 bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition border border-red-500/30" title="Excluir permanentemente do banco de dados">
+                            🗑️ Excluir
+                        </button>
+                    </td>
                 </tr>
             `).join('');
         } catch (e) {
-            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-400">Falha ao consultar agendamentos.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-400">Falha ao consultar agendamentos.</td></tr>';
+        }
+    }
+
+    // Excluir agendamento do banco de dados pelo ID
+    async function excluirAgendamentoBanco(id) {
+        if (!confirm('Deseja realmente excluir este agendamento do banco de dados? Esta ação é definitiva e liberará o horário.')) return;
+        try {
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            });
+            const res = await resp.json();
+            if (resp.ok && res.success) {
+                alert(res.success);
+                carregarResumoAgendamentos();
+                carregarHorariosDisponiveis();
+                carregarGradeGerenciador();
+            } else {
+                alert(res.error || 'Erro ao excluir agendamento do banco de dados.');
+            }
+        } catch (e) {
+            alert('Falha na comunicação com o servidor ao excluir.');
+        }
+    }
+
+    // Limpar todos os cancelados do banco
+    async function limparCanceladosBanco() {
+        if (!confirm('Deseja excluir permanentemente do banco de dados todos os agendamentos marcados como "cancelado"?')) return;
+        try {
+            const resp = await fetch(API_AGENDAMENTOS, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ acao: 'limpar_cancelados' })
+            });
+            const res = await resp.json();
+            if (resp.ok && res.success) {
+                alert(res.success);
+                carregarResumoAgendamentos();
+            } else {
+                alert(res.error || 'Erro ao limpar cancelados.');
+            }
+        } catch (e) {
+            alert('Falha na comunicação com o servidor.');
         }
     }
 

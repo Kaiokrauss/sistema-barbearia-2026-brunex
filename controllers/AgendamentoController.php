@@ -52,6 +52,13 @@ class AgendamentoController {
         return ['erro' => 'Agendamento não encontrado.'];
     }
 
+    public function excluir($id) {
+        if ($this->agendamento->excluir((int)$id)) {
+            return ['sucesso' => 'Agendamento excluído do banco de dados com sucesso.'];
+        }
+        return ['erro' => 'Erro ao excluir agendamento do banco de dados.'];
+    }
+
     public function exportarCSV($from = null, $to = null) {
         $sql = "SELECT * FROM agendamentos";
         $params = [];

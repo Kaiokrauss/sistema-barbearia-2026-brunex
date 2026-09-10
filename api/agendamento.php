@@ -324,11 +324,35 @@ if ($method === 'PUT') {
 }
 
 if ($method === 'DELETE') {
-    // Suporta cancelamento por código
+    // 1. Exclusão física permanente do banco de dados (por ID)
+    $id = $input['id'] ?? ($_GET['id'] ?? null);
+    if ($id) {
+        if ($ag->excluir((int)$id)) {
+            echo json_encode(['success' => 'Agendamento excluído do banco de dados com sucesso.']);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Erro ao excluir agendamento do banco de dados.']);
+        }
+        exit;
+    }
+
+    // 2. Limpar todos os agendamentos cancelados do banco de dados
+    $acao = $input['acao'] ?? ($_GET['acao'] ?? null);
+    if ($acao === 'limpar_cancelados') {
+        if ($ag->limparCancelados()) {
+            echo json_encode(['success' => 'Todos os agendamentos cancelados foram excluídos do banco.']);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Erro ao limpar agendamentos cancelados.']);
+        }
+        exit;
+    }
+
+    // 3. Suporta cancelamento tradicional por código
     $codigo = $input['codigo'] ?? ($_GET['codigo'] ?? null);
     if (!$codigo) {
         http_response_code(400);
-        echo json_encode(['error' => 'Código do agendamento necessário para cancelamento.']);
+        echo json_encode(['error' => 'Código ou ID do agendamento necessário para a operação.']);
         exit;
     }
     $res = $ag->cancelarPorCodigo($codigo);
