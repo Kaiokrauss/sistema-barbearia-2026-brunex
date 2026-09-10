@@ -84,13 +84,15 @@ try {
         $servicoId = $conn->lastInsertId();
     }
 
-    // Se agendamentos estiver vazia, insere um agendamento de teste
+    // Se agendamentos estiver vazia, insere um agendamento temporário de teste
     $stmtAg = $conn->query("SELECT id FROM agendamentos LIMIT 1");
     $temAgendamento = $stmtAg->fetchColumn();
+    $idAgendamentoTemporario = null;
     if (!$temAgendamento) {
         $codigoTeste = 'TST' . rand(100, 999);
         $conn->exec("INSERT INTO agendamentos (cliente_nome, cliente_telefone, servico_id, data_agendada, horario, status, codigo)
                      VALUES ('Carlos Silva Teste', '(11) 98888-7777', $servicoId, CURDATE(), '14:00:00', 'ativo', '$codigoTeste')");
+        $idAgendamentoTemporario = (int)$conn->lastInsertId();
     }
 
     echo "  [OK] Dados do banco verificados/prontos com sucesso.\n\n";
@@ -143,6 +145,12 @@ try {
 
 } catch (Exception $e) {
     assertTeste(false, "Exceção inesperada no teste de Adapter: " . $e->getMessage());
+} finally {
+    if (!empty($idAgendamentoTemporario)) {
+        try {
+            $conn->exec("DELETE FROM agendamentos WHERE id = " . (int)$idAgendamentoTemporario);
+        } catch (Exception $e) {}
+    }
 }
 
 echo "\n============================================================\n";
