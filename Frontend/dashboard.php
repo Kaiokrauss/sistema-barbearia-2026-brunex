@@ -69,7 +69,9 @@ $tituloPainel = $isMasterAdmin ? '👑 Painel do Administrador' : ($isBarbeiro ?
                     <a href="index.html#tab-dashboard" class="rounded-xl px-3 py-2 text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 font-semibold transition">📊 Resumo & Faturamento Bruto</a>
                     <a href="index.html#tab-horarios" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">⏰ Horários</a>
                     <a href="../views/admin/servicos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">📋 Serviços</a>
+                    <a href="../views/admin/caixa.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">💼 Caixa & Comissões</a>
                     <a href="../views/admin/agendamentos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">📥 Exportações</a>
+                    <a href="../api/backup.php?download=1" class="rounded-xl px-3 py-2 text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 font-semibold transition">💾 Backup (.sql)</a>
                 <?php endif; ?>
                 <a href="logout.php" class="rounded-xl bg-red-500/15 border border-red-500/30 px-3 py-2 text-red-300 hover:bg-red-500/30 transition">🚪 Sair</a>
             </div>
@@ -145,6 +147,20 @@ $tituloPainel = $isMasterAdmin ? '👑 Painel do Administrador' : ($isBarbeiro ?
                                 <p class="text-xs text-zinc-400">Exportar dados utilizando o padrão de projeto Adapter</p>
                             </div>
                             <span class="text-zinc-400 text-sm">→</span>
+                        </a>
+                        <a href="../views/admin/caixa.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-amber-500/20 hover:border-amber-500/40 transition group">
+                            <div>
+                                <p class="text-sm font-semibold text-white group-hover:text-amber-400 transition">💼 Fechamento de Caixa & Comissões</p>
+                                <p class="text-xs text-zinc-400">Apuração de faturamento diário, divisão de comissões e impressão de fechamento</p>
+                            </div>
+                            <span class="text-amber-400 text-sm">→</span>
+                        </a>
+                        <a href="../api/backup.php?download=1" class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition group">
+                            <div>
+                                <p class="text-sm font-semibold text-emerald-300 group-hover:text-white transition">💾 Fazer Backup do Banco de Dados (.sql)</p>
+                                <p class="text-xs text-emerald-400/80">Download instantâneo em 1 clique de todas as tabelas e dados</p>
+                            </div>
+                            <span class="text-emerald-400 text-sm">↓</span>
                         </a>
                     <?php else: ?>
                         <a href="index.html#tab-agendar" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-amber-500/20 transition group">

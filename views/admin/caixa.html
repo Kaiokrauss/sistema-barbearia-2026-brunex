@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="bg-[#0A0A0C]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0A0A0C">
+    <title>Barbearia VIP - Fechamento de Caixa & Comissões</title>
+    <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['Cinzel', 'serif']
+                    },
+                    colors: {
+                        barberYellow: '#D4AF37',
+                        barberYellowHover: '#E5C158'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0A0A0C;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.16) 0%, rgba(15, 15, 20, 0.6) 40%, rgba(10, 10, 12, 1) 90%),
+                radial-gradient(circle at 10% 40%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 60%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #d4d4d8;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-display { font-family: 'Cinzel', serif; }
+
+        .glass-panel {
+            background: rgba(18, 18, 24, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF1D0 0%, #D4AF37 50%, #B38728 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-btn {
+            background: linear-gradient(135deg, #EAD086 0%, #D4AF37 50%, #B38728 100%);
+            color: #0A0A0C;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gold-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+            filter: brightness(1.08);
+        }
+
+        .dark-input {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-radius: 0.875rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .dark-input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        /* Estilo especial para impressão do Fechamento de Caixa */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                background-image: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .glass-panel {
+                background: #ffffff !important;
+                border: 1px solid #cccccc !important;
+                box-shadow: none !important;
+                color: #000000 !important;
+            }
+            .gold-gradient-text, h1, h2, h3, p, span, td, th {
+                color: #000000 !important;
+                -webkit-text-fill-color: #000000 !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border-bottom: 1px solid #ddd !important;
+                color: #000 !important;
+            }
+        }
+
+        .print-only {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- CABEÇALHO GLOBAL VIP (NO-PRINT) -->
+    <header class="no-print border-b border-amber-500/20 bg-[#0A0A0C]/90 backdrop-blur-md sticky top-0 z-40 p-4 sm:px-6">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-xl shadow-lg shadow-black/40 flex-shrink-0">
+                    💈
+                </div>
+                <div class="text-left">
+                    <p class="text-[10px] uppercase tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
+                    <h1 class="text-xl font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap text-xs">
+                <a href="../../Frontend/index.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    🏠 <span>Início</span>
+                </a>
+                <a href="../../Frontend/index.html#tab-horarios" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    ⏰ <span>Horários</span>
+                </a>
+                <a href="../../Frontend/index.html#tab-dashboard" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    📊 <span>Resumo</span>
+                </a>
+                <a href="servicos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    📋 <span>Serviços</span>
+                </a>
+                <a href="caixa.html" class="rounded-xl px-3.5 py-2 font-bold text-black bg-gradient-to-r from-[#EAD086] via-[#D4AF37] to-[#B38728] shadow-md flex items-center gap-1.5">
+                    💼 <span>Caixa & Comissões</span>
+                </a>
+                <a href="agendamentos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    📥 <span>Exportações</span>
+                </a>
+                <a href="../../Frontend/dashboard.php" class="rounded-xl px-3 py-2 text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 font-semibold transition">
+                    👑 <span>Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CABEÇALHO EXCLUSIVO PARA IMPRESSÃO -->
+    <div class="print-only p-6 border-b-2 border-black text-center mb-6">
+        <h1 class="text-2xl font-bold uppercase tracking-wider">Barbearia VIP — Relatório de Fechamento de Caixa</h1>
+        <p class="text-sm mt-1">Demonstrativo Diário de Vendas, Comissões e Repasse Profissional</p>
+        <p class="text-xs text-gray-600 mt-1" id="print-data-emissao">Emitido em: --/--/---- às --:--</p>
+    </div>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="flex-grow max-w-6xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+
+        <!-- BANNER E CONTROLES (NO-PRINT) -->
+        <div class="no-print mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Gestão Financeira & Comissões</span>
+                <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-1 flex items-center gap-2.5">
+                    <span>💼 Fechamento de Caixa Diário</span>
+                </h2>
+                <p class="text-sm text-zinc-400 mt-1">Apure o faturamento do dia, rateio de comissões da equipe e receita líquida da casa.</p>
+            </div>
+            
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <button onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-xs font-bold text-white transition flex items-center gap-2">
+                    <span>🖨️</span> Imprimir Fechamento
+                </button>
+                <a href="../../api/backup.php?download=1" class="px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-bold text-emerald-300 transition flex items-center gap-2">
+                    <span>💾</span> Backup do Banco (.sql)
+                </a>
+            </div>
+        </div>
+
+        <!-- PAINEL DE FILTROS & TAXA DE COMISSÃO (NO-PRINT) -->
+        <div class="no-print glass-panel rounded-3xl p-5 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-bold text-zinc-300 mb-1.5 uppercase tracking-wider">📅 Data do Fechamento</label>
+                    <input type="date" id="inputData" class="dark-input w-full" onchange="carregarFechamento()">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-zinc-300 mb-1.5 uppercase tracking-wider">✂️ Taxa de Comissão (%)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="inputComissao" min="0" max="100" step="1" value="50" class="dark-input w-24 text-center font-bold text-amber-400" onchange="carregarFechamento()">
+                        <span class="text-sm text-zinc-400">% barbeiro</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="setComissao(40)" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300">40%</button>
+                    <button type="button" onclick="setComissao(50)" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/20 border border-amber-500/40 text-amber-300">50%</button>
+                    <button type="button" onclick="setComissao(60)" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300">60%</button>
+                    <button type="button" onclick="setComissao(70)" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300">70%</button>
+                </div>
+                <div class="text-right">
+                    <button type="button" onclick="carregarFechamento()" class="gold-btn w-full py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2">
+                        <span>🔄</span> Atualizar Dados
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENSAGEM / NOTIFICAÇÃO -->
+        <div id="mensagem" class="hidden mb-6 p-4 rounded-2xl text-sm font-medium border"></div>
+
+        <!-- CARDS DE MÉTRICAS PRINCIPAIS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- 1. Faturamento Bruto -->
+            <div class="glass-panel rounded-3xl p-5 border border-amber-500/30 relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-amber-400">Faturamento Bruto</span>
+                    <span class="text-lg">💰</span>
+                </div>
+                <p id="card-faturamento-bruto" class="mt-3 text-3xl font-display font-extrabold text-white">R$ 0,00</p>
+                <p class="mt-1 text-xs text-zinc-400 flex items-center gap-1">
+                    <span id="label-dia-semana">Carregando...</span>
+                </p>
+            </div>
+
+            <!-- 2. Comissão dos Barbeiros -->
+            <div class="glass-panel rounded-3xl p-5 border border-amber-500/20">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-amber-300">Comissão da Equipe</span>
+                    <span class="text-lg">✂️</span>
+                </div>
+                <p id="card-comissao" class="mt-3 text-3xl font-display font-extrabold text-amber-400">R$ 0,00</p>
+                <p class="mt-1 text-xs text-zinc-400">
+                    <span id="badge-taxa-comissao" class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 text-[10px] font-bold">50% taxa</span> do faturamento
+                </p>
+            </div>
+
+            <!-- 3. Lucro Líquido da Barbearia -->
+            <div class="glass-panel rounded-3xl p-5 border border-emerald-500/20">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Lucro da Barbearia</span>
+                    <span class="text-lg">🏛️</span>
+                </div>
+                <p id="card-lucro-liquido" class="mt-3 text-3xl font-display font-extrabold text-emerald-300">R$ 0,00</p>
+                <p class="mt-1 text-xs text-zinc-400">
+                    <span id="badge-taxa-casa" class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 text-[10px] font-bold">50% margem</span> retida na casa
+                </p>
+            </div>
+
+            <!-- 4. Ticket Médio & Atendimentos -->
+            <div class="glass-panel rounded-3xl p-5 border border-white/10">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Ticket Médio</span>
+                    <span class="text-lg">👥</span>
+                </div>
+                <p id="card-ticket-medio" class="mt-3 text-3xl font-display font-extrabold text-white">R$ 0,00</p>
+                <p class="mt-1 text-xs text-zinc-400">
+                    <strong id="card-total-atendimentos" class="text-zinc-200">0</strong> atendimentos realizados
+                </p>
+            </div>
+        </div>
+
+        <!-- BREAKDOWN DE SERVIÇOS DO DIA -->
+        <section class="glass-panel rounded-3xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                    <span>📊</span> Resumo por Serviço Realizado
+                </h3>
+                <span id="badge-total-tipos-servicos" class="text-xs text-amber-400 font-mono font-bold">0 serviços distintos</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-white/10 text-xs text-zinc-400 uppercase tracking-wider font-semibold">
+                            <th class="p-3">Serviço</th>
+                            <th class="p-3 text-center">Quantidade</th>
+                            <th class="p-3 text-right">Faturado</th>
+                            <th class="p-3 text-right">Comissão Barbeiros</th>
+                            <th class="p-3 text-right">Repasse Barbearia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-servicos" class="divide-y divide-white/5">
+                        <tr><td colspan="5" class="p-6 text-center text-zinc-500">Nenhum serviço faturado nesta data.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- EXTRATO DETALHADO DE ATENDIMENTOS -->
+        <section class="glass-panel rounded-3xl p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div>
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                        <span>🧾</span> Extrato Detalhado de Atendimentos
+                    </h3>
+                    <p class="text-xs text-zinc-400 mt-0.5">Relação completa de todos os agendamentos registrados para esta data.</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                    <span id="filtro-badge-status" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300 font-mono">0 registros</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-white/10 text-xs text-zinc-400 uppercase tracking-wider font-semibold">
+                            <th class="p-3">Horário</th>
+                            <th class="p-3">Cliente</th>
+                            <th class="p-3">Telefone</th>
+                            <th class="p-3">Serviço</th>
+                            <th class="p-3 text-right">Valor</th>
+                            <th class="p-3 text-right">Comissão</th>
+                            <th class="p-3 text-right">Casa</th>
+                            <th class="p-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-atendimentos" class="divide-y divide-white/5">
+                        <tr><td colspan="8" class="p-6 text-center text-zinc-500">Nenhum atendimento encontrado para esta data.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ASSINATURAS PARA O FECHAMENTO IMPRESSO -->
+        <div class="print-only mt-16 pt-8 border-t border-gray-400">
+            <div class="grid grid-cols-2 gap-12 text-center text-xs">
+                <div>
+                    <div class="border-b border-black pb-8 mb-2"></div>
+                    <p class="font-bold">Assinatura do Responsável / Gerência</p>
+                    <p class="text-gray-600">Barbearia VIP</p>
+                </div>
+                <div>
+                    <div class="border-b border-black pb-8 mb-2"></div>
+                    <p class="font-bold">Assinatura do Profissional / Barbeiro</p>
+                    <p class="text-gray-600">Conferência de Comissões</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ (NO-PRINT) -->
+    <footer class="no-print bg-[#0A0A0C] border-t border-white/10 p-6 text-center text-xs text-zinc-500 mt-12">
+        <p class="font-display font-medium text-zinc-400">Barbearia VIP © 2026 — Gestão Financeira de Alta Precisão.</p>
+    </footer>
+
+    <script>
+        const basePath = window.location.pathname.includes('/views/')
+            ? window.location.pathname.split('/views/')[0]
+            : window.location.pathname.replace(/\/[^/]*$/, '');
+        const API_CAIXA = `${window.location.origin}${basePath}/api/fechamento_caixa.php`;
+
+        function formatarMoeda(valor) {
+            return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function setComissao(pct) {
+            document.getElementById('inputComissao').value = pct;
+            carregarFechamento();
+        }
+
+        // Inicializa o campo de data com a data atual local
+        function inicializarData() {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            document.getElementById('inputData').value = `${ano}-${mes}-${dia}`;
+        }
+
+        function carregarFechamento() {
+            const data = document.getElementById('inputData').value;
+            const comissao = document.getElementById('inputComissao').value || 50;
+
+            const url = `${API_CAIXA}?data=${data}&comissao=${comissao}`;
+
+            fetch(url)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.success) {
+                        alert(res.error || 'Erro ao carregar fechamento de caixa.');
+                        return;
+                    }
+                    renderizarDados(res.dados);
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }
+
+        function renderizarDados(d) {
+            // Data e dia
+            document.getElementById('label-dia-semana').textContent = `${d.dia_semana}, ${d.data_formatada}`;
+            const printEl = document.getElementById('print-data-emissao');
+            if (printEl) {
+                printEl.textContent = `Fechamento de: ${d.dia_semana}, ${d.data_formatada} | Emitido em: ${new Date().toLocaleString('pt-BR')}`;
+            }
+
+            // Cards de Métricas
+            document.getElementById('card-faturamento-bruto').textContent = formatarMoeda(d.resumo_financeiro.faturamento_bruto);
+            document.getElementById('card-comissao').textContent = formatarMoeda(d.resumo_financeiro.comissao_barbeiros);
+            document.getElementById('card-lucro-liquido').textContent = formatarMoeda(d.resumo_financeiro.lucro_liquido_barbearia);
+            document.getElementById('card-ticket-medio').textContent = formatarMoeda(d.resumo_financeiro.ticket_medio);
+            document.getElementById('card-total-atendimentos').textContent = d.resumo_operacional.total_realizados;
+
+            // Badges de taxa
+            const taxa = d.taxa_comissao_percentual;
+            document.getElementById('badge-taxa-comissao').textContent = `${taxa}% taxa`;
+            document.getElementById('badge-taxa-casa').textContent = `${(100 - taxa)}% margem`;
+
+            // Breakdown de Serviços
+            const tbServicos = document.getElementById('tabela-servicos');
+            tbServicos.innerHTML = '';
+            const breakdown = d.breakdown_servicos || [];
+            document.getElementById('badge-total-tipos-servicos').textContent = `${breakdown.length} serviços distintos`;
+
+            if (breakdown.length === 0) {
+                tbServicos.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-zinc-500">Nenhum serviço faturado nesta data.</td></tr>';
+            } else {
+                breakdown.forEach(s => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-white">${s.servico}</td>
+                        <td class="p-3 text-center font-mono font-bold text-amber-400">${s.quantidade}</td>
+                        <td class="p-3 text-right font-mono text-zinc-200">${formatarMoeda(s.total_faturado)}</td>
+                        <td class="p-3 text-right font-mono text-amber-300 font-bold">${formatarMoeda(s.total_comissao)}</td>
+                        <td class="p-3 text-right font-mono text-emerald-300 font-bold">${formatarMoeda(s.total_casa)}</td>
+                    `;
+                    tbServicos.appendChild(tr);
+                });
+            }
+
+            // Extrato Detalhado de Atendimentos
+            const tbAtendimentos = document.getElementById('tabela-atendimentos');
+            tbAtendimentos.innerHTML = '';
+            const atendimentos = d.atendimentos || [];
+            document.getElementById('filtro-badge-status').textContent = `${atendimentos.length} registros no dia`;
+
+            if (atendimentos.length === 0) {
+                tbAtendimentos.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-zinc-500">Nenhum atendimento registrado nesta data.</td></tr>';
+            } else {
+                atendimentos.forEach(a => {
+                    const tr = document.createElement('tr');
+                    const isCancelado = a.status === 'cancelado';
+                    const badgeStatus = isCancelado
+                        ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-300 border border-red-500/30">Cancelado</span>'
+                        : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Ativo / Realizado</span>';
+
+                    tr.innerHTML = `
+                        <td class="p-3 font-mono text-xs font-bold text-amber-400">${a.horario}</td>
+                        <td class="p-3 font-semibold text-white">${a.cliente_nome}</td>
+                        <td class="p-3 font-mono text-xs text-zinc-400">${a.cliente_telefone || '-'}</td>
+                        <td class="p-3 text-zinc-300">${a.servico}</td>
+                        <td class="p-3 text-right font-mono ${isCancelado ? 'line-through text-zinc-500' : 'text-white font-bold'}">${formatarMoeda(a.preco)}</td>
+                        <td class="p-3 text-right font-mono ${isCancelado ? 'text-zinc-600' : 'text-amber-300 font-semibold'}">${formatarMoeda(a.comissao_barbeiro)}</td>
+                        <td class="p-3 text-right font-mono ${isCancelado ? 'text-zinc-600' : 'text-emerald-300 font-semibold'}">${formatarMoeda(a.lucro_casa)}</td>
+                        <td class="p-3 text-center">${badgeStatus}</td>
+                    `;
+                    tbAtendimentos.appendChild(tr);
+                });
+            }
+        }
+
+        // Inicialização
+        inicializarData();
+        carregarFechamento();
+    </script>
+</body>
+</html>

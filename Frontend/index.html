@@ -345,11 +345,17 @@
             <span class="nav-icon">📊</span> <span>Resumo</span>
         </button>
         <span class="text-zinc-700 px-1">|</span>
-        <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3.5 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">📋</span> <span>Gerenciar Serviços</span>
+        <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">📋</span> <span>Serviços</span>
         </a>
-        <a href="../views/admin/agendamentos.html" class="nav-btn nav-btn-export text-zinc-400 hover:text-amber-400 text-xs px-3.5 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">📥</span> <span>Exportações (CSV/XML/JSON)</span>
+        <a href="../views/admin/caixa.html" class="nav-btn nav-btn-caixa text-zinc-400 hover:text-amber-400 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">💼</span> <span>Caixa & Comissões</span>
+        </a>
+        <a href="../views/admin/agendamentos.html" class="nav-btn nav-btn-export text-zinc-400 hover:text-amber-400 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">📥</span> <span>Exportações</span>
+        </a>
+        <a href="../api/backup.php?download=1" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
+            <span class="nav-icon">💾</span> <span>Backup</span>
         </a>
     </div>
 </nav>
@@ -744,9 +750,17 @@
                 <span class="flex items-center gap-2.5"><span>📋</span> Gerenciar Serviços</span>
                 <span class="text-amber-400">→</span>
             </a>
+            <a href="../views/admin/caixa.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
+                <span class="flex items-center gap-2.5"><span>💼</span> Fechamento de Caixa & Comissões</span>
+                <span class="text-amber-400">→</span>
+            </a>
             <a href="../views/admin/agendamentos.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
                 <span class="flex items-center gap-2.5"><span>📥</span> Exportações (CSV/XML/JSON)</span>
                 <span class="text-amber-400">→</span>
+            </a>
+            <a href="../api/backup.php?download=1" class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-sm font-semibold text-emerald-300 transition">
+                <span class="flex items-center gap-2.5"><span>💾</span> Baixar Backup do Banco (.sql)</span>
+                <span class="text-emerald-400">↓</span>
             </a>
             <a href="dashboard.php" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-amber-500/20 text-sm font-semibold text-amber-300 transition">
                 <span class="flex items-center gap-2.5"><span>👑</span> Painel do Usuário / Admin</span>
