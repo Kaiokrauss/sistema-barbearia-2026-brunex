@@ -2,7 +2,10 @@
 <html lang="pt-BR" class="bg-[#0A0A0C]">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0A0A0C">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Barbearia VIP - Sistema Premium de Agendamento</title>
     <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -255,28 +258,72 @@
             box-shadow: 0 8px 28px rgba(212, 175, 55, 0.6) !important;
             color: #000000 !important;
         }
+
+        /* Otimizações Responsivas Mobile VIP (Celular) */
+        @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden;
+            }
+            /* Previne zoom automático invasivo do iOS Safari */
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+            /* Espaçamento inferior para a barra de navegação móvel */
+            main {
+                padding-bottom: 5.5rem !important;
+            }
+            footer {
+                padding-bottom: 6rem !important;
+            }
+            .horario-pill {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.85rem !important;
+                touch-action: manipulation;
+            }
+            /* Rolagem suave com inércia para tabelas no celular */
+            .table-mobile-scroll {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /* Barra Inferior Mobile */
+        .mobile-nav-item.active {
+            color: #D4AF37 !important;
+        }
+        .mobile-nav-item.active .mobile-nav-icon-box {
+            background: rgba(212, 175, 55, 0.22) !important;
+            border-color: rgba(212, 175, 55, 0.55) !important;
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+        .mobile-nav-item:active {
+            transform: scale(0.93);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
 <!-- CABEÇALHO GLOBAL -->
-<header class="glass-panel border-b border-white/10 sticky top-0 z-50 px-4 py-3.5 backdrop-blur-xl">
-    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3.5 -translate-x-2 sm:-translate-x-4">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-xl shadow-lg shadow-black/40">
+<header class="glass-panel border-b border-white/10 sticky top-0 z-50 px-3 sm:px-4 py-2.5 sm:py-3.5 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto flex justify-between items-center gap-2">
+        <div class="flex items-center gap-2.5 sm:gap-3.5 -translate-x-1 sm:-translate-x-4 flex-shrink-0">
+            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-lg sm:text-xl shadow-lg shadow-black/40">
                 💈
             </div>
             <div class="text-left">
-                <p class="text-[10px] uppercase tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
-                <h1 class="text-xl font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
+                <p class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
+                <h1 class="text-base sm:text-xl font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
             </div>
         </div>
-        <div class="flex items-center gap-2.5 flex-wrap">
-            <button type="button" onclick="toggleSom()" id="btn-toggle-som" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-amber-400 border border-white/10 px-3 py-2.5 rounded-xl transition-all flex items-center gap-1.5" title="Ativar/Desativar som dos cliques e confirmações">
+        <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+            <button type="button" onclick="toggleSom()" id="btn-toggle-som" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-amber-400 border border-white/10 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl transition-all flex items-center gap-1.5" title="Ativar/Desativar som dos cliques e confirmações">
                 <span id="som-icone">🔊</span> <span id="som-texto" class="hidden sm:inline">Som VIP</span>
             </button>
-            <button onclick="changeTab('tab-horarios')" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
-                ⏰ Gerenciar Horários
+            <button onclick="changeTab('tab-horarios')" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+                <span class="text-sm">⏰</span> <span class="hidden sm:inline">Gerenciar Horários</span><span class="sm:hidden">Horários</span>
             </button>
         </div>
     </div>
@@ -450,11 +497,13 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3 mb-6 bg-white/[0.03] p-4 rounded-2xl border border-white/5">
-                <label class="text-sm font-medium text-zinc-300">Escolha a Data:</label>
-                <input type="date" id="data-gerenciar-horarios" class="dark-input !w-auto !mt-0" onchange="carregarGradeGerenciador()">
-                <button type="button" onclick="hojeGerenciador()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Hoje</button>
-                <button type="button" onclick="amanhaGerenciador()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Amanhã</button>
-                <span id="feedback-horarios" class="text-xs text-amber-400 ml-auto font-medium transition-all"></span>
+                <label class="text-sm font-medium text-zinc-300 w-full sm:w-auto">Escolha a Data:</label>
+                <input type="date" id="data-gerenciar-horarios" class="dark-input w-full sm:!w-auto !mt-0" onchange="carregarGradeGerenciador()">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="hojeGerenciador()" class="flex-1 sm:flex-initial text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Hoje</button>
+                    <button type="button" onclick="amanhaGerenciador()" class="flex-1 sm:flex-initial text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Amanhã</button>
+                </div>
+                <span id="feedback-horarios" class="text-xs text-amber-400 w-full sm:w-auto sm:ml-auto font-medium transition-all"></span>
             </div>
 
             <!-- Legenda explicativa -->
@@ -474,8 +523,8 @@
                 <h3 class="text-base font-display font-semibold text-white mb-1">⚙️ Expediente Padrão da Barbearia</h3>
                 <p class="text-xs text-zinc-400 mb-4">Adicione horários de atendimento extras à barbearia (ex: 08:00, 18:00, 19:00):</p>
                 <div class="flex flex-wrap items-center gap-2">
-                    <input type="time" id="novo-horario-expediente" class="dark-input !w-auto !mt-0" value="08:00">
-                    <button type="button" onclick="adicionarHorarioExpediente()" class="gold-btn text-xs px-4 py-2.5 rounded-xl transition">
+                    <input type="time" id="novo-horario-expediente" class="dark-input w-full sm:!w-auto !mt-0" value="08:00">
+                    <button type="button" onclick="adicionarHorarioExpediente()" class="w-full sm:w-auto gold-btn text-xs px-4 py-2.5 rounded-xl transition">
                         ➕ Adicionar Horário
                     </button>
                 </div>
@@ -507,57 +556,57 @@
                 </div>
             </div>
 
-            <!-- CARDS DE MÉTRICAS (5 COLUNAS) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
-                <!-- Faturamento Bruto (Total) -->
-                <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-500/15 via-white/[0.03] to-transparent border border-amber-500/40 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-amber-400 transition">
+            <!-- CARDS DE MÉTRICAS (5 COLUNAS NO DESKTOP / GRID INTELIGENTE NO MOBILE) -->
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <!-- Faturamento Bruto (Destaque Full Width no Mobile / 1 Coluna no PC) -->
+                <div class="col-span-2 sm:col-span-1 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/15 via-white/[0.03] to-transparent border border-amber-500/40 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-amber-400 transition">
                     <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/15 rounded-full blur-xl pointer-events-none"></div>
                     <div>
                         <p class="text-amber-400/90 text-xs uppercase tracking-wider font-bold">Faturamento Bruto</p>
-                        <p id="card-faturamento-bruto" class="text-2xl font-display font-bold text-amber-400 mt-1">R$ 0,00</p>
+                        <p id="card-faturamento-bruto" class="text-xl sm:text-2xl font-display font-bold text-amber-400 mt-1">R$ 0,00</p>
                         <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Total de serviços agendados</span>
                     </div>
-                    <div class="text-2xl p-3 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-inner">💰</div>
+                    <div class="text-xl sm:text-2xl p-2.5 sm:p-3 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-inner">💰</div>
                 </div>
 
                 <!-- Receita Confirmada / Ativa -->
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/30 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-emerald-500/50 transition">
+                <div class="p-3.5 sm:p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/30 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-emerald-500/50 transition">
                     <div>
-                        <p class="text-emerald-400 text-xs uppercase tracking-wider font-semibold">Receita Confirmada</p>
-                        <p id="card-faturamento-total" class="text-2xl font-display font-bold text-emerald-400 mt-1">R$ 0,00</p>
-                        <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Agendamentos ativos</span>
+                        <p class="text-emerald-400 text-xs uppercase tracking-wider font-semibold">Receita Ativa</p>
+                        <p id="card-faturamento-total" class="text-xl sm:text-2xl font-display font-bold text-emerald-400 mt-1">R$ 0,00</p>
+                        <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Confirmados</span>
                     </div>
-                    <div class="text-2xl p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-inner">💎</div>
+                    <div class="text-xl sm:text-2xl p-2.5 sm:p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-inner">💎</div>
                 </div>
 
                 <!-- Total de Cortes / Agendamentos -->
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 flex justify-between items-center shadow-lg group hover:border-white/20 transition">
+                <div class="p-3.5 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/10 flex justify-between items-center shadow-lg group hover:border-white/20 transition">
                     <div>
-                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Total Agendados</p>
-                        <p id="card-total-count" class="text-2xl font-display font-bold text-white mt-1">0</p>
-                        <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Histórico no banco</span>
+                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Total Geral</p>
+                        <p id="card-total-count" class="text-xl sm:text-2xl font-display font-bold text-white mt-1">0</p>
+                        <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Histórico</span>
                     </div>
-                    <div class="text-2xl p-3 rounded-xl bg-white/5 border border-white/10 text-white">📅</div>
+                    <div class="text-xl sm:text-2xl p-2.5 sm:p-3 rounded-xl bg-white/5 border border-white/10 text-white">📅</div>
                 </div>
 
                 <!-- Ativos / Confirmados -->
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex justify-between items-center shadow-lg group hover:border-emerald-500/40 transition">
+                <div class="p-3.5 sm:p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex justify-between items-center shadow-lg group hover:border-emerald-500/40 transition">
                     <div>
                         <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Confirmados</p>
-                        <p id="card-ativos-count" class="text-2xl font-display font-bold text-emerald-400 mt-1">0</p>
+                        <p id="card-ativos-count" class="text-xl sm:text-2xl font-display font-bold text-emerald-400 mt-1">0</p>
                         <span id="card-taxa-ocupacao" class="text-[10px] text-emerald-400/80 mt-0.5 inline-block">100% ativos</span>
                     </div>
-                    <div class="text-2xl p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">✂️</div>
+                    <div class="text-xl sm:text-2xl p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">✂️</div>
                 </div>
 
                 <!-- Cancelados -->
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-red-500/20 flex justify-between items-center shadow-lg group hover:border-red-500/40 transition">
+                <div class="p-3.5 sm:p-5 rounded-2xl bg-white/[0.03] border border-red-500/20 flex justify-between items-center shadow-lg group hover:border-red-500/40 transition">
                     <div>
                         <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Cancelados</p>
-                        <p id="card-cancelados-count" class="text-2xl font-display font-bold text-red-400 mt-1">0</p>
+                        <p id="card-cancelados-count" class="text-xl sm:text-2xl font-display font-bold text-red-400 mt-1">0</p>
                         <span id="card-cancelados-valor" class="text-[10px] text-red-400/80 mt-0.5 inline-block">Perda: R$ 0,00</span>
                     </div>
-                    <div class="text-2xl p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400">⚠️</div>
+                    <div class="text-xl sm:text-2xl p-2.5 sm:p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400">⚠️</div>
                 </div>
             </div>
 
@@ -608,8 +657,8 @@
                 </div>
             </div>
             
-            <div class="rounded-2xl border border-white/10 overflow-hidden bg-black/40">
-                <table class="w-full text-left text-sm">
+            <div class="rounded-2xl border border-white/10 overflow-x-auto table-mobile-scroll bg-black/40">
+                <table class="w-full text-left text-sm min-w-[620px]">
                     <thead class="bg-white/[0.04] text-zinc-400 border-b border-white/10">
                         <tr>
                             <th class="p-4 font-semibold text-xs uppercase tracking-wider">Cliente</th>
@@ -652,6 +701,64 @@
         </div>
     </div>
 </footer>
+
+<!-- BARRA DE NAVEGAÇÃO INFERIOR EXCLUSIVA PARA CELULARES (ESTILO APP VIP) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0E0E12]/95 backdrop-blur-2xl border-t border-amber-500/20 px-2 py-1.5 shadow-[0_-10px_30px_rgba(0,0,0,0.85)] pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+    <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
+        <button onclick="changeTab('tab-agendar')" id="mobile-nav-agendar" class="mobile-nav-item active flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">📅</span>
+            <span class="text-[10px] font-semibold mt-0.5">Agendar</span>
+        </button>
+        <button onclick="changeTab('tab-cancelar')" id="mobile-nav-cancelar" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-red-400 transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">❌</span>
+            <span class="text-[10px] font-semibold mt-0.5">Cancelar</span>
+        </button>
+        <button onclick="changeTab('tab-horarios')" id="mobile-nav-horarios" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-white transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">⏰</span>
+            <span class="text-[10px] font-semibold mt-0.5">Horários</span>
+        </button>
+        <button onclick="changeTab('tab-dashboard')" id="mobile-nav-dashboard" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">📊</span>
+            <span class="text-[10px] font-semibold mt-0.5">Resumo</span>
+        </button>
+        <button onclick="toggleMobileMenuMais()" id="mobile-nav-mais" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">☰</span>
+            <span class="text-[10px] font-semibold mt-0.5">Mais</span>
+        </button>
+    </div>
+</nav>
+
+<!-- MODAL / DRAWER 'MAIS OPÇÕES' PARA CELULARES -->
+<div id="drawer-mobile-mais" onclick="toggleMobileMenuMais()" class="md:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-end">
+    <div onclick="event.stopPropagation()" class="w-full bg-[#121217] border-t border-amber-500/30 rounded-t-3xl p-6 shadow-2xl transform translate-y-full transition-transform duration-300 max-h-[85vh] overflow-y-auto pb-[max(2rem,env(safe-area-inset-bottom))]">
+        <div class="w-12 h-1.5 bg-zinc-600/50 rounded-full mx-auto mb-5"></div>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-display font-bold text-white flex items-center gap-2">
+                <span class="text-amber-400">💈</span> Menu Barbearia VIP
+            </h3>
+            <button onclick="toggleMobileMenuMais()" class="text-zinc-400 hover:text-white text-xl p-1 leading-none">✕</button>
+        </div>
+        <p class="text-xs text-zinc-400 mb-5">Acesse rapidamente as ferramentas administrativas e configurações:</p>
+        <div class="space-y-2.5">
+            <a href="../views/admin/servicos.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
+                <span class="flex items-center gap-2.5"><span>📋</span> Gerenciar Serviços</span>
+                <span class="text-amber-400">→</span>
+            </a>
+            <a href="../views/admin/agendamentos.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
+                <span class="flex items-center gap-2.5"><span>📥</span> Exportações (CSV/XML/JSON)</span>
+                <span class="text-amber-400">→</span>
+            </a>
+            <a href="dashboard.php" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-amber-500/20 text-sm font-semibold text-amber-300 transition">
+                <span class="flex items-center gap-2.5"><span>👑</span> Painel do Usuário / Admin</span>
+                <span class="text-amber-400">→</span>
+            </a>
+            <button type="button" onclick="toggleSom(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-zinc-300 transition">
+                <span class="flex items-center gap-2.5"><span id="mobile-drawer-som-icone">🔊</span> Efeitos Sonoros VIP</span>
+                <span id="mobile-drawer-som-status" class="text-xs text-amber-400 font-bold">Ativado</span>
+            </button>
+        </div>
+    </div>
+</div>
 
 <script>
     const basePath = window.location.pathname.replace(/\/Frontend\/[^\/]*$/, '');
@@ -842,6 +949,7 @@
         const target = document.getElementById(tabId);
         if (target) target.classList.add('active');
 
+        // Sincronizar botões da barra superior desktop
         document.querySelectorAll('.nav-btn').forEach(btn => {
             if (btn.tagName === 'BUTTON') {
                 btn.classList.remove('active-tab-gold');
@@ -855,8 +963,44 @@
             activeBtn.classList.add('active-tab-gold');
         }
 
+        // Sincronizar botões da barra inferior mobile (celular)
+        document.querySelectorAll('.mobile-nav-item').forEach(btn => {
+            btn.classList.remove('active');
+            btn.classList.add('text-zinc-400');
+        });
+        const mobKey = tabId.replace('tab-', '');
+        const activeMobBtn = document.getElementById(`mobile-nav-${mobKey}`);
+        if (activeMobBtn) {
+            activeMobBtn.classList.remove('text-zinc-400');
+            activeMobBtn.classList.add('active');
+        }
+
         if (tabId === 'tab-horarios') carregarGradeGerenciador();
         if (tabId === 'tab-dashboard') carregarResumoAgendamentos();
+    }
+
+    // Controle do Drawer/Modal 'Mais Opções' para celulares
+    function toggleMobileMenuMais() {
+        soundVIP.playSoftClick();
+        const drawer = document.getElementById('drawer-mobile-mais');
+        if (!drawer) return;
+        const sheet = drawer.firstElementChild;
+        const isOpen = !drawer.classList.contains('opacity-0');
+
+        if (isOpen) {
+            drawer.classList.add('opacity-0', 'pointer-events-none');
+            if (sheet) sheet.classList.add('translate-y-full');
+        } else {
+            drawer.classList.remove('opacity-0', 'pointer-events-none');
+            if (sheet) sheet.classList.remove('translate-y-full');
+            // Sincronizar indicador de som no drawer móvel
+            const mobSomStatus = document.getElementById('mobile-drawer-som-status');
+            const mobSomIcon = document.getElementById('mobile-drawer-som-icone');
+            if (mobSomStatus && mobSomIcon) {
+                mobSomStatus.textContent = soundVIP.enabled ? 'Ativado' : 'Silenciado';
+                mobSomIcon.textContent = soundVIP.enabled ? '🔊' : '🔇';
+            }
+        }
     }
 
     // Carregar Serviços do Banco de Dados
