@@ -110,65 +110,69 @@
     <div id="tab-agendamentos" class="tab-content">
         <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-                <h2>Agendamentos</h2>
-                <p class="text-sm text-gray-600">Visão geral dos agendamentos e controle de horários.</p>
+                <h2 class="text-2xl font-bold text-white">Agendamentos</h2>
+                <p class="text-sm text-zinc-400">Visão geral dos agendamentos e controle de horários.</p>
             </div>
-            <div id="resumo-faturamento" class="text-base font-semibold text-[#28a745]"></div>
+            <div id="resumo-faturamento" class="text-base font-semibold text-emerald-400"></div>
         </div>
 
         <div class="grid gap-4 md:grid-cols-3 mb-6">
-            <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+            <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10">
                 <div class="flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-sm text-slate-500">Total de Agendamentos</p>
-                        <p id="card-total-agendamentos" class="mt-3 text-3xl font-semibold text-[#121212]">0</p>
+                        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Total de Agendamentos</p>
+                        <p id="card-total-agendamentos" class="mt-2 text-3xl font-bold text-white">0</p>
                     </div>
-                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#D4AF37]/15 text-[#D4AF37]">📅</div>
+                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] text-xl">📅</div>
                 </div>
             </div>
-            <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+            <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10">
                 <div class="flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-sm text-slate-500">Cancelamentos</p>
-                        <p id="card-cancelamentos" class="mt-3 text-3xl font-semibold text-[#121212]">0</p>
+                        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Cancelamentos</p>
+                        <p id="card-cancelamentos" class="mt-2 text-3xl font-bold text-red-400">0</p>
                     </div>
-                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#dc3545]/15 text-[#dc3545]">⚠️</div>
+                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#dc3545]/15 border border-[#dc3545]/30 text-[#dc3545] text-xl">⚠️</div>
                 </div>
             </div>
-            <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+            <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10">
                 <div class="flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-sm text-slate-500">Horários Disponíveis</p>
-                        <p id="card-horarios-disponiveis" class="mt-3 text-3xl font-semibold text-[#121212]">0</p>
+                        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Horários Disponíveis Hoje</p>
+                        <p id="card-horarios-disponiveis" class="mt-2 text-3xl font-bold text-emerald-400">0</p>
                     </div>
-                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0ea5e9]/15 text-[#0ea5e9]">⏰</div>
+                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xl">⏰</div>
                 </div>
             </div>
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-2 mb-6">
-            <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-                <h3 class="mb-4 text-base font-semibold text-slate-700">Ocupação da Semana</h3>
+        <div class="grid gap-6 lg:grid-cols-2 mb-6">
+            <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10">
+                <h3 class="mb-4 text-base font-semibold text-white flex items-center gap-2">
+                    <span class="text-[#D4AF37]">📊</span> Ocupação da Semana
+                </h3>
                 <canvas id="ocupacaoChart" height="240"></canvas>
             </div>
-            <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-                <h3 class="mb-4 text-base font-semibold text-slate-700">Marcados vs Cancelados</h3>
+            <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10">
+                <h3 class="mb-4 text-base font-semibold text-white flex items-center gap-2">
+                    <span class="text-[#D4AF37]">🎯</span> Marcados vs Cancelados
+                </h3>
                 <canvas id="proporcaoChart" height="240"></canvas>
             </div>
         </div>
 
-        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200 overflow-x-auto">
-            <h3 class="mb-4 text-base font-semibold text-slate-700">Tabela de Gerenciamento</h3>
-            <table class="min-w-full text-left text-sm text-slate-800">
+        <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10 overflow-x-auto">
+            <h3 class="mb-4 text-base font-semibold text-white">Tabela de Gerenciamento</h3>
+            <table class="min-w-full text-left text-sm text-zinc-200">
                 <thead>
-                    <tr class="border-b border-slate-200 text-slate-500">
+                    <tr class="border-b border-white/10 text-zinc-400">
                         <th class="py-3 px-3">Cliente</th>
                         <th class="py-3 px-3">Horário</th>
                         <th class="py-3 px-3">Status</th>
                         <th class="py-3 px-3">Ações</th>
                     </tr>
                 </thead>
-                <tbody id="tabela-agendamentos-body"></tbody>
+                <tbody id="tabela-agendamentos-body" class="divide-y divide-white/5"></tbody>
             </table>
         </div>
     </div>

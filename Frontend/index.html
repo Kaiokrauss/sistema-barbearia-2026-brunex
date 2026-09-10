@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -490,41 +491,108 @@
         <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-5xl mx-auto">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6">
                 <div>
-                    <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Relatório em Tempo Real</span>
-                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1">Resumo do Sistema</h2>
-                    <p class="text-sm text-zinc-400 mt-1">Controle de agendamentos armazenados no MySQL.</p>
+                    <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Relatório & Performance Executiva</span>
+                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1">Painel Administrativo VIP</h2>
+                    <p class="text-sm text-zinc-400 mt-1">Métricas em tempo real, faturamento estimado e gráficos interativos.</p>
                 </div>
                 <div class="flex gap-2 flex-wrap">
                     <button onclick="limparCanceladosBanco()" class="bg-red-900/30 hover:bg-red-800/60 text-red-300 border border-red-700/50 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Exclui definitivamente todos os agendamentos cancelados do banco">
                         <span>🗑️</span> Limpar Cancelados
                     </button>
                     <a href="../views/admin/agendamentos.html" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5">
-                        Ver Tabela Completa & Exportações →
+                        Exportar Relatórios →
                     </a>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-amber-500/20 flex justify-between items-center shadow-lg">
+            <!-- CARDS DE MÉTRICAS (4 COLUNAS) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <!-- Faturamento Previsto -->
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-amber-500/30 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-amber-500/60 transition">
+                    <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
                     <div>
-                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Agendamentos Totais</p>
-                        <p id="card-total-count" class="text-3xl font-display font-bold text-white mt-1">0</p>
+                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Faturamento Previsto</p>
+                        <p id="card-faturamento-total" class="text-2xl font-display font-bold text-amber-400 mt-1">R$ 0,00</p>
+                        <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Agendamentos ativos</span>
                     </div>
-                    <div class="text-3xl p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">📅</div>
+                    <div class="text-2xl p-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 shadow-inner">💰</div>
                 </div>
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex justify-between items-center shadow-lg">
+
+                <!-- Total de Cortes / Agendamentos -->
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 flex justify-between items-center shadow-lg group hover:border-white/20 transition">
                     <div>
-                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Ativos</p>
-                        <p id="card-ativos-count" class="text-3xl font-display font-bold text-emerald-400 mt-1">0</p>
+                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Total Agendados</p>
+                        <p id="card-total-count" class="text-2xl font-display font-bold text-white mt-1">0</p>
+                        <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Histórico no banco</span>
                     </div>
-                    <div class="text-3xl p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">✅</div>
+                    <div class="text-2xl p-3 rounded-xl bg-white/5 border border-white/10 text-white">📅</div>
                 </div>
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-red-500/20 flex justify-between items-center shadow-lg">
+
+                <!-- Ativos / Confirmados -->
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex justify-between items-center shadow-lg group hover:border-emerald-500/40 transition">
+                    <div>
+                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Confirmados</p>
+                        <p id="card-ativos-count" class="text-2xl font-display font-bold text-emerald-400 mt-1">0</p>
+                        <span id="card-taxa-ocupacao" class="text-[10px] text-emerald-400/80 mt-0.5 inline-block">100% ativos</span>
+                    </div>
+                    <div class="text-2xl p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">✂️</div>
+                </div>
+
+                <!-- Cancelados -->
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-red-500/20 flex justify-between items-center shadow-lg group hover:border-red-500/40 transition">
                     <div>
                         <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Cancelados</p>
-                        <p id="card-cancelados-count" class="text-3xl font-display font-bold text-red-400 mt-1">0</p>
+                        <p id="card-cancelados-count" class="text-2xl font-display font-bold text-red-400 mt-1">0</p>
+                        <span class="text-[10px] text-red-400/80 mt-0.5 inline-block">Horários liberados</span>
                     </div>
-                    <div class="text-3xl p-3 rounded-xl bg-red-500/10 border border-red-500/20">⚠️</div>
+                    <div class="text-2xl p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400">⚠️</div>
+                </div>
+            </div>
+
+            <!-- GRÁFICOS CHART.JS DARK & GOLD -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Gráfico 1: Ocupação e Faturamento nos Próximos Dias -->
+                <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 shadow-xl backdrop-blur-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <span class="text-amber-400">📊</span> Ocupação & Faturamento por Data
+                            </h3>
+                            <p class="text-xs text-zinc-400 mt-0.5">Demanda diária e receita prevista</p>
+                        </div>
+                        <span class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">Dias com Atendimento</span>
+                    </div>
+                    <div class="relative h-64 w-full">
+                        <canvas id="chartFaturamentoDias"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 2: Distribuição dos Serviços e Proporção -->
+                <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 shadow-xl backdrop-blur-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <span class="text-amber-400">💈</span> Demanda por Serviço
+                            </h3>
+                            <p class="text-xs text-zinc-400 mt-0.5">Participação de cada serviço na barbearia</p>
+                        </div>
+                        <span id="badge-top-servico" class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold">Mais Procurado</span>
+                    </div>
+                    <div class="relative h-64 w-full flex items-center justify-center">
+                        <canvas id="chartServicosDoughnut"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BARRA DE PESQUISA E FILTROS RÁPIDOS -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+                <div class="relative w-full sm:w-80">
+                    <input type="text" id="filtro-pesquisa-resumo" oninput="filtrarTabelaResumo()" placeholder="🔍 Buscar por cliente, serviço ou código..." class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" onclick="filtrarStatusResumo('todos')" id="filtro-btn-todos" class="text-xs px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/20 text-amber-300 font-semibold transition">Todos</button>
+                    <button type="button" onclick="filtrarStatusResumo('ativo')" id="filtro-btn-ativo" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white transition">Ativos</button>
+                    <button type="button" onclick="filtrarStatusResumo('cancelado')" id="filtro-btn-cancelado" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white transition">Cancelados</button>
                 </div>
             </div>
             
@@ -533,15 +601,16 @@
                     <thead class="bg-white/[0.04] text-zinc-400 border-b border-white/10">
                         <tr>
                             <th class="p-4 font-semibold text-xs uppercase tracking-wider">Cliente</th>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider">Serviço</th>
                             <th class="p-4 font-semibold text-xs uppercase tracking-wider">Data</th>
                             <th class="p-4 font-semibold text-xs uppercase tracking-wider">Horário</th>
                             <th class="p-4 font-semibold text-xs uppercase tracking-wider">Status</th>
                             <th class="p-4 font-semibold text-xs uppercase tracking-wider">Código</th>
-                            <th class="p-4 font-semibold text-xs uppercase tracking-wider text-right">Ação</th>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider text-right">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-resumo-body" class="divide-y divide-white/5 text-zinc-300">
-                        <tr><td colspan="6" class="p-5 text-center text-zinc-500">Carregando agendamentos...</td></tr>
+                        <tr><td colspan="7" class="p-5 text-center text-zinc-500">Carregando agendamentos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1174,43 +1243,356 @@
         }
     }
 
-    // Carregar Resumo Geral de Agendamentos
+    // Estado e Instâncias dos Gráficos Chart.js
+    let cacheAgendamentosResumo = [];
+    let filtroStatusAtual = 'todos';
+    let chartFaturamentoInstancia = null;
+    let chartServicosInstancia = null;
+
+    // Renderização dos Gráficos Interativos Chart.js
+    function renderizarGraficosResumo(dados) {
+        if (typeof Chart === 'undefined') return;
+
+        const ativos = dados.filter(a => a.status === 'ativo');
+
+        // 1. DADOS: Ocupação e Faturamento por Data
+        const diasMap = {};
+        ativos.forEach(a => {
+            const dia = a.data_agendada;
+            if (!dia) return;
+            if (!diasMap[dia]) {
+                diasMap[dia] = { qtd: 0, total: 0 };
+            }
+            diasMap[dia].qtd += 1;
+            diasMap[dia].total += parseFloat(a.servico_preco || 0);
+        });
+
+        const datasOrdenadas = Object.keys(diasMap).sort();
+        const labelsDias = datasOrdenadas.length > 0 
+            ? datasOrdenadas.map(d => {
+                const parts = d.split('-');
+                return parts.length === 3 ? `${parts[2]}/${parts[1]}` : d;
+            })
+            : ['Sem dados'];
+
+        const qtdsDias = datasOrdenadas.length > 0
+            ? datasOrdenadas.map(d => diasMap[d].qtd)
+            : [0];
+
+        const valoresDias = datasOrdenadas.length > 0
+            ? datasOrdenadas.map(d => diasMap[d].total)
+            : [0];
+
+        // Destruir gráfico anterior se já existia
+        if (chartFaturamentoInstancia) {
+            chartFaturamentoInstancia.destroy();
+        }
+
+        const ctxFaturamento = document.getElementById('chartFaturamentoDias');
+        if (ctxFaturamento) {
+            chartFaturamentoInstancia = new Chart(ctxFaturamento, {
+                type: 'bar',
+                data: {
+                    labels: labelsDias,
+                    datasets: [
+                        {
+                            label: 'Atendimentos (qtd)',
+                            data: qtdsDias,
+                            backgroundColor: 'rgba(212, 175, 55, 0.45)',
+                            borderColor: '#D4AF37',
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            yAxisID: 'yQtd'
+                        },
+                        {
+                            label: 'Faturamento Previsto (R$)',
+                            data: valoresDias,
+                            type: 'line',
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                            pointBackgroundColor: '#10B981',
+                            pointBorderColor: '#ffffff',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            borderWidth: 2.5,
+                            tension: 0.35,
+                            fill: true,
+                            yAxisID: 'yValor'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e4e4e7',
+                                font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 12, 0.95)',
+                            borderColor: 'rgba(212, 175, 55, 0.4)',
+                            borderWidth: 1,
+                            titleColor: '#D4AF37',
+                            bodyColor: '#f4f4f5',
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.dataset.label.includes('Faturamento')) {
+                                        return ` ${context.dataset.label}: R$ ${parseFloat(context.raw).toFixed(2).replace('.', ',')}`;
+                                    }
+                                    return ` ${context.dataset.label}: ${context.raw} cliente(s)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#a1a1aa', font: { size: 11 } }
+                        },
+                        yQtd: {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#a1a1aa', stepSize: 1, font: { size: 11 } }
+                        },
+                        yValor: {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: { display: false },
+                            ticks: {
+                                color: '#10B981',
+                                font: { size: 11 },
+                                callback: function(val) { return `R$ ${val}`; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. DADOS: Distribuição dos Serviços (Doughnut)
+        const servicosMap = {};
+        dados.forEach(a => {
+            const servico = a.servico_nome || 'Outro Serviço';
+            servicosMap[servico] = (servicosMap[servico] || 0) + 1;
+        });
+
+        const labelsServicos = Object.keys(servicosMap);
+        const qtdsServicos = labelsServicos.map(s => servicosMap[s]);
+
+        // Identificar serviço mais pedido
+        let topServicoNome = 'Nenhum';
+        let topServicoQtd = 0;
+        labelsServicos.forEach(s => {
+            if (servicosMap[s] > topServicoQtd) {
+                topServicoQtd = servicosMap[s];
+                topServicoNome = s;
+            }
+        });
+
+        const badgeTop = document.getElementById('badge-top-servico');
+        if (badgeTop) {
+            badgeTop.textContent = topServicoQtd > 0 ? `Top: ${topServicoNome} (${topServicoQtd})` : 'Aguardando dados';
+        }
+
+        if (chartServicosInstancia) {
+            chartServicosInstancia.destroy();
+        }
+
+        const ctxServicos = document.getElementById('chartServicosDoughnut');
+        if (ctxServicos) {
+            const coresPaleta = ['#D4AF37', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'];
+
+            chartServicosInstancia = new Chart(ctxServicos, {
+                type: 'doughnut',
+                data: {
+                    labels: labelsServicos.length > 0 ? labelsServicos : ['Nenhum'],
+                    datasets: [{
+                        data: qtdsServicos.length > 0 ? qtdsServicos : [1],
+                        backgroundColor: qtdsServicos.length > 0 ? coresPaleta.slice(0, labelsServicos.length) : ['rgba(255,255,255,0.1)'],
+                        borderColor: '#0A0A0C',
+                        borderWidth: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#d4d4d8',
+                                padding: 12,
+                                font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 12, 0.95)',
+                            borderColor: 'rgba(212, 175, 55, 0.4)',
+                            borderWidth: 1,
+                            titleColor: '#D4AF37',
+                            bodyColor: '#f4f4f5',
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    if (qtdsServicos.length === 0) return ' Sem dados';
+                                    const totalGeral = qtdsServicos.reduce((acc, curr) => acc + curr, 0);
+                                    const perc = ((context.raw / totalGeral) * 100).toFixed(1);
+                                    return ` ${context.label}: ${context.raw} (${perc}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '68%'
+                }
+            });
+        }
+    }
+
+    // Filtragem em Tempo Real na Tabela
+    function filtrarStatusResumo(status) {
+        filtroStatusAtual = status;
+        soundVIP.playSoftClick();
+
+        ['todos', 'ativo', 'cancelado'].forEach(s => {
+            const btn = document.getElementById(`filtro-btn-${s}`);
+            if (!btn) return;
+            if (s === status) {
+                btn.className = 'text-xs px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/20 text-amber-300 font-semibold transition';
+            } else {
+                btn.className = 'text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white transition';
+            }
+        });
+
+        filtrarTabelaResumo();
+    }
+
+    function filtrarTabelaResumo() {
+        const termo = (document.getElementById('filtro-pesquisa-resumo')?.value || '').toLowerCase().trim();
+        let filtrados = cacheAgendamentosResumo;
+
+        if (filtroStatusAtual !== 'todos') {
+            filtrados = filtrados.filter(a => a.status === filtroStatusAtual);
+        }
+
+        if (termo) {
+            filtrados = filtrados.filter(a => 
+                (a.cliente_nome && a.cliente_nome.toLowerCase().includes(termo)) ||
+                (a.codigo && a.codigo.toLowerCase().includes(termo)) ||
+                (a.servico_nome && a.servico_nome.toLowerCase().includes(termo)) ||
+                (a.data_agendada && a.data_agendada.includes(termo)) ||
+                (a.cliente_telefone && a.cliente_telefone.includes(termo))
+            );
+        }
+
+        renderizarTabelaResumoFiltrada(filtrados);
+    }
+
+    function renderizarTabelaResumoFiltrada(dados) {
+        const tbody = document.getElementById('tabela-resumo-body');
+        if (!tbody) return;
+
+        if (!dados || dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="p-5 text-center text-zinc-500">Nenhum agendamento encontrado para o filtro aplicado.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = dados.map(a => {
+            const precoFmt = a.servico_preco ? `R$ ${parseFloat(a.servico_preco).toFixed(2).replace('.', ',')}` : 'R$ --';
+            const servicoLabel = a.servico_nome || 'Serviço Padrão';
+            const whatsTel = (a.cliente_telefone || '').replace(/\D/g, '');
+            const whatsUrl = whatsTel 
+                ? `https://api.whatsapp.com/send?phone=${whatsTel}&text=${encodeURIComponent(`Olá ${a.cliente_nome}, tudo bem? Confirmando seu horário na Barbearia VIP dia ${a.data_agendada} às ${a.horario}.`)}`
+                : null;
+
+            return `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="p-4 font-semibold text-white">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm">👤</div>
+                            <div>
+                                <p class="font-medium text-white text-sm leading-tight">${a.cliente_nome}</p>
+                                ${a.cliente_telefone ? `<p class="text-[11px] text-zinc-400 font-mono mt-0.5">${a.cliente_telefone}</p>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-amber-300 font-medium text-xs block leading-tight">${servicoLabel}</span>
+                        <span class="text-[11px] text-zinc-400 font-mono">${precoFmt}</span>
+                    </td>
+                    <td class="p-4 text-xs font-mono text-zinc-300">${a.data_agendada}</td>
+                    <td class="p-4 text-amber-400 font-semibold font-mono text-xs">${a.horario}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                            a.status === 'ativo' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/15 text-red-300 border border-red-500/30'
+                        }">${a.status === 'ativo' ? '✓ Ativo' : '✕ Cancelado'}</span>
+                    </td>
+                    <td class="p-4 font-mono text-xs text-zinc-400">${a.codigo}</td>
+                    <td class="p-4 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            ${whatsUrl ? `
+                                <a href="${whatsUrl}" target="_blank" class="inline-flex items-center gap-1 bg-[#25D366]/20 hover:bg-[#25D366] text-[#25D366] hover:text-black px-2.5 py-1 rounded-lg text-xs font-semibold transition border border-[#25D366]/30" title="Conversar no WhatsApp">
+                                    <span>💬</span> WhatsApp
+                                </a>
+                            ` : ''}
+                            <button onclick="excluirAgendamentoBanco(${a.id})" class="inline-flex items-center gap-1 bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition border border-red-500/30" title="Excluir permanentemente do banco de dados">
+                                🗑️ Excluir
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Carregar Resumo Geral de Agendamentos e Faturamento
     async function carregarResumoAgendamentos() {
         const tbody = document.getElementById('tabela-resumo-body');
         try {
             const resp = await fetch(API_AGENDAMENTOS);
             const res = await resp.json();
             const dados = res.data || [];
+            cacheAgendamentosResumo = dados;
 
-            document.getElementById('card-total-count').textContent = dados.length;
-            document.getElementById('card-ativos-count').textContent = dados.filter(a => a.status === 'ativo').length;
-            document.getElementById('card-cancelados-count').textContent = dados.filter(a => a.status === 'cancelado').length;
+            const ativos = dados.filter(a => a.status === 'ativo');
+            const cancelados = dados.filter(a => a.status === 'cancelado');
 
-            if (dados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado no banco de dados.</td></tr>';
-                return;
+            // Faturamento Total Previsto
+            const faturamentoTotal = ativos.reduce((acc, curr) => acc + (parseFloat(curr.servico_preco) || 0), 0);
+            const elFaturamento = document.getElementById('card-faturamento-total');
+            if (elFaturamento) {
+                elFaturamento.textContent = `R$ ${faturamentoTotal.toFixed(2).replace('.', ',')}`;
             }
 
-            tbody.innerHTML = dados.map(a => `
-                <tr class="hover:bg-white/5 transition">
-                    <td class="p-4 font-medium text-white">${a.cliente_nome}</td>
-                    <td class="p-4">${a.data_agendada}</td>
-                    <td class="p-4 text-barberYellow font-semibold">${a.horario}</td>
-                    <td class="p-4">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${
-                            a.status === 'ativo' ? 'bg-green-900/60 text-green-300' : 'bg-red-900/60 text-red-300'
-                        }">${a.status}</span>
-                    </td>
-                    <td class="p-4 font-mono text-xs text-gray-400">${a.codigo}</td>
-                    <td class="p-4 text-right">
-                        <button onclick="excluirAgendamentoBanco(${a.id})" class="inline-flex items-center gap-1 bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition border border-red-500/30" title="Excluir permanentemente do banco de dados">
-                            🗑️ Excluir
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            document.getElementById('card-total-count').textContent = dados.length;
+            document.getElementById('card-ativos-count').textContent = ativos.length;
+            document.getElementById('card-cancelados-count').textContent = cancelados.length;
+
+            const taxaOcupacao = dados.length > 0 ? ((ativos.length / dados.length) * 100).toFixed(0) : 100;
+            const elTaxa = document.getElementById('card-taxa-ocupacao');
+            if (elTaxa) {
+                elTaxa.textContent = `${taxaOcupacao}% ativos`;
+            }
+
+            // Renderizar Gráficos Chart.js
+            renderizarGraficosResumo(dados);
+
+            // Renderizar Tabela com Filtros
+            filtrarTabelaResumo();
         } catch (e) {
-            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-400">Falha ao consultar agendamentos.</td></tr>';
+            console.error('Erro ao carregar resumo:', e);
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="p-5 text-center text-red-400">Falha ao consultar agendamentos.</td></tr>';
         }
     }
 

@@ -386,8 +386,9 @@ function renderCharts() {
     const activeCount = appState.agendamentos.filter(a => a.status === 'ativo').length;
     const canceledCount = appState.agendamentos.filter(a => a.status === 'cancelado').length;
 
-    const ocupacaoCtx = document.getElementById('ocupacaoChart').getContext('2d');
-    const proporcaoCtx = document.getElementById('proporcaoChart').getContext('2d');
+    const ocupacaoCtx = document.getElementById('ocupacaoChart')?.getContext('2d');
+    const proporcaoCtx = document.getElementById('proporcaoChart')?.getContext('2d');
+    if (!ocupacaoCtx || !proporcaoCtx) return;
 
     if (ocupacaoChart) {
         ocupacaoChart.data.labels = labels;
@@ -401,17 +402,35 @@ function renderCharts() {
                 datasets: [{
                     label: 'Agendamentos ativos',
                     data: weekData,
-                    backgroundColor: '#D4AF37',
-                    borderRadius: 12,
-                    maxBarThickness: 40
+                    backgroundColor: 'rgba(212, 175, 55, 0.7)',
+                    borderColor: '#D4AF37',
+                    borderWidth: 1.5,
+                    borderRadius: 10,
+                    maxBarThickness: 42
                 }]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10, 10, 12, 0.95)',
+                        borderColor: '#D4AF37',
+                        borderWidth: 1,
+                        titleColor: '#D4AF37',
+                        bodyColor: '#f4f4f5'
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { beginAtZero: true, grid: { color: '#e2e8f0' } }
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#a1a1aa', font: { family: 'sans-serif', size: 12 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: { color: '#a1a1aa', stepSize: 1, font: { family: 'sans-serif', size: 12 } }
+                    }
                 }
             }
         });
@@ -428,14 +447,27 @@ function renderCharts() {
                 datasets: [{
                     data: [activeCount, canceledCount],
                     backgroundColor: ['#D4AF37', '#dc3545'],
+                    borderColor: '#18181F',
+                    borderWidth: 3,
                     hoverOffset: 8
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 18 } }
-                }
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, padding: 18, color: '#e4e4e7', font: { size: 12 } }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(10, 10, 12, 0.95)',
+                        borderColor: '#D4AF37',
+                        borderWidth: 1,
+                        titleColor: '#D4AF37',
+                        bodyColor: '#f4f4f5'
+                    }
+                },
+                cutout: '65%'
             }
         });
     }
