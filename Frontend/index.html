@@ -271,6 +271,9 @@
             </div>
         </div>
         <div class="flex items-center gap-2.5 flex-wrap">
+            <button type="button" onclick="toggleSom()" id="btn-toggle-som" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-amber-400 border border-white/10 px-3 py-2.5 rounded-xl transition-all flex items-center gap-1.5" title="Ativar/Desativar som dos cliques e confirmações">
+                <span id="som-icone">🔊</span> <span id="som-texto" class="hidden sm:inline">Som VIP</span>
+            </button>
             <button onclick="changeTab('tab-horarios')" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
                 ⏰ Gerenciar Horários
             </button>
@@ -565,8 +568,186 @@
     const API_SERVICOS = `${basePath}/api/servico.php`;
     const API_AGENDAMENTOS = `${basePath}/api/agendamento.php`;
 
+    // Motor de Áudio Sintetizado Luxuoso (Web Audio API nativo - Sem arquivos externos)
+    class ChicAudioService {
+        constructor() {
+            this.ctx = null;
+            this.enabled = localStorage.getItem('barbearia_vip_som') !== 'false';
+        }
+
+        init() {
+            if (!this.ctx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) this.ctx = new AudioCtx();
+            }
+            if (this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
+        }
+
+        toggle() {
+            this.enabled = !this.enabled;
+            localStorage.setItem('barbearia_vip_som', this.enabled ? 'true' : 'false');
+            if (this.enabled) {
+                this.init();
+                this.playChicSuccess();
+            }
+            return this.enabled;
+        }
+
+        // Micro-clique táctil suave e aveludado (estilo botão de boutique/luxo)
+        playSoftClick() {
+            if (!this.enabled) return;
+            this.init();
+            if (!this.ctx) return;
+
+            try {
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(2600, now);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1200, now);
+                osc.frequency.exponentialRampToValueAtTime(320, now + 0.03);
+
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.035);
+            } catch (e) {
+                // Silencioso se navegador restringir
+            }
+        }
+
+        // Acorde Dourado em Arpeggio Suave (Timbre chic de confirmação VIP em Db Maior 7/9)
+        playChicSuccess() {
+            if (!this.enabled) return;
+            this.init();
+            if (!this.ctx) return;
+
+            try {
+                const notes = [554.37, 698.46, 830.61, 1046.50]; // Db5, F5, Ab5, C6 (escala pentatônica nobre)
+                const now = this.ctx.currentTime;
+
+                notes.forEach((freq, idx) => {
+                    const noteTime = now + (idx * 0.08);
+
+                    // Onda senoidal pura
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const filter = this.ctx.createBiquadFilter();
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(3000, noteTime);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, noteTime);
+
+                    gain.gain.setValueAtTime(0.0001, noteTime);
+                    gain.gain.exponentialRampToValueAtTime(0.1 / (idx + 1), noteTime + 0.015);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 1.2);
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(noteTime);
+                    osc.stop(noteTime + 1.25);
+
+                    // Harmônico secundário para brilho dourado
+                    const oscHarm = this.ctx.createOscillator();
+                    const gainHarm = this.ctx.createGain();
+                    oscHarm.type = 'triangle';
+                    oscHarm.frequency.setValueAtTime(freq * 2, noteTime);
+
+                    gainHarm.gain.setValueAtTime(0.0001, noteTime);
+                    gainHarm.gain.exponentialRampToValueAtTime(0.018, noteTime + 0.01);
+                    gainHarm.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.6);
+
+                    oscHarm.connect(gainHarm);
+                    gainHarm.connect(this.ctx.destination);
+
+                    oscHarm.start(noteTime);
+                    oscHarm.stop(noteTime + 0.65);
+                });
+            } catch (e) {
+                // Silencioso se navegador restringir
+            }
+        }
+
+        // Tom suave descendente para cancelamentos e exclusões
+        playCancelSound() {
+            if (!this.enabled) return;
+            this.init();
+            if (!this.ctx) return;
+
+            try {
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 440.00, 349.23]; // C5 -> A4 -> F4 harmônico aveludado
+
+                notes.forEach((freq, idx) => {
+                    const noteTime = now + (idx * 0.09);
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, noteTime);
+
+                    gain.gain.setValueAtTime(0.0001, noteTime);
+                    gain.gain.exponentialRampToValueAtTime(0.06, noteTime + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.5);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(noteTime);
+                    osc.stop(noteTime + 0.55);
+                });
+            } catch (e) {
+                // Silencioso se navegador restringir
+            }
+        }
+    }
+
+    const soundVIP = new ChicAudioService();
+
+    function atualizarBotaoSom() {
+        const btn = document.getElementById('btn-toggle-som');
+        const icone = document.getElementById('som-icone');
+        const texto = document.getElementById('som-texto');
+        if (!btn || !icone || !texto) return;
+
+        if (soundVIP.enabled) {
+            icone.textContent = '🔊';
+            texto.textContent = 'Som VIP';
+            btn.classList.remove('opacity-50');
+            btn.title = 'Som VIP ativado (clique para silenciar)';
+        } else {
+            icone.textContent = '🔇';
+            texto.textContent = 'Mudo';
+            btn.classList.add('opacity-50');
+            btn.title = 'Som VIP silenciado (clique para ativar)';
+        }
+    }
+
+    function toggleSom() {
+        soundVIP.toggle();
+        atualizarBotaoSom();
+    }
+
     // Navegação por Abas
     function changeTab(tabId) {
+        soundVIP.playSoftClick();
+
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         const target = document.getElementById(tabId);
         if (target) target.classList.add('active');
@@ -647,6 +828,7 @@
                         chip.className = 'time-chip' + (idx === 0 ? ' selected' : '');
                         chip.innerHTML = `<span>⏰</span> <span>${h}</span>`;
                         chip.onclick = () => {
+                            soundVIP.playSoftClick();
                             document.querySelectorAll('.time-chip').forEach(c => c.classList.remove('selected'));
                             chip.classList.add('selected');
                             select.value = h;
@@ -704,6 +886,7 @@
             const result = await resp.json();
 
             if (resp.ok && result.success) {
+                soundVIP.playChicSuccess();
                 const box = document.getElementById('boxSucessoAgendamento');
                 box.innerHTML = `
                     <div class="flex items-center gap-2 mb-2">
@@ -767,6 +950,7 @@
 
             box.classList.remove('hidden', 'bg-red-500/20', 'text-red-200', 'bg-green-500/20', 'text-green-200');
             if (resp.ok && result.success) {
+                soundVIP.playCancelSound();
                 box.classList.add('bg-green-500/20', 'text-green-200');
                 box.textContent = `✅ ${result.success}`;
                 document.getElementById('codigo-cancelar-input').value = '';
@@ -871,6 +1055,7 @@
             });
             const res = await resp.json();
             if (resp.ok && res.success) {
+                soundVIP.playSoftClick();
                 if (feedback) feedback.textContent = `✓ ${res.mensagem || 'Horário atualizado!'}`;
                 setTimeout(() => { if (feedback) feedback.textContent = ''; }, 3000);
                 carregarGradeGerenciador();
@@ -1040,6 +1225,7 @@
             });
             const res = await resp.json();
             if (resp.ok && res.success) {
+                soundVIP.playCancelSound();
                 alert(res.success);
                 carregarResumoAgendamentos();
                 carregarHorariosDisponiveis();
@@ -1063,6 +1249,7 @@
             });
             const res = await resp.json();
             if (resp.ok && res.success) {
+                soundVIP.playCancelSound();
                 alert(res.success);
                 carregarResumoAgendamentos();
             } else {
@@ -1084,6 +1271,7 @@
     }
 
     // Inicialização
+    atualizarBotaoSom();
     carregarServicosSelect();
     carregarHorariosDisponiveis();
     carregarGradeGerenciador();
