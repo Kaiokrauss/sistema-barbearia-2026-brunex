@@ -66,7 +66,7 @@ $tituloPainel = $isMasterAdmin ? '👑 Painel do Administrador' : ($isBarbeiro ?
                 <a href="index.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">🏠 Início</a>
                 <a href="index.html#tab-agendar" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">✂️ Agendar</a>
                 <?php if ($isAdmin): ?>
-                    <a href="index.html#tab-dashboard" class="rounded-xl px-3 py-2 text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 font-semibold transition">📊 Resumo & Faturamento</a>
+                    <a href="index.html#tab-dashboard" class="rounded-xl px-3 py-2 text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 font-semibold transition">📊 Resumo & Faturamento Bruto</a>
                     <a href="index.html#tab-horarios" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">⏰ Horários</a>
                     <a href="../views/admin/servicos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">📋 Serviços</a>
                     <a href="../views/admin/agendamentos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">📥 Exportações</a>
@@ -120,8 +120,8 @@ $tituloPainel = $isMasterAdmin ? '👑 Painel do Administrador' : ($isBarbeiro ?
                     <?php if ($isAdmin): ?>
                         <a href="index.html#tab-dashboard" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-amber-500/20 hover:border-amber-500/40 transition group">
                             <div>
-                                <p class="text-sm font-semibold text-white group-hover:text-amber-400 transition">📊 Resumo com Faturamento & Gráficos</p>
-                                <p class="text-xs text-zinc-400">Projeção financeira (R$), métricas e gráficos Chart.js</p>
+                                <p class="text-sm font-semibold text-white group-hover:text-amber-400 transition">📊 Resumo com Faturamento Bruto & Gráficos</p>
+                                <p class="text-xs text-zinc-400">Faturamento Bruto (R$), receita confirmada, métricas e gráficos Chart.js</p>
                             </div>
                             <span class="text-amber-400 text-sm">→</span>
                         </a>

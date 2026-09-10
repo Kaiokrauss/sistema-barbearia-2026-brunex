@@ -327,10 +327,17 @@ function renderAdminAgendamentos() {
     const bloqueiosHoje = appState.bloqueios[hoje] || [];
     const disponiveisHoje = defaultHorarios.filter(h => !ativosHoje.some(a => a.horario === h) && !bloqueiosHoje.includes(h));
 
+    const faturamentoBrutoGeral = appState.agendamentos.reduce((acc, a) => acc + (parseFloat(a.servico_preco || a.preco || 0)), 0);
+    const faturamentoAtivosHoje = ativosHoje.reduce((acc, a) => acc + (parseFloat(a.servico_preco || a.preco || 0)), 0);
+
     document.getElementById('card-total-agendamentos').textContent = appState.agendamentos.filter(a => a.status === 'ativo').length;
     document.getElementById('card-cancelamentos').textContent = appState.agendamentos.filter(a => a.status === 'cancelado').length;
     document.getElementById('card-horarios-disponiveis').textContent = disponiveisHoje.length;
-    document.getElementById('resumo-faturamento').textContent = `Hoje: ${ativosHoje.length} agendados`;
+    
+    const elResumoFat = document.getElementById('resumo-faturamento');
+    if (elResumoFat) {
+        elResumoFat.innerHTML = `<span class="text-amber-400 font-bold font-mono">Faturamento Bruto: R$ ${faturamentoBrutoGeral.toFixed(2).replace('.', ',')}</span> <span class="text-xs text-zinc-400 font-normal">(Hoje: R$ ${faturamentoAtivosHoje.toFixed(2).replace('.', ',')} em ${ativosHoje.length} agendados)</span>`;
+    }
 
     renderCharts();
     renderAgendamentosTable(agendamentosHoje, disponiveisHoje);

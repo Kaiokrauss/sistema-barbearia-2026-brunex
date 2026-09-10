@@ -489,8 +489,13 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6">
                 <div>
                     <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Relatório & Performance Executiva</span>
-                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1">Painel Administrativo VIP</h2>
-                    <p class="text-sm text-zinc-400 mt-1">Métricas em tempo real, faturamento estimado e gráficos interativos.</p>
+                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1 flex items-center gap-3 flex-wrap">
+                        <span>Painel Administrativo VIP</span>
+                        <span id="badge-faturamento-bruto-topo" class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 shadow-sm">
+                            💰 Bruto: R$ 0,00
+                        </span>
+                    </h2>
+                    <p class="text-sm text-zinc-400 mt-1">Métricas em tempo real, faturamento bruto total, receita confirmada e gráficos interativos.</p>
                 </div>
                 <div class="flex gap-2 flex-wrap">
                     <button onclick="limparCanceladosBanco()" class="bg-red-900/30 hover:bg-red-800/60 text-red-300 border border-red-700/50 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Exclui definitivamente todos os agendamentos cancelados do banco">
@@ -502,17 +507,27 @@
                 </div>
             </div>
 
-            <!-- CARDS DE MÉTRICAS (4 COLUNAS) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <!-- Faturamento Previsto -->
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-amber-500/30 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-amber-500/60 transition">
-                    <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
+            <!-- CARDS DE MÉTRICAS (5 COLUNAS) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+                <!-- Faturamento Bruto (Total) -->
+                <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-500/15 via-white/[0.03] to-transparent border border-amber-500/40 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-amber-400 transition">
+                    <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/15 rounded-full blur-xl pointer-events-none"></div>
                     <div>
-                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Faturamento Previsto</p>
-                        <p id="card-faturamento-total" class="text-2xl font-display font-bold text-amber-400 mt-1">R$ 0,00</p>
+                        <p class="text-amber-400/90 text-xs uppercase tracking-wider font-bold">Faturamento Bruto</p>
+                        <p id="card-faturamento-bruto" class="text-2xl font-display font-bold text-amber-400 mt-1">R$ 0,00</p>
+                        <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Total de serviços agendados</span>
+                    </div>
+                    <div class="text-2xl p-3 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-inner">💰</div>
+                </div>
+
+                <!-- Receita Confirmada / Ativa -->
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/30 flex justify-between items-center shadow-lg relative overflow-hidden group hover:border-emerald-500/50 transition">
+                    <div>
+                        <p class="text-emerald-400 text-xs uppercase tracking-wider font-semibold">Receita Confirmada</p>
+                        <p id="card-faturamento-total" class="text-2xl font-display font-bold text-emerald-400 mt-1">R$ 0,00</p>
                         <span class="text-[10px] text-zinc-400 mt-0.5 inline-block">Agendamentos ativos</span>
                     </div>
-                    <div class="text-2xl p-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 shadow-inner">💰</div>
+                    <div class="text-2xl p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-inner">💎</div>
                 </div>
 
                 <!-- Total de Cortes / Agendamentos -->
@@ -540,7 +555,7 @@
                     <div>
                         <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Cancelados</p>
                         <p id="card-cancelados-count" class="text-2xl font-display font-bold text-red-400 mt-1">0</p>
-                        <span class="text-[10px] text-red-400/80 mt-0.5 inline-block">Horários liberados</span>
+                        <span id="card-cancelados-valor" class="text-[10px] text-red-400/80 mt-0.5 inline-block">Perda: R$ 0,00</span>
                     </div>
                     <div class="text-2xl p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400">⚠️</div>
                 </div>
@@ -610,6 +625,16 @@
                         <tr><td colspan="7" class="p-5 text-center text-zinc-500">Carregando agendamentos...</td></tr>
                     </tbody>
                 </table>
+                <!-- BARRA DE RESUMO FINANCEIRO DA TABELA -->
+                <div class="p-4 bg-white/[0.02] border-t border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="text-zinc-400">Total listado: <strong id="resumo-tabela-qtd" class="text-white font-mono">0</strong></span>
+                        <span class="text-zinc-400">Faturamento Bruto: <strong id="resumo-tabela-bruto" class="text-amber-400 font-mono font-bold">R$ 0,00</strong></span>
+                        <span class="text-zinc-400">Confirmado: <strong id="resumo-tabela-ativo" class="text-emerald-400 font-mono font-bold">R$ 0,00</strong></span>
+                        <span class="text-zinc-400">Cancelado: <strong id="resumo-tabela-cancelado" class="text-red-400 font-mono font-bold">R$ 0,00</strong></span>
+                    </div>
+                    <div class="text-[11px] text-zinc-500 italic">Atualizado em tempo real</div>
+                </div>
             </div>
         </div>
     </div>
@@ -1251,16 +1276,20 @@
 
         const ativos = dados.filter(a => a.status === 'ativo');
 
-        // 1. DADOS: Ocupação e Faturamento por Data
+        // 1. DADOS: Ocupação, Faturamento Bruto e Receita Confirmada por Data
         const diasMap = {};
-        ativos.forEach(a => {
+        dados.forEach(a => {
             const dia = a.data_agendada;
             if (!dia) return;
             if (!diasMap[dia]) {
-                diasMap[dia] = { qtd: 0, total: 0 };
+                diasMap[dia] = { qtd: 0, bruto: 0, ativos: 0 };
             }
+            const preco = parseFloat(a.servico_preco || 0);
             diasMap[dia].qtd += 1;
-            diasMap[dia].total += parseFloat(a.servico_preco || 0);
+            diasMap[dia].bruto += preco;
+            if (a.status === 'ativo') {
+                diasMap[dia].ativos += preco;
+            }
         });
 
         const datasOrdenadas = Object.keys(diasMap).sort();
@@ -1275,8 +1304,12 @@
             ? datasOrdenadas.map(d => diasMap[d].qtd)
             : [0];
 
-        const valoresDias = datasOrdenadas.length > 0
-            ? datasOrdenadas.map(d => diasMap[d].total)
+        const valoresBrutoDias = datasOrdenadas.length > 0
+            ? datasOrdenadas.map(d => diasMap[d].bruto)
+            : [0];
+
+        const valoresAtivosDias = datasOrdenadas.length > 0
+            ? datasOrdenadas.map(d => diasMap[d].ativos)
             : [0];
 
         // Destruir gráfico anterior se já existia
@@ -1292,17 +1325,18 @@
                     labels: labelsDias,
                     datasets: [
                         {
-                            label: 'Atendimentos (qtd)',
-                            data: qtdsDias,
+                            label: 'Faturamento Bruto (R$)',
+                            data: valoresBrutoDias,
+                            type: 'bar',
                             backgroundColor: 'rgba(212, 175, 55, 0.45)',
                             borderColor: '#D4AF37',
                             borderWidth: 2,
                             borderRadius: 8,
-                            yAxisID: 'yQtd'
+                            yAxisID: 'yValor'
                         },
                         {
-                            label: 'Faturamento Previsto (R$)',
-                            data: valoresDias,
+                            label: 'Receita Confirmada (R$)',
+                            data: valoresAtivosDias,
                             type: 'line',
                             borderColor: '#10B981',
                             backgroundColor: 'rgba(16, 185, 129, 0.12)',
@@ -1314,6 +1348,16 @@
                             tension: 0.35,
                             fill: true,
                             yAxisID: 'yValor'
+                        },
+                        {
+                            label: 'Atendimentos (qtd)',
+                            data: qtdsDias,
+                            type: 'bar',
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                            borderColor: 'rgba(255, 255, 255, 0.25)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            yAxisID: 'yQtd'
                         }
                     ]
                 },
@@ -1340,10 +1384,10 @@
                             padding: 10,
                             callbacks: {
                                 label: function(context) {
-                                    if (context.dataset.label.includes('Faturamento')) {
+                                    if (context.dataset.label.includes('R$')) {
                                         return ` ${context.dataset.label}: R$ ${parseFloat(context.raw).toFixed(2).replace('.', ',')}`;
                                     }
-                                    return ` ${context.dataset.label}: ${context.raw} cliente(s)`;
+                                    return ` ${context.dataset.label}: ${context.raw} agendamento(s)`;
                                 }
                             }
                         }
@@ -1499,12 +1543,28 @@
         const tbody = document.getElementById('tabela-resumo-body');
         if (!tbody) return;
 
-        if (!dados || dados.length === 0) {
+        const lista = dados || [];
+
+        // Atualizar barra de totais e faturamento da tabela
+        const brutoFiltro = lista.reduce((acc, c) => acc + (parseFloat(c.servico_preco) || 0), 0);
+        const ativoFiltro = lista.filter(a => a.status === 'ativo').reduce((acc, c) => acc + (parseFloat(c.servico_preco) || 0), 0);
+        const canceladoFiltro = lista.filter(a => a.status === 'cancelado').reduce((acc, c) => acc + (parseFloat(c.servico_preco) || 0), 0);
+
+        const elResumoQtd = document.getElementById('resumo-tabela-qtd');
+        if (elResumoQtd) elResumoQtd.textContent = lista.length;
+        const elResumoBruto = document.getElementById('resumo-tabela-bruto');
+        if (elResumoBruto) elResumoBruto.textContent = `R$ ${brutoFiltro.toFixed(2).replace('.', ',')}`;
+        const elResumoAtivo = document.getElementById('resumo-tabela-ativo');
+        if (elResumoAtivo) elResumoAtivo.textContent = `R$ ${ativoFiltro.toFixed(2).replace('.', ',')}`;
+        const elResumoCancelado = document.getElementById('resumo-tabela-cancelado');
+        if (elResumoCancelado) elResumoCancelado.textContent = `R$ ${canceladoFiltro.toFixed(2).replace('.', ',')}`;
+
+        if (lista.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="p-5 text-center text-zinc-500">Nenhum agendamento encontrado para o filtro aplicado.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = dados.map(a => {
+        tbody.innerHTML = lista.map(a => {
             const precoFmt = a.servico_preco ? `R$ ${parseFloat(a.servico_preco).toFixed(2).replace('.', ',')}` : 'R$ --';
             const servicoLabel = a.servico_nome || 'Serviço Padrão';
             const whatsTel = (a.cliente_telefone || '').replace(/\D/g, '');
@@ -1564,11 +1624,31 @@
             const ativos = dados.filter(a => a.status === 'ativo');
             const cancelados = dados.filter(a => a.status === 'cancelado');
 
-            // Faturamento Total Previsto
+            // 1. Faturamento Bruto Total (Soma de todos os agendamentos registrados no banco)
+            const faturamentoBruto = dados.reduce((acc, curr) => acc + (parseFloat(curr.servico_preco) || 0), 0);
+            const elFaturamentoBruto = document.getElementById('card-faturamento-bruto');
+            if (elFaturamentoBruto) {
+                elFaturamentoBruto.textContent = `R$ ${faturamentoBruto.toFixed(2).replace('.', ',')}`;
+            }
+
+            // 2. Receita Confirmada / Ativa
             const faturamentoTotal = ativos.reduce((acc, curr) => acc + (parseFloat(curr.servico_preco) || 0), 0);
             const elFaturamento = document.getElementById('card-faturamento-total');
             if (elFaturamento) {
                 elFaturamento.textContent = `R$ ${faturamentoTotal.toFixed(2).replace('.', ',')}`;
+            }
+
+            // 3. Faturamento Perdido em Cancelamentos
+            const faturamentoCancelados = cancelados.reduce((acc, curr) => acc + (parseFloat(curr.servico_preco) || 0), 0);
+            const elCanceladosValor = document.getElementById('card-cancelados-valor');
+            if (elCanceladosValor) {
+                elCanceladosValor.textContent = `Perda: R$ ${faturamentoCancelados.toFixed(2).replace('.', ',')}`;
+            }
+
+            // 4. Badge Dourado no Topo do Painel
+            const elBadgeTopo = document.getElementById('badge-faturamento-bruto-topo');
+            if (elBadgeTopo) {
+                elBadgeTopo.textContent = `💰 Bruto: R$ ${faturamentoBruto.toFixed(2).replace('.', ',')}`;
             }
 
             document.getElementById('card-total-count').textContent = dados.length;
