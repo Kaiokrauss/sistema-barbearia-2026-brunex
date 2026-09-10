@@ -20,7 +20,7 @@ $nome = trim($input['nome'] ?? '');
 $email = strtolower(trim($input['email'] ?? ''));
 $telefone = trim($input['telefone'] ?? '');
 $senha = $input['senha'] ?? '';
-$senha2 = $input['senha2'] ?? '';
+$senha2 = $input['senha2'] ?? $input['confirmar_senha'] ?? '';
 $perfil = trim($input['perfil'] ?? 'cliente');
 
 // Debug: log para verificar o valor recebido
