@@ -1,194 +1,480 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="bg-[#121212]">
+<html lang="pt-BR" class="bg-[#0A0A0C]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbearia VIP - Sistema de Agendamento</title>
+    <title>Barbearia VIP - Sistema Premium de Agendamento</title>
+    <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['Cinzel', 'serif']
+                    },
                     colors: {
-                        barberDark: '#1E1E1E',
+                        barberDark: '#121216',
+                        barberCard: '#18181F',
                         barberYellow: '#D4AF37',
-                        barberYellowHover: '#FACC15'
+                        barberYellowHover: '#E5C158'
                     }
                 }
             }
         }
     </script>
     <style>
-        .tab-content { display: none; animation: fadeIn 0.25s ease-in-out; }
+        body {
+            background-color: #0A0A0C;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.16) 0%, rgba(15, 15, 20, 0.6) 40%, rgba(10, 10, 12, 1) 90%),
+                radial-gradient(circle at 10% 40%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 60%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #d4d4d8;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-display { font-family: 'Cinzel', serif; }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
+        .glass-panel {
+            background: rgba(18, 18, 24, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF1D0 0%, #D4AF37 50%, #B38728 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-btn {
+            background: linear-gradient(135deg, #EAD086 0%, #D4AF37 50%, #B38728 100%);
+            color: #0d0d0f;
+            font-weight: 700;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.28);
+        }
+        .gold-btn:hover {
+            background: linear-gradient(135deg, #F5DF9E 0%, #E2BD4E 50%, #C49833 100%);
+            box-shadow: 0 6px 28px rgba(212, 175, 55, 0.45);
+            transform: translateY(-1px);
+        }
+
         .dark-input { 
             width: 100%;
-            background: #2A2A2A;
-            border: 1px solid #374151;
+            background: rgba(28, 28, 36, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff;
-            border-radius: 0.75rem;
-            padding: 0.75rem 1rem;
+            border-radius: 0.85rem;
+            padding: 0.85rem 1.1rem;
             margin-top: 0.25rem;
             outline: none;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
+            font-size: 0.95rem;
         }
         .dark-input:focus {
             border-color: #D4AF37;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25), 0 4px 14px rgba(0, 0, 0, 0.4);
+            background: rgba(36, 36, 48, 0.95);
+        }
+
+        /* Chips de Horários */
+        .time-chip {
+            padding: 0.7rem 0.85rem;
+            border-radius: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #e4e4e7;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+        .time-chip:hover {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.12);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+        .time-chip.selected {
+            border-color: #D4AF37;
+            background: linear-gradient(135deg, #EAD086, #D4AF37, #B38728);
+            color: #0a0a0c;
+            font-weight: 800;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.55);
+            transform: scale(1.03);
+        }
+
+        /* Card interativo de Serviços */
+        .service-card {
+            padding: 1rem 1.1rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.025);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .service-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-2px);
+        }
+        .service-card.selected {
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+        }
+
+        /* Efeitos e Animações da Barra de Navegação */
+        .nav-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            cursor: pointer;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Efeito de levitação suave e brilho ao passar o mouse */
+        .nav-btn:hover {
+            transform: translateY(-2.5px) scale(1.04);
+            border-color: rgba(212, 175, 55, 0.35);
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+            box-shadow: 0 8px 22px -4px rgba(212, 175, 55, 0.28), 0 0 12px rgba(212, 175, 55, 0.15) inset;
+        }
+
+        /* Animação do ícone dentro do botão no hover */
+        .nav-btn .nav-icon, .nav-btn span:first-child {
+            display: inline-block;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .nav-btn:hover .nav-icon, .nav-btn:hover span:first-child {
+            transform: scale(1.3) rotate(-8deg);
+        }
+
+        /* Feedback tátil ao clicar */
+        .nav-btn:active {
+            transform: translateY(0px) scale(0.97);
+        }
+
+        /* Brilho Shimmer de luz que percorre o botão no hover */
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -130%;
+            width: 80%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+            transform: skewX(-20deg);
+            pointer-events: none;
+            transition: none;
+        }
+
+        .nav-btn:hover::before {
+            left: 140%;
+            transition: all 0.65s ease;
+        }
+
+        /* Animações e cores temáticas personalizadas por botão */
+        .nav-btn-cancel:hover {
+            border-color: rgba(239, 68, 68, 0.45) !important;
+            box-shadow: 0 8px 22px -4px rgba(239, 68, 68, 0.35), 0 0 12px rgba(239, 68, 68, 0.15) inset !important;
+        }
+        .nav-btn-cancel:hover .nav-icon, .nav-btn-cancel:hover span:first-child {
+            transform: scale(1.3) rotate(90deg) !important;
+        }
+
+        .nav-btn-horarios:hover {
+            border-color: rgba(56, 189, 248, 0.45) !important;
+            box-shadow: 0 8px 22px -4px rgba(56, 189, 248, 0.35), 0 0 12px rgba(56, 189, 248, 0.15) inset !important;
+        }
+        .nav-btn-horarios:hover .nav-icon, .nav-btn-horarios:hover span:first-child {
+            transform: scale(1.35) rotate(360deg) !important;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+
+        .nav-btn-resumo:hover {
+            border-color: rgba(52, 211, 153, 0.45) !important;
+            box-shadow: 0 8px 22px -4px rgba(52, 211, 153, 0.35), 0 0 12px rgba(52, 211, 153, 0.15) inset !important;
+        }
+        .nav-btn-resumo:hover .nav-icon, .nav-btn-resumo:hover span:first-child {
+            transform: scale(1.3) translateY(-2px) !important;
+        }
+
+        .nav-btn-servicos:hover {
+            border-color: rgba(245, 158, 11, 0.45) !important;
+            box-shadow: 0 8px 22px -4px rgba(245, 158, 11, 0.35), 0 0 12px rgba(245, 158, 11, 0.15) inset !important;
+        }
+
+        .nav-btn-export:hover {
+            border-color: rgba(168, 85, 247, 0.45) !important;
+            box-shadow: 0 8px 22px -4px rgba(168, 85, 247, 0.35), 0 0 12px rgba(168, 85, 247, 0.15) inset !important;
+        }
+        .nav-btn-export:hover .nav-icon, .nav-btn-export:hover span:first-child {
+            transform: scale(1.3) translateY(2.5px) !important;
+        }
+
+        /* Aba Ativa Dourada */
+        .active-tab-gold {
+            background: linear-gradient(135deg, #EAD086, #D4AF37, #B38728) !important;
+            color: #0a0a0c !important;
+            font-weight: 800 !important;
+            box-shadow: 0 6px 22px rgba(212, 175, 55, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.3) inset !important;
+            border-color: #F5DF9E !important;
+        }
+        .active-tab-gold:hover {
+            transform: translateY(-2px) scale(1.03) !important;
+            box-shadow: 0 8px 28px rgba(212, 175, 55, 0.6) !important;
+            color: #000000 !important;
         }
     </style>
 </head>
-<body class="text-gray-300 font-sans antialiased min-h-screen flex flex-col bg-[#121212]">
+<body class="min-h-screen flex flex-col antialiased">
 
 <!-- CABEÇALHO GLOBAL -->
-<header class="bg-barberDark border-b border-gray-800 p-4 sticky top-0 z-50">
+<header class="glass-panel border-b border-white/10 sticky top-0 z-50 px-4 py-3.5 backdrop-blur-xl">
     <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-[#2A2A2A] rounded-full flex items-center justify-center text-xl border border-gray-700">💈</div>
-            <div>
-                <p class="text-xs uppercase tracking-widest text-barberYellow font-bold">Borcelle</p>
-                <h1 class="text-xl font-semibold text-white">Barbearia VIP</h1>
+        <div class="flex items-center gap-3.5 -translate-x-2 sm:-translate-x-4">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-xl shadow-lg shadow-black/40">
+                💈
+            </div>
+            <div class="text-left">
+                <p class="text-[10px] uppercase tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
+                <h1 class="text-xl font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
             </div>
         </div>
-        <div class="flex items-center gap-3 flex-wrap">
-            <button onclick="changeTab('tab-horarios')" class="text-sm font-semibold text-white bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+        <div class="flex items-center gap-2.5 flex-wrap">
+            <button onclick="changeTab('tab-horarios')" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
                 ⏰ Gerenciar Horários
             </button>
-            <a href="login.html" class="text-sm font-semibold text-black bg-barberYellow hover:bg-barberYellowHover px-4 py-2 rounded-xl transition shadow-md">🔐 Entrar / Cadastrar</a>
+            <a href="login.html" class="text-xs font-bold gold-btn px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+                🔐 Entrar / Cadastrar
+            </a>
         </div>
     </div>
 </header>
 
 <!-- MENU DE NAVEGAÇÃO ENTRE ABAS E ARQUIVOS -->
-<nav class="bg-[#181818] border-b border-gray-800 px-4 overflow-x-auto">
-    <div class="max-w-6xl mx-auto flex gap-2 py-3 items-center">
-        <button onclick="changeTab('tab-agendar')" id="btn-tab-agendar" class="nav-btn bg-barberYellow text-black px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">📅 Agendar</button>
-        <button onclick="changeTab('tab-cancelar')" id="btn-tab-cancelar" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">❌ Cancelar</button>
-        <button onclick="changeTab('tab-horarios')" id="btn-tab-horarios" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">⏰ Gerenciar Horários</button>
-        <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition">📊 Resumo</button>
-        <span class="text-gray-600 px-1">|</span>
-        <a href="../views/admin/servicos.html" class="nav-btn text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg font-semibold whitespace-nowrap transition">📋 Gerenciar Serviços</a>
-        <a href="../views/admin/agendamentos.html" class="nav-btn text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg font-semibold whitespace-nowrap transition">📥 Exportar (CSV/XML/JSON)</a>
+<nav class="bg-[#101014]/90 border-b border-white/5 px-4 sticky top-[69px] z-40 backdrop-blur-md overflow-x-auto">
+    <div class="max-w-6xl mx-auto flex gap-2 py-2.5 items-center">
+        <button onclick="changeTab('tab-agendar')" id="btn-tab-agendar" class="nav-btn nav-btn-agendar active-tab-gold text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">📅</span> <span>Agendar</span>
+        </button>
+        <button onclick="changeTab('tab-cancelar')" id="btn-tab-cancelar" class="nav-btn nav-btn-cancel text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">❌</span> <span>Cancelar</span>
+        </button>
+        <button onclick="changeTab('tab-horarios')" id="btn-tab-horarios" class="nav-btn nav-btn-horarios text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">⏰</span> <span>Gerenciar Horários</span>
+        </button>
+        <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn nav-btn-resumo text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">📊</span> <span>Resumo</span>
+        </button>
+        <span class="text-zinc-700 px-1">|</span>
+        <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3.5 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">📋</span> <span>Gerenciar Serviços</span>
+        </a>
+        <a href="../views/admin/agendamentos.html" class="nav-btn nav-btn-export text-zinc-400 hover:text-amber-400 text-xs px-3.5 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">📥</span> <span>Exportações (CSV/XML/JSON)</span>
+        </a>
     </div>
 </nav>
+
+<!-- HERO BANNER LUXUOSO -->
+<section class="max-w-6xl mx-auto px-4 pt-6 pb-2 w-full">
+    <div class="glass-panel rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 text-left">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25 mb-3">
+                <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                Atendimento VIP & Agendamento Instantâneo
+            </span>
+            <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-wide">
+                Estilo, Precisão & <span class="gold-gradient-text">Tradição</span>
+            </h2>
+            <p class="text-zinc-400 text-sm mt-2 max-w-xl leading-relaxed">
+                Garanta seu horário com os melhores mestres barbeiros. Escolha o serviço, selecione seu horário preferido e confirme em segundos.
+            </p>
+        </div>
+        <div class="flex items-center gap-3 relative z-10">
+            <div class="text-center px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5 shadow-inner">
+                <div class="text-amber-400 font-bold text-xl font-display">★ 4.9</div>
+                <div class="text-[11px] text-zinc-400 mt-0.5 uppercase tracking-wider">Avaliação</div>
+            </div>
+            <div class="text-center px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5 shadow-inner">
+                <div class="text-white font-bold text-xl font-display">100%</div>
+                <div class="text-[11px] text-zinc-400 mt-0.5 uppercase tracking-wider">Pontual</div>
+            </div>
+            <div class="text-center px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5 shadow-inner">
+                <div class="text-emerald-400 font-bold text-xl font-display">24/7</div>
+                <div class="text-[11px] text-zinc-400 mt-0.5 uppercase tracking-wider">Online</div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- CONTAINER PRINCIPAL -->
 <main class="flex-grow max-w-6xl mx-auto w-full p-4 md:p-6">
 
     <!-- ALERTA DE STATUS / FEEDBACK -->
-    <div id="statusAlert" class="mb-6 hidden p-4 rounded-xl text-sm font-medium"></div>
+    <div id="statusAlert" class="mb-6 hidden p-4 rounded-2xl text-sm font-medium"></div>
 
     <!-- TELA 1: AGENDAR -->
     <div id="tab-agendar" class="tab-content active">
-        <div class="bg-barberDark p-6 md:p-8 rounded-2xl border border-gray-800 max-w-2xl mx-auto shadow-2xl">
-            <h2 class="text-2xl font-bold text-white mb-2">Fazer Agendamento</h2>
-            <p class="text-sm text-gray-400 mb-6">Escolha o serviço desejado, a data e um dos horários livres.</p>
+        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-2xl mx-auto">
+            <div class="mb-6 border-b border-white/10 pb-5">
+                <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Passo a Passo</span>
+                <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1">Fazer Agendamento</h2>
+                <p class="text-sm text-zinc-400 mt-1">Selecione o serviço desejado, a data e clique no horário livre ideal.</p>
+            </div>
             
             <form id="formAgendarIndex" onsubmit="realizarAgendamento(event)">
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-400">Seu Nome Completo *</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Seu Nome Completo *</label>
                     <input type="text" id="cliente-nome" class="dark-input" placeholder="Ex: Carlos Silva" required>
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-400">Telefone / WhatsApp</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Telefone / WhatsApp</label>
                     <input type="tel" id="cliente-tel" class="dark-input" placeholder="Ex: (11) 98888-7777">
                 </div>
                 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-400">Serviço *</label>
-                    <select id="cliente-servico" class="dark-input text-gray-200" required>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400">Serviço Desejado *</label>
+                    </div>
+                    <!-- Select tradicional mantido para envio e sincronização -->
+                    <select id="cliente-servico" class="dark-input text-zinc-200 mb-2" required>
                         <option value="">Carregando serviços do banco...</option>
                     </select>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400">Data *</label>
-                        <input type="date" id="cliente-data" class="dark-input" onchange="carregarHorariosDisponiveis()" required>
+                <div class="mb-6">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Escolha a Data *</label>
+                    <input type="date" id="cliente-data" class="dark-input" onchange="carregarHorariosDisponiveis()" required>
+                </div>
+
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400">Horários Disponíveis *</label>
+                        <span class="text-xs text-amber-400 font-medium">Selecione um chip abaixo</span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400">Horário Disponível *</label>
-                        <select id="cliente-horario" class="dark-input text-gray-200" required>
-                            <option value="">Selecione a data primeiro</option>
-                        </select>
+                    
+                    <!-- Select tradicional oculto para envio do form -->
+                    <select id="cliente-horario" class="hidden" required>
+                        <option value="">Selecione a data primeiro</option>
+                    </select>
+
+                    <!-- Grade de chips interativos -->
+                    <div id="chips-container-horarios" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                        <div class="col-span-full p-4 rounded-xl bg-white/[0.02] border border-white/5 text-zinc-400 text-sm text-center">
+                            Carregando horários da data selecionada...
+                        </div>
                     </div>
                 </div>
                 
-                <button type="submit" id="btnConfirmarAgendamento" class="w-full bg-barberYellow hover:bg-barberYellowHover text-black font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                <button type="submit" id="btnConfirmarAgendamento" class="w-full gold-btn py-4 rounded-2xl text-base transition flex items-center justify-center gap-2">
                     <span>Confirmar Agendamento</span>
                 </button>
             </form>
 
-            <div id="boxSucessoAgendamento" class="mt-6 hidden bg-green-900/30 border border-green-700/50 p-5 rounded-xl text-green-200"></div>
+            <div id="boxSucessoAgendamento" class="mt-6 hidden bg-emerald-950/40 border border-emerald-600/40 p-5 rounded-2xl text-emerald-200"></div>
         </div>
     </div>
 
     <!-- TELA 2: CANCELAR -->
     <div id="tab-cancelar" class="tab-content">
-        <div class="bg-barberDark p-6 md:p-8 rounded-2xl border border-gray-800 max-w-md mx-auto text-center shadow-2xl">
-            <h2 class="text-2xl font-bold text-white mb-2">Cancelar Horário</h2>
-            <p class="text-gray-400 text-sm mb-6">Insira o código de agendamento que você recebeu.</p>
+        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-md mx-auto text-center">
+            <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-2xl">
+                ❌
+            </div>
+            <h2 class="text-2xl font-display font-bold text-white mb-2">Cancelar Horário</h2>
+            <p class="text-zinc-400 text-sm mb-6 leading-relaxed">Insira o código de 6 dígitos que você recebeu ao agendar para liberar o horário.</p>
             
             <form onsubmit="executarCancelamento(event)">
                 <div class="mb-6">
-                    <input type="text" id="codigo-cancelar-input" placeholder="Ex: TST443" maxlength="8" class="dark-input text-center text-2xl uppercase tracking-widest font-mono" required>
+                    <input type="text" id="codigo-cancelar-input" placeholder="Ex: TST443" maxlength="8" class="dark-input text-center text-2xl uppercase tracking-widest font-mono font-bold" required>
                 </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition shadow-md">
+                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-3.5 rounded-2xl transition shadow-lg shadow-red-900/40">
                     Cancelar Horário
                 </button>
             </form>
-            <div id="boxCancelamentoFeedback" class="mt-5 hidden p-4 rounded-xl text-sm"></div>
+            <div id="boxCancelamentoFeedback" class="mt-5 hidden p-4 rounded-2xl text-sm"></div>
         </div>
     </div>
 
     <!-- TELA 3: GERENCIAR HORÁRIOS DISPONÍVEIS E BLOQUEADOS -->
     <div id="tab-horarios" class="tab-content">
-        <div class="bg-barberDark p-6 md:p-8 rounded-2xl border border-gray-800 max-w-4xl mx-auto shadow-2xl">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-4xl mx-auto">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-1">⏰ Gerenciador de Horários</h2>
-                    <p class="text-sm text-gray-400">Clique para alternar qualquer horário entre <strong class="text-green-400">Disponível</strong> e <strong class="text-red-400">Bloqueado</strong>.</p>
+                    <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Painel do Barbeiro</span>
+                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white mb-1">Gerenciador de Horários</h2>
+                    <p class="text-sm text-zinc-400">Clique em qualquer horário para alternar entre <strong class="text-emerald-400">Livre</strong> e <strong class="text-red-400">Bloqueado</strong>.</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button type="button" onclick="bloquearDiaInteiro()" class="text-xs bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold px-3.5 py-2 rounded-xl border border-red-500/30 transition flex items-center gap-1.5">
+                    <button type="button" onclick="bloquearDiaInteiro()" class="text-xs bg-red-500/15 hover:bg-red-500/25 text-red-300 font-semibold px-3.5 py-2.5 rounded-xl border border-red-500/30 transition flex items-center gap-1.5">
                         🚫 Bloquear Dia Todo
                     </button>
-                    <button type="button" onclick="liberarDiaInteiro()" class="text-xs bg-green-500/20 hover:bg-green-500/30 text-green-300 font-semibold px-3.5 py-2 rounded-xl border border-green-500/30 transition flex items-center gap-1.5">
+                    <button type="button" onclick="liberarDiaInteiro()" class="text-xs bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-semibold px-3.5 py-2.5 rounded-xl border border-emerald-500/30 transition flex items-center gap-1.5">
                         ✅ Liberar Dia Todo
                     </button>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3 mb-6 bg-[#222] p-4 rounded-xl border border-gray-800">
-                <label class="text-sm font-medium text-gray-300">Escolha a Data:</label>
+            <div class="flex flex-wrap items-center gap-3 mb-6 bg-white/[0.03] p-4 rounded-2xl border border-white/5">
+                <label class="text-sm font-medium text-zinc-300">Escolha a Data:</label>
                 <input type="date" id="data-gerenciar-horarios" class="dark-input !w-auto !mt-0" onchange="carregarGradeGerenciador()">
                 <button type="button" onclick="hojeGerenciador()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Hoje</button>
                 <button type="button" onclick="amanhaGerenciador()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition font-medium">Amanhã</button>
-                <span id="feedback-horarios" class="text-xs text-barberYellow ml-auto font-medium transition-all"></span>
+                <span id="feedback-horarios" class="text-xs text-amber-400 ml-auto font-medium transition-all"></span>
             </div>
 
             <!-- Legenda explicativa -->
-            <div class="flex flex-wrap gap-4 text-xs mb-4 text-gray-400 bg-white/5 p-3 rounded-xl">
-                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span> <strong class="text-white">Disponível:</strong> Livre para agendamento</span>
-                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> <strong class="text-white">Bloqueado:</strong> Oculto para clientes</span>
-                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> <strong class="text-white">Ocupado:</strong> Já reservado</span>
+            <div class="flex flex-wrap gap-4 text-xs mb-5 text-zinc-400 bg-white/[0.02] p-3.5 rounded-2xl border border-white/5">
+                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span> <strong class="text-white">Disponível:</strong> Aberto para agendar</span>
+                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)]"></span> <strong class="text-white">Bloqueado:</strong> Oculto para clientes</span>
+                <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]"></span> <strong class="text-white">Ocupado:</strong> Já agendado</span>
             </div>
 
             <!-- Grade de Horários -->
             <div id="gradeGerenciadorContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <p class="text-gray-500 col-span-full">Carregando horários...</p>
+                <p class="text-zinc-500 col-span-full">Carregando horários...</p>
             </div>
 
             <!-- Seção de Adicionar Horário ao Expediente da Barbearia -->
-            <div class="mt-8 pt-6 border-t border-gray-800">
-                <h3 class="text-base font-semibold text-white mb-1">⚙️ Configuração do Expediente Padrão</h3>
-                <p class="text-xs text-gray-400 mb-4">Adicione horários de atendimento extras à barbearia (ex: 08:00, 18:00, 19:00):</p>
+            <div class="mt-8 pt-6 border-t border-white/10">
+                <h3 class="text-base font-display font-semibold text-white mb-1">⚙️ Expediente Padrão da Barbearia</h3>
+                <p class="text-xs text-zinc-400 mb-4">Adicione horários de atendimento extras à barbearia (ex: 08:00, 18:00, 19:00):</p>
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="time" id="novo-horario-expediente" class="dark-input !w-auto !mt-0" value="08:00">
-                    <button type="button" onclick="adicionarHorarioExpediente()" class="bg-barberYellow hover:bg-barberYellowHover text-black text-xs font-bold px-4 py-2.5 rounded-xl transition shadow">
+                    <button type="button" onclick="adicionarHorarioExpediente()" class="gold-btn text-xs px-4 py-2.5 rounded-xl transition">
                         ➕ Adicionar Horário
                     </button>
                 </div>
@@ -198,74 +484,79 @@
 
     <!-- TELA 4: RESUMO / DASHBOARD -->
     <div id="tab-dashboard" class="tab-content">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-white">Resumo do Sistema</h2>
-                <p class="text-sm text-gray-400">Visão geral dos agendamentos no banco de dados.</p>
+        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-5xl mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Relatório em Tempo Real</span>
+                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1">Resumo do Sistema</h2>
+                    <p class="text-sm text-zinc-400 mt-1">Controle de agendamentos armazenados no MySQL.</p>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="limparCanceladosBanco()" class="bg-red-900/30 hover:bg-red-800/60 text-red-300 border border-red-700/50 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Exclui definitivamente todos os agendamentos cancelados do banco">
+                        <span>🗑️</span> Limpar Cancelados
+                    </button>
+                    <a href="../views/admin/agendamentos.html" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5">
+                        Ver Tabela Completa & Exportações →
+                    </a>
+                </div>
             </div>
-            <div class="flex gap-2 flex-wrap">
-                <button onclick="limparCanceladosBanco()" class="bg-red-900/30 hover:bg-red-800/60 text-red-300 border border-red-700/50 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5" title="Exclui definitivamente todos os agendamentos cancelados do banco">
-                    <span>🗑️</span> Limpar Cancelados
-                </button>
-                <a href="../views/admin/agendamentos.html" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-2 rounded-lg font-medium transition">
-                    Ver Tabela Completa & Exportações →
-                </a>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-barberDark p-5 rounded-xl border border-gray-800 flex justify-between items-center">
-                <div>
-                    <p class="text-gray-400 text-sm">Agendamentos Totais</p>
-                    <p id="card-total-count" class="text-3xl font-bold text-white mt-1">0</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-amber-500/20 flex justify-between items-center shadow-lg">
+                    <div>
+                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Agendamentos Totais</p>
+                        <p id="card-total-count" class="text-3xl font-display font-bold text-white mt-1">0</p>
+                    </div>
+                    <div class="text-3xl p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">📅</div>
                 </div>
-                <div class="text-3xl">📅</div>
-            </div>
-            <div class="bg-barberDark p-5 rounded-xl border border-gray-800 flex justify-between items-center">
-                <div>
-                    <p class="text-gray-400 text-sm">Ativos</p>
-                    <p id="card-ativos-count" class="text-3xl font-bold text-green-400 mt-1">0</p>
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-emerald-500/20 flex justify-between items-center shadow-lg">
+                    <div>
+                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Ativos</p>
+                        <p id="card-ativos-count" class="text-3xl font-display font-bold text-emerald-400 mt-1">0</p>
+                    </div>
+                    <div class="text-3xl p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">✅</div>
                 </div>
-                <div class="text-3xl opacity-75">✅</div>
-            </div>
-            <div class="bg-barberDark p-5 rounded-xl border border-gray-800 flex justify-between items-center">
-                <div>
-                    <p class="text-gray-400 text-sm">Cancelados</p>
-                    <p id="card-cancelados-count" class="text-3xl font-bold text-red-400 mt-1">0</p>
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-red-500/20 flex justify-between items-center shadow-lg">
+                    <div>
+                        <p class="text-zinc-400 text-xs uppercase tracking-wider font-semibold">Cancelados</p>
+                        <p id="card-cancelados-count" class="text-3xl font-display font-bold text-red-400 mt-1">0</p>
+                    </div>
+                    <div class="text-3xl p-3 rounded-xl bg-red-500/10 border border-red-500/20">⚠️</div>
                 </div>
-                <div class="text-3xl opacity-50">⚠️</div>
             </div>
-        </div>
-        
-        <div class="bg-barberDark rounded-xl border border-gray-800 overflow-hidden">
-            <table class="w-full text-left text-sm">
-                <thead class="bg-[#252525] text-gray-400">
-                    <tr>
-                        <th class="p-4 font-medium">Cliente</th>
-                        <th class="p-4 font-medium">Data</th>
-                        <th class="p-4 font-medium">Horário</th>
-                        <th class="p-4 font-medium">Status</th>
-                        <th class="p-4 font-medium">Código</th>
-                        <th class="p-4 font-medium text-right">Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-resumo-body" class="divide-y divide-gray-800 text-gray-300">
-                    <tr><td colspan="6" class="p-4 text-center text-gray-500">Carregando agendamentos...</td></tr>
-                </tbody>
-            </table>
+            
+            <div class="rounded-2xl border border-white/10 overflow-hidden bg-black/40">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-white/[0.04] text-zinc-400 border-b border-white/10">
+                        <tr>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider">Cliente</th>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider">Data</th>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider">Horário</th>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider">Status</th>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider">Código</th>
+                            <th class="p-4 font-semibold text-xs uppercase tracking-wider text-right">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-resumo-body" class="divide-y divide-white/5 text-zinc-300">
+                        <tr><td colspan="6" class="p-5 text-center text-zinc-500">Carregando agendamentos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
 </main>
 
-<footer class="bg-barberDark border-t border-gray-800 p-6 text-center text-xs text-gray-500 mt-10">
-    <p>Barbearia VIP © 2026 — Desenvolvido com Padrões de Projeto Singleton, Adapter e Factory.</p>
-    <div class="flex justify-center gap-4 mt-2">
-        <a href="index.html" class="hover:text-barberYellow">Início</a>
-        <a href="javascript:void(0)" onclick="changeTab('tab-horarios')" class="hover:text-barberYellow">Gerenciar Horários</a>
-        <a href="../views/admin/servicos.html" class="hover:text-barberYellow">Serviços</a>
-        <a href="../views/admin/agendamentos.html" class="hover:text-barberYellow">Exportação</a>
-        <a href="login.html" class="hover:text-barberYellow">Entrar</a>
+<footer class="bg-[#0A0A0C] border-t border-white/10 p-8 text-center text-xs text-zinc-500 mt-12">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="font-display font-medium text-zinc-400">Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance.</p>
+        <div class="flex justify-center gap-4">
+            <a href="index.html" class="hover:text-amber-400 transition">Início</a>
+            <a href="javascript:void(0)" onclick="changeTab('tab-horarios')" class="hover:text-amber-400 transition">Gerenciar Horários</a>
+            <a href="../views/admin/servicos.html" class="hover:text-amber-400 transition">Serviços</a>
+            <a href="../views/admin/agendamentos.html" class="hover:text-amber-400 transition">Exportações</a>
+            <a href="login.html" class="hover:text-amber-400 transition">Entrar</a>
+        </div>
     </div>
 </footer>
 
@@ -282,13 +573,15 @@
 
         document.querySelectorAll('.nav-btn').forEach(btn => {
             if (btn.tagName === 'BUTTON') {
-                btn.className = 'nav-btn text-gray-400 hover:text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition';
+                btn.classList.remove('active-tab-gold');
+                btn.classList.add('text-zinc-400');
             }
         });
         
         const activeBtn = document.getElementById(`btn-${tabId}`);
         if (activeBtn) {
-            activeBtn.className = 'nav-btn bg-barberYellow text-black px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition';
+            activeBtn.classList.remove('text-zinc-400');
+            activeBtn.classList.add('active-tab-gold');
         }
 
         if (tabId === 'tab-horarios') carregarGradeGerenciador();
@@ -304,28 +597,34 @@
             select.innerHTML = '<option value="">Selecione o serviço...</option>';
 
             if (data && data.data && data.data.length > 0) {
-                data.data.forEach(s => {
+                data.data.forEach((s, idx) => {
                     const opt = document.createElement('option');
                     opt.value = s.id;
                     opt.textContent = `${s.nome} — R$ ${parseFloat(s.preco).toFixed(2)} (${s.duracao_minutos} min)`;
                     select.appendChild(opt);
                 });
             } else {
-                select.innerHTML = '<option value="">Nenhum serviço disponível</option>';
+                select.innerHTML = '<option value="">Nenhum serviço disponível no momento</option>';
             }
         } catch (e) {
             console.error('Erro ao carregar serviços:', e);
         }
     }
 
-    // Carregar Horários Livres para a data selecionada
+    // Carregar Horários Livres para a data selecionada em chips interativos
     async function carregarHorariosDisponiveis() {
         const data = document.getElementById('cliente-data').value;
         const select = document.getElementById('cliente-horario');
+        const chipsBox = document.getElementById('chips-container-horarios');
+
         select.innerHTML = '<option value="">Buscando horários disponíveis...</option>';
+        if (chipsBox) {
+            chipsBox.innerHTML = '<div class="col-span-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-zinc-400 text-sm text-center">Buscando horários disponíveis no banco...</div>';
+        }
 
         if (!data) {
             select.innerHTML = '<option value="">Selecione a data primeiro</option>';
+            if (chipsBox) chipsBox.innerHTML = '<div class="col-span-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-zinc-400 text-sm text-center">Selecione uma data para ver os horários livres.</div>';
             return;
         }
 
@@ -333,19 +632,41 @@
             const resp = await fetch(`${API_AGENDAMENTOS}?disponiveis=1&data=${data}`);
             const res = await resp.json();
             select.innerHTML = '';
+            if (chipsBox) chipsBox.innerHTML = '';
 
             if (res.horarios && res.horarios.length > 0) {
-                res.horarios.forEach(h => {
+                res.horarios.forEach((h, idx) => {
                     const opt = document.createElement('option');
                     opt.value = h;
                     opt.textContent = `${h} - Livre`;
                     select.appendChild(opt);
+
+                    if (chipsBox) {
+                        const chip = document.createElement('button');
+                        chip.type = 'button';
+                        chip.className = 'time-chip' + (idx === 0 ? ' selected' : '');
+                        chip.innerHTML = `<span>⏰</span> <span>${h}</span>`;
+                        chip.onclick = () => {
+                            document.querySelectorAll('.time-chip').forEach(c => c.classList.remove('selected'));
+                            chip.classList.add('selected');
+                            select.value = h;
+                        };
+                        chipsBox.appendChild(chip);
+                    }
                 });
+                // Seleciona o primeiro chip por padrão
+                select.value = res.horarios[0];
             } else {
                 select.innerHTML = '<option value="">Nenhum horário livre nesta data</option>';
+                if (chipsBox) {
+                    chipsBox.innerHTML = '<div class="col-span-full p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-sm text-center font-medium">⚠️ Nenhum horário livre para este dia. Por favor, selecione outra data acima.</div>';
+                }
             }
         } catch (e) {
             select.innerHTML = '<option value="">Erro ao buscar horários</option>';
+            if (chipsBox) {
+                chipsBox.innerHTML = '<div class="col-span-full p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm text-center">Erro ao buscar horários no servidor.</div>';
+            }
         }
     }
 
