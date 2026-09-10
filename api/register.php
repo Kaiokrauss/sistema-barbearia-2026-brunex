@@ -79,8 +79,8 @@ try {
 
     // Inserir novo usuário
     $senhaHash = password_hash($senha, PASSWORD_BCRYPT);
-    $sql = "INSERT INTO usuarios (nome, email, telefone, senha, perfil) 
-            VALUES (:nome, :email, :telefone, :senha, :perfil)";
+    $sql = "INSERT INTO usuarios (nome, email, telefone, senha, perfil, ativo) 
+            VALUES (:nome, :email, :telefone, :senha, :perfil, 1)";
     
     $stmt = $conn->prepare($sql);
     $stmt->bindValue(':nome', $nome);
@@ -90,6 +90,20 @@ try {
     $stmt->bindValue(':perfil', $perfil);
 
     if ($stmt->execute()) {
+        $newId = (int)$conn->lastInsertId();
+
+        // Autenticar automaticamente a sessão do novo usuário
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['user'] = [
+            'id' => $newId,
+            'nome' => $nome,
+            'email' => $email,
+            'telefone' => $telefone,
+            'perfil' => strtolower($perfil)
+        ];
+
         // Obter redirecionamento via Factory
         $redirect = null;
         try {
@@ -100,12 +114,13 @@ try {
         }
 
         echo json_encode([
-            'success' => 'Conta criada com sucesso!',
+            'success' => 'Conta criada com sucesso! Entrando no sistema...',
+            'user' => $_SESSION['user'],
             'redirect' => $redirect
         ]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Erro ao criar conta.']);
+        echo json_encode(['error' => 'Erro ao criar conta no banco de dados.']);
     }
 
 } catch (PDOException $e) {

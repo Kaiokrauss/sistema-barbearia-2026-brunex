@@ -78,79 +78,89 @@
         <!-- LOGIN -->
         <form id="loginSection" class="space-y-6">
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-300">E-mail ou Telefone</label>
-                <input id="email" type="text" placeholder="seu@exemplo.com ou 5511999999999"
+                <label for="email" class="block text-sm font-medium text-gray-300">E-mail, Telefone ou Usuário</label>
+                <input id="email" type="text" placeholder="seu@email.com, telefone ou usuário" required
                     class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition duration-200 placeholder:text-gray-500" />
             </div>
 
-            <div class="relative">
+            <div>
                 <label for="senha" class="block text-sm font-medium text-gray-300">Senha</label>
-                <input id="senha" type="password" placeholder="********"
-                    class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white outline-none transition duration-200 placeholder:text-gray-500" />
-                <button type="button" onclick="togglePass('senha', 'eye1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-300 focus:outline-none">
-                    <span id="eye1">👁️</span>
-                </button>
+                <div class="relative mt-2">
+                    <input id="senha" type="password" placeholder="Digite sua senha" required
+                        class="input-focus w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white outline-none transition duration-200 placeholder:text-gray-500" />
+                    <button type="button" onclick="togglePass('senha', 'eye1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-400 p-1 focus:outline-none text-base">
+                        <span id="eye1">👁️</span>
+                    </button>
+                </div>
             </div>
 
-            <button type="submit" class="w-full rounded-2xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#E1B12C]">
-                Entrar
+            <button type="submit" id="btnLoginSubmit" class="w-full rounded-2xl bg-[#D4AF37] px-4 py-3.5 text-sm font-bold text-black transition hover:bg-[#E5C158] shadow-lg shadow-amber-500/20 active:scale-[0.99] flex items-center justify-center gap-2">
+                <span>🔐</span> <span id="btnLoginTexto">Entrar no Sistema</span>
             </button>
 
-            <div class="text-sm">
-                <a href="#" class="link-muted hover:text-white">Esqueceu a senha?</a>
+            <div class="text-center text-xs text-zinc-400">
+                Ainda não tem conta? <button type="button" onclick="showRegister()" class="text-amber-400 hover:underline font-semibold ml-1">Criar conta agora</button>
             </div>
         </form>
 
         <!-- REGISTRO -->
-        <form id="registerSection" class="space-y-6" style="display:none;">
+        <form id="registerSection" class="space-y-5" style="display:none;">
             <div>
                 <label for="nome" class="block text-sm font-medium text-gray-300">Nome Completo</label>
-                <input id="nome" type="text" placeholder="Seu nome completo"
+                <input id="nome" type="text" placeholder="Seu nome ou apelido" required
                     class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition duration-200 placeholder:text-gray-500" />
             </div>
 
             <div>
                 <label for="emailReg" class="block text-sm font-medium text-gray-300">E-mail</label>
-                <input id="emailReg" type="email" placeholder="seu@exemplo.com"
+                <input id="emailReg" type="email" placeholder="seu@email.com" required
                     class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition duration-200 placeholder:text-gray-500" />
             </div>
 
             <div>
-                <label for="telefone" class="block text-sm font-medium text-gray-300">Telefone</label>
-                <input id="telefone" type="tel" placeholder="5511999999999"
+                <label for="telefone" class="block text-sm font-medium text-gray-300">Telefone / WhatsApp</label>
+                <input id="telefone" type="tel" placeholder="(11) 98888-7777 ou 11988887777" required
                     class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition duration-200 placeholder:text-gray-500" />
             </div>
 
-            <div class="relative">
-                <label for="senhaReg" class="block text-sm font-medium text-gray-300">Senha</label>
-                <input id="senhaReg" type="password" placeholder="Mínimo 8 caracteres"
-                    class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white outline-none transition duration-200 placeholder:text-gray-500" />
-                <button type="button" onclick="togglePass('senhaReg', 'eye2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-300 focus:outline-none">
-                    <span id="eye2">👁️</span>
-                </button>
+            <div>
+                <label for="senhaReg" class="block text-sm font-medium text-gray-300">Senha (mínimo 6 caracteres)</label>
+                <div class="relative mt-2">
+                    <input id="senhaReg" type="password" placeholder="Crie uma senha segura" required minlength="6"
+                        class="input-focus w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white outline-none transition duration-200 placeholder:text-gray-500" />
+                    <button type="button" onclick="togglePass('senhaReg', 'eye2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-400 p-1 focus:outline-none text-base">
+                        <span id="eye2">👁️</span>
+                    </button>
+                </div>
             </div>
 
-            <div class="relative">
+            <div>
                 <label for="senhaReg2" class="block text-sm font-medium text-gray-300">Confirmar Senha</label>
-                <input id="senhaReg2" type="password" placeholder="Confirme sua senha"
-                    class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white outline-none transition duration-200 placeholder:text-gray-500" />
-                <button type="button" onclick="togglePass('senhaReg2', 'eye3')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-300 focus:outline-none">
-                    <span id="eye3">👁️</span>
-                </button>
+                <div class="relative mt-2">
+                    <input id="senhaReg2" type="password" placeholder="Repita a senha" required minlength="6"
+                        class="input-focus w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white outline-none transition duration-200 placeholder:text-gray-500" />
+                    <button type="button" onclick="togglePass('senhaReg2', 'eye3')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-400 p-1 focus:outline-none text-base">
+                        <span id="eye3">👁️</span>
+                    </button>
+                </div>
             </div>
 
             <div>
-                <label for="perfil" class="block text-sm font-medium text-gray-300">Tipo de Conta</label>
-                <select id="perfil" class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition duration-200">
-                    <option value="cliente" style="background: #1a1a2e; color: white;">👤 Cliente</option>
-                    <option value="barbeiro" style="background: #1a1a2e; color: white;">✂️ Barbeiro</option>
-                    <option value="admin" style="background: #1a1a2e; color: white;">🔐 Admin</option>
+                <label for="perfil" class="block text-sm font-medium text-gray-300">Tipo de Perfil</label>
+                <select id="perfil" class="input-focus mt-2 w-full rounded-2xl border border-white/10 bg-[#121216] px-4 py-3 text-white outline-none transition duration-200">
+                    <option value="cliente">👤 Cliente</option>
+                    <option value="barbeiro">✂️ Barbeiro</option>
+                    <option value="admin">👑 Administrador</option>
                 </select>
             </div>
 
-            <button type="submit" class="w-full rounded-2xl bg-[#D4AF37] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#E1B12C]">
-                Criar Conta
+            <button type="submit" id="btnRegisterSubmit" class="w-full rounded-2xl bg-[#D4AF37] px-4 py-3.5 text-sm font-bold text-black transition hover:bg-[#E5C158] shadow-lg shadow-amber-500/20 active:scale-[0.99] flex items-center justify-center gap-2">
+                <span>✨</span> <span id="btnRegisterTexto">Criar Conta VIP</span>
             </button>
+
+            <div class="text-center text-xs text-zinc-400">
+                Já possui uma conta? <button type="button" onclick="showLogin()" class="text-amber-400 hover:underline font-semibold ml-1">Fazer Login</button>
+            </div>
         </form>
     </div>
 
@@ -159,13 +169,50 @@
         const loginForm = document.getElementById('loginSection');
         const registerForm = document.getElementById('registerSection');
 
+        // Efeitos sonoros suaves nativos
+        function playChicBeep(success = true) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const now = ctx.currentTime;
+                if (success) {
+                    [554.37, 698.46, 830.61].forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        gain.gain.setValueAtTime(0.001, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.08, now + idx * 0.08 + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.8);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + idx * 0.08 + 0.85);
+                    });
+                } else {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.exponentialRampToValueAtTime(220, now + 0.15);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.22);
+                }
+            } catch(e) {}
+        }
+
         function showAlert(message, type = 'success') {
             alertBox.textContent = message;
-            alertBox.classList.remove('hidden', 'bg-red-500/20', 'text-red-200', 'bg-green-500/20', 'text-green-200');
+            alertBox.classList.remove('hidden', 'bg-red-500/20', 'text-red-200', 'bg-emerald-500/20', 'text-emerald-200', 'border-red-500/40', 'border-emerald-500/40');
             if (type === 'error') {
-                alertBox.classList.add('bg-red-500/20', 'text-red-200');
+                alertBox.classList.add('bg-red-500/20', 'text-red-200', 'border-red-500/40');
+                playChicBeep(false);
             } else {
-                alertBox.classList.add('bg-green-500/20', 'text-green-200');
+                alertBox.classList.add('bg-emerald-500/20', 'text-emerald-200', 'border-emerald-500/40');
+                playChicBeep(true);
             }
         }
 
@@ -176,6 +223,7 @@
         function togglePass(inputId, eyeId) {
             const input = document.getElementById(inputId);
             const eye = document.getElementById(eyeId);
+            if (!input || !eye) return;
             if (input.type === 'password') {
                 input.type = 'text';
                 eye.textContent = '🙈';
@@ -185,12 +233,12 @@
             }
         }
 
-        function showLogin() {
+        function showLogin(keepAlert = false) {
             loginForm.style.display = 'block';
             registerForm.style.display = 'none';
             document.getElementById('tabLogin').classList.add('active');
             document.getElementById('tabRegister').classList.remove('active');
-            hideAlert();
+            if (!keepAlert) hideAlert();
         }
 
         function showRegister() {
@@ -203,6 +251,11 @@
 
         registerForm.addEventListener('submit', async function (event) {
             event.preventDefault();
+            const btn = document.getElementById('btnRegisterSubmit');
+            const btnText = document.getElementById('btnRegisterTexto');
+            btn.disabled = true;
+            btnText.textContent = 'Criando conta...';
+
             const nome = document.getElementById('nome').value.trim();
             const email = document.getElementById('emailReg').value.trim().toLowerCase();
             const telefone = document.getElementById('telefone').value.trim();
@@ -210,54 +263,95 @@
             const senha2 = document.getElementById('senhaReg2').value;
             const perfil = document.getElementById('perfil').value;
 
-            const response = await fetch('../api/register.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ nome, email, telefone, senha, senha2, perfil })
-            });
-            const data = await response.json();
-
-            if (!response.ok) {
-                showAlert(data.error || 'Erro no cadastro.', 'error');
+            if (senha !== senha2) {
+                showAlert('As senhas digitadas não coincidem.', 'error');
+                btn.disabled = false;
+                btnText.textContent = 'Criar Conta VIP';
                 return;
             }
 
-            showAlert(data.success || 'Cadastro realizado com sucesso.');
-            showLogin();
-            registerForm.reset();
+            try {
+                const response = await fetch('../api/register.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ nome, email, telefone, senha, senha2, perfil })
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showAlert(data.error || 'Erro no cadastro.', 'error');
+                    btn.disabled = false;
+                    btnText.textContent = 'Criar Conta VIP';
+                    return;
+                }
+
+                showAlert(data.success || 'Conta criada com sucesso! Redirecionando...');
+                btnText.textContent = '✓ Sucesso!';
+
+                // Pré-preenche o e-mail no login por segurança
+                document.getElementById('email').value = email;
+
+                // Redireciona diretamente para o painel de destino após 1.2s!
+                setTimeout(() => {
+                    let dest = data.redirect || 'dashboard.php';
+                    if (dest.startsWith('Frontend/')) {
+                        dest = dest.replace(/^Frontend\//, '');
+                    }
+                    window.location.href = dest;
+                }, 1200);
+
+            } catch (e) {
+                showAlert('Falha na comunicação com o servidor.', 'error');
+                btn.disabled = false;
+                btnText.textContent = 'Criar Conta VIP';
+            }
         });
 
         loginForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-            const identifier = document.getElementById('email').value.trim().toLowerCase();
+            const btn = document.getElementById('btnLoginSubmit');
+            const btnText = document.getElementById('btnLoginTexto');
+            btn.disabled = true;
+            btnText.textContent = 'Verificando dados...';
+
+            const identifier = document.getElementById('email').value.trim();
             const senha = document.getElementById('senha').value;
 
-            const response = await fetch('../api/login.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ identifier, senha })
-            });
-            const data = await response.json();
+            try {
+                const response = await fetch('../api/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ identifier, senha })
+                });
+                const data = await response.json();
 
-            if (!response.ok) {
-                showAlert(data.error || 'Erro no login.', 'error');
-                return;
-            }
-
-            showAlert(data.success || 'Login realizado com sucesso.');
-            loginForm.reset();
-            setTimeout(() => {
-                let dest = data.redirect || 'dashboard.php';
-                if (dest.startsWith('Frontend/')) {
-                    dest = dest.replace(/^Frontend\//, '');
+                if (!response.ok) {
+                    showAlert(data.error || 'E-mail, telefone ou senha incorretos.', 'error');
+                    btn.disabled = false;
+                    btnText.textContent = 'Entrar no Sistema';
+                    return;
                 }
-                window.location.href = dest;
-            }, 1000);
+
+                showAlert(data.success || 'Login realizado com sucesso! Redirecionando...');
+                btnText.textContent = '✓ Entrando...';
+
+                setTimeout(() => {
+                    let dest = data.redirect || 'dashboard.php';
+                    if (dest.startsWith('Frontend/')) {
+                        dest = dest.replace(/^Frontend\//, '');
+                    }
+                    window.location.href = dest;
+                }, 800);
+            } catch (e) {
+                showAlert('Falha na conexão com o servidor.', 'error');
+                btn.disabled = false;
+                btnText.textContent = 'Entrar no Sistema';
+            }
         });
 
-        window.addEventListener('load', showLogin);
+        window.addEventListener('load', () => showLogin());
     </script>
 </body>
 </html>
