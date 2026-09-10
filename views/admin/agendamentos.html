@@ -1,205 +1,220 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="bg-[#0A0A0C]">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Agendamentos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0A0A0C">
+    <title>Barbearia VIP - Exportações & Agendamentos</title>
+    <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['Cinzel', 'serif']
+                    },
+                    colors: {
+                        barberYellow: '#D4AF37',
+                        barberYellowHover: '#E5C158'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary: #121212;
-            --secondary: #d4af37;
-            --bg: #121212;
-            --surface: rgba(255,255,255,0.04);
-            --border: rgba(255,255,255,0.08);
-            --text: #f4f4f5;
-            --muted: #cbd5e1;
-            --danger: #dc3545;
-            --success: #28a745;
-            --info: #0ea5e9;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            margin: 0;
-            padding: 20px;
-            color: var(--text);
+            background-color: #0A0A0C;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.16) 0%, rgba(15, 15, 20, 0.6) 40%, rgba(10, 10, 12, 1) 90%),
+                radial-gradient(circle at 10% 40%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 60%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #d4d4d8;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.03);
-            padding: 24px;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            box-shadow: 0 18px 60px rgba(0,0,0,0.18);
+        .font-display { font-family: 'Cinzel', serif; }
+
+        .glass-panel {
+            background: rgba(18, 18, 24, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
         }
 
-        h1 {
-            color: var(--text);
-            margin-top: 0;
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF1D0 0%, #D4AF37 50%, #B38728 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        a {
-            color: var(--secondary);
-            text-decoration: none;
-        }
-
-        .filtros {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        input, select {
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: var(--surface);
-            color: var(--text);
-            min-width: 220px;
-        }
-
-        input::placeholder, select option {
-            color: var(--muted);
-        }
-
-        button {
-            padding: 10px 20px;
-            background: var(--secondary);
-            color: var(--primary);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
+        .gold-btn {
+            background: linear-gradient(135deg, #EAD086 0%, #D4AF37 50%, #B38728 100%);
+            color: #0A0A0C;
             font-weight: 700;
-            transition: opacity 0.2s ease;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        button:hover {
-            opacity: 0.92;
+        .gold-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+            filter: brightness(1.08);
         }
 
-        button.export {
-            background: var(--success);
-            color: white;
-        }
-
-        button.export-xml {
-            background: #0284c7;
-            color: white;
-        }
-
-        button.export-json {
-            background: #7c3aed;
-            color: white;
-        }
-
-        button.cancel {
-            background: var(--danger);
-            color: white;
-        }
-
-        table {
+        .dark-input {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: transparent;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-radius: 0.875rem;
+            padding: 0.85rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
         }
 
-        th, td {
-            padding: 14px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
+        .dark-input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+            background: rgba(0, 0, 0, 0.65);
         }
 
-        th {
-            background: rgba(255,255,255,0.05);
-            font-weight: 700;
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
         }
-
-        tr:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .message {
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 12px;
-        }
-
-        .success {
-            background: rgba(40, 167, 69, 0.12);
-            color: #b7f5cf;
-            border: 1px solid rgba(40, 167, 69, 0.35);
-        }
-
-        .error {
-            background: rgba(220, 53, 69, 0.12);
-            color: #ffd7df;
-            border: 1px solid rgba(220, 53, 69, 0.35);
-        }
-
-        .status {
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 0.85em;
-            color: var(--text);
-            background: rgba(255,255,255,0.06);
-            border: 1px solid var(--border);
-        }
-
-        .status.ativo { background: rgba(40,167,69,0.14); }
-        .status.cancelado { background: rgba(220,53,69,0.14); }
-        .status.concluido { background: rgba(14,165,233,0.14); }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 14px; border: 1px solid var(--border); flex-wrap: wrap; gap: 10px;">
-            <div style="display:flex; align-items:center; gap: 10px;">
-                <span style="font-size: 1.4rem;">💈</span>
-                <strong style="color: var(--secondary); font-size: 1.1rem;">Barbearia VIP</strong>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- CABEÇALHO GLOBAL VIP -->
+    <header class="glass-panel border-b border-white/10 sticky top-0 z-50 px-4 py-3.5 backdrop-blur-xl">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-xl shadow-lg shadow-black/40 flex-shrink-0">
+                    💈
+                </div>
+                <div class="text-left">
+                    <p class="text-[10px] uppercase tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
+                    <h1 class="text-xl font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
+                </div>
             </div>
-            <div style="display:flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                <a href="../../Frontend/index.html">🏠 Início</a>
-                <a href="../../Frontend/index.html#tab-horarios">⏰ Gerenciar Horários</a>
-                <a href="servicos.html">📋 Serviços</a>
-                <a href="agendamentos.html" style="color:#fff; font-weight:bold; border-bottom: 2px solid var(--secondary);">📅 Agendamentos (Exportação)</a>
-                <a href="../../Frontend/logout.php" style="color:var(--danger);">🚪 Sair</a>
+            <div class="flex items-center gap-2 flex-wrap text-xs">
+                <a href="../../Frontend/index.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    🏠 <span>Início</span>
+                </a>
+                <a href="../../Frontend/index.html#tab-horarios" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    ⏰ <span>Horários</span>
+                </a>
+                <a href="../../Frontend/index.html#tab-dashboard" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    📊 <span>Resumo</span>
+                </a>
+                <a href="servicos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                    📋 <span>Serviços</span>
+                </a>
+                <a href="agendamentos.html" class="rounded-xl px-3.5 py-2 font-bold text-black bg-gradient-to-r from-[#EAD086] via-[#D4AF37] to-[#B38728] shadow-md flex items-center gap-1.5">
+                    📥 <span>Exportações</span>
+                </a>
+                <a href="../../Frontend/dashboard.php" class="rounded-xl px-3 py-2 text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 font-semibold transition">
+                    👑 <span>Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="flex-grow max-w-6xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+        
+        <!-- BANNER DO MÓDULO -->
+        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Módulo de Relatórios & Padrão Adapter</span>
+                <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-1 flex items-center gap-2.5">
+                    <span>📥 Exportações & Relatórios VIP</span>
+                </h2>
+                <p class="text-sm text-zinc-400 mt-1">Exporte dados em múltiplos formatos e gerencie o histórico de agendamentos.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="badge-total-agendamentos" class="px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
+                    Carregando...
+                </span>
             </div>
         </div>
 
-        <h1>📅 Gerenciamento de Agendamentos</h1>
-        <div id="message"></div>
+        <!-- MENSAGEM DE FEEDBACK -->
+        <div id="message" class="mb-6 hidden p-4 rounded-2xl text-sm font-medium transition-all"></div>
 
-        <div class="filtros">
-            <input type="date" id="filtroData" placeholder="Data">
-            <input type="text" id="filtroCliente" placeholder="Nome do cliente">
-            <button onclick="filtrar()">Filtrar</button>
-            <button class="export" onclick="exportarCSV()">📥 Exportar CSV</button>
-            <button class="export-xml" onclick="exportarXML()">📄 Exportar XML (Adaptee)</button>
-            <button class="export-json" onclick="exportarJSON()">⚡ Exportar JSON (Adapter)</button>
+        <!-- PAINEL DE FILTROS E EXPORTAÇÃO -->
+        <div class="glass-panel p-6 rounded-3xl mb-8">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-grow">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Filtrar por Data</label>
+                        <input type="date" id="filtroData" class="dark-input">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Filtrar por Cliente</label>
+                        <input type="text" id="filtroCliente" placeholder="Nome do cliente..." class="dark-input">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="filtrar()" class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5">
+                        🔍 <span>Filtrar</span>
+                    </button>
+                    <button onclick="exportarCSV()" class="px-4 py-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1.5">
+                        📥 <span>CSV</span>
+                    </button>
+                    <button onclick="exportarXML()" class="px-4 py-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1.5" title="Exportação XML utilizando o Adaptee">
+                        📄 <span>XML (Adaptee)</span>
+                    </button>
+                    <button onclick="exportarJSON()" class="px-4 py-3 rounded-xl gold-btn text-xs font-bold transition flex items-center gap-1.5" title="Exportação JSON utilizando o padrão Adapter">
+                        ⚡ <span>JSON (Adapter)</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Telefone</th>
-                    <th>Data</th>
-                    <th>Horário</th>
-                    <th>Status</th>
-                    <th>Código</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody id="agendamentos"></tbody>
-        </table>
-    </div>
+        <!-- TABELA DE AGENDAMENTOS -->
+        <div class="glass-panel p-6 rounded-3xl">
+            <h3 class="text-lg font-display font-bold text-white mb-4">Lista de Agendamentos para Exportação</h3>
+            <div class="rounded-2xl border border-white/10 overflow-x-auto bg-black/40">
+                <table class="w-full text-left text-sm min-w-[700px]">
+                    <thead class="bg-white/[0.04] text-zinc-400 border-b border-white/10">
+                        <tr>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider">ID</th>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider">Cliente</th>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider">Telefone</th>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider">Data</th>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider">Horário</th>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider">Status</th>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider">Código</th>
+                            <th class="p-3.5 font-semibold text-xs uppercase tracking-wider text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agendamentos" class="divide-y divide-white/5 text-zinc-300">
+                        <tr>
+                            <td colspan="8" class="p-6 text-center text-zinc-500">
+                                Carregando agendamentos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-[#0A0A0C] border-t border-white/10 p-6 text-center text-xs text-zinc-500 mt-12">
+        <p class="font-display font-medium text-zinc-400">Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance.</p>
+    </footer>
 
     <script>
         const basePath = window.location.pathname.includes('/views/')
@@ -209,9 +224,18 @@
 
         function mostrarMensagem(msg, tipo) {
             const div = document.getElementById('message');
-            div.className = `message ${tipo}`;
+            if (!div) return;
+            div.className = `mb-6 p-4 rounded-2xl text-sm font-medium border ${
+                tipo === 'success' 
+                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' 
+                    : 'bg-red-500/15 text-red-300 border-red-500/30'
+            }`;
             div.textContent = msg;
-            setTimeout(() => div.textContent = '', 4000);
+            div.classList.remove('hidden');
+            setTimeout(() => {
+                div.classList.add('hidden');
+                div.textContent = '';
+            }, 4000);
         }
 
         function carregarAgendamentos(filters = '') {
@@ -220,29 +244,52 @@
                 .then(data => {
                     const tbody = document.getElementById('agendamentos');
                     tbody.innerHTML = '';
-                    (data.data || []).forEach(a => {
+                    const lista = data.data || [];
+
+                    const badge = document.getElementById('badge-total-agendamentos');
+                    if (badge) {
+                        badge.textContent = `📅 ${lista.length} agendamentos`;
+                    }
+
+                    if (lista.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-zinc-500">Nenhum agendamento encontrado para o filtro aplicado.</td></tr>';
+                        return;
+                    }
+
+                    lista.forEach(a => {
                         const row = tbody.insertRow();
+                        row.className = 'hover:bg-white/5 transition';
+
                         const telLimpo = (a.cliente_telefone || '').replace(/\D/g, '');
                         const telComDdi = telLimpo ? (telLimpo.length <= 11 && !telLimpo.startsWith('55') ? '55' + telLimpo : telLimpo) : '';
                         const zapMsg = encodeURIComponent(`Olá ${a.cliente_nome}, confirmando seu agendamento na Barbearia VIP para o dia ${a.data_agendada} às ${a.horario}. Código: ${a.codigo}.`);
                         const zapUrl = telComDdi ? `https://api.whatsapp.com/send?phone=${telComDdi}&text=${zapMsg}` : `https://api.whatsapp.com/send?text=${zapMsg}`;
-                        const zapBtn = `<a href="${zapUrl}" target="_blank" style="background:#25D366; color:#000; font-weight:700; padding:6px 10px; border-radius:8px; text-decoration:none; display:inline-block; font-size:0.8rem; margin-right:6px;">💬 WhatsApp</a>`;
+                        const zapBtn = `<a href="${zapUrl}" target="_blank" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#25D366]/20 hover:bg-[#25D366] text-[#25D366] hover:text-black border border-[#25D366]/30 transition inline-flex items-center gap-1">💬 WhatsApp</a>`;
+
+                        const statusBadge = a.status === 'ativo'
+                            ? '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">✓ Ativo</span>'
+                            : '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-500/15 text-red-300 border border-red-500/30">✕ Cancelado</span>';
 
                         row.innerHTML = `
-                            <td>${a.id}</td>
-                            <td>${a.cliente_nome}</td>
-                            <td>${a.cliente_telefone || '-'}</td>
-                            <td>${a.data_agendada}</td>
-                            <td>${a.horario}</td>
-                            <td><span class="status ${a.status}">${a.status}</span></td>
-                            <td>${a.codigo}</td>
-                            <td>
-                                ${zapBtn}
-                                ${a.status === 'ativo' ? `<button class="cancel" onclick="cancelar('${a.codigo}')">Cancelar</button>` : ''}
-                                <button style="background:#dc3545; color:white; padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; font-size:12px; margin-left:4px;" onclick="excluirPermanente(${a.id})">🗑️ Excluir</button>
+                            <td class="p-3.5 font-mono text-xs text-zinc-400">#${a.id}</td>
+                            <td class="p-3.5 font-semibold text-white">${a.cliente_nome}</td>
+                            <td class="p-3.5 font-mono text-xs text-zinc-400">${a.cliente_telefone || '-'}</td>
+                            <td class="p-3.5 font-mono text-xs text-zinc-300">${a.data_agendada}</td>
+                            <td class="p-3.5 font-mono font-bold text-amber-400 text-xs">${a.horario}</td>
+                            <td class="p-3.5">${statusBadge}</td>
+                            <td class="p-3.5 font-mono text-xs text-zinc-400">${a.codigo}</td>
+                            <td class="p-3.5 text-right">
+                                <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                                    ${zapBtn}
+                                    ${a.status === 'ativo' ? `<button class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition" onclick="cancelar('${a.codigo}')">Cancelar</button>` : ''}
+                                    <button class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition" onclick="excluirPermanente(${a.id})">🗑️ Excluir</button>
+                                </div>
                             </td>
                         `;
                     });
+                })
+                .catch(err => {
+                    mostrarMensagem('Falha ao carregar agendamentos.', 'error');
                 });
         }
 
@@ -256,7 +303,7 @@
         }
 
         function cancelar(codigo) {
-            if (!confirm('Cancelar este agendamento?')) return;
+            if (!confirm('Deseja realmente cancelar este agendamento?')) return;
             fetch(API, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -270,7 +317,7 @@
         }
 
         function excluirPermanente(id) {
-            if (!confirm('Deseja realmente excluir este agendamento do banco de dados permanentemente?')) return;
+            if (!confirm('Deseja realmente excluir este agendamento permanentemente do banco de dados?')) return;
             fetch(API, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
