@@ -63,7 +63,8 @@ assertTeste(isset($fechamentoHoje['breakdown_servicos']), "fecharCaixa() gerou b
 assertTeste(isset($fechamentoHoje['atendimentos']), "fecharCaixa() gerou bloco 'atendimentos'.");
 
 // Inserir agendamento temporário para teste de apuração matemática
-$codigoTemp = 'TSTCX' . rand(10, 99);
+$codigoTemp = 'TC' . str_pad((string)mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+$db->exec("DELETE FROM agendamentos WHERE codigo = '{$codigoTemp}'");
 $stServico = $db->query("SELECT id, preco FROM servicos LIMIT 1");
 $servico = $stServico->fetch(PDO::FETCH_ASSOC);
 
