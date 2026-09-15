@@ -344,6 +344,12 @@
         <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn nav-btn-resumo text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
             <span class="nav-icon">📊</span> <span>Resumo</span>
         </button>
+        <button onclick="changeTab('tab-fidelidade')" id="btn-tab-fidelidade" class="nav-btn nav-btn-fidelidade text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">🎁</span> <span>Fidelidade VIP</span>
+        </button>
+        <button onclick="changeTab('tab-avaliacoes')" id="btn-tab-avaliacoes" class="nav-btn nav-btn-avaliacoes text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
+            <span class="nav-icon">⭐</span> <span>Avaliações</span>
+        </button>
         <span class="text-zinc-700 px-1">|</span>
         <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap">
             <span class="nav-icon">📋</span> <span>Serviços</span>
@@ -711,6 +717,148 @@
         </div>
     </div>
 
+    <!-- TELA 5: CARTÃO FIDELIDADE DIGITAL VIP (Funcionalidade 3) -->
+    <div id="tab-fidelidade" class="tab-content">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-amber-500/20">
+            <div class="absolute -right-16 -top-16 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-3xl mx-auto text-center mb-8">
+                <span class="px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                    🎁 Benefício Exclusivo VIP
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-display font-bold text-white mt-3 mb-2">Cartão Fidelidade Digital</h2>
+                <p class="text-sm text-zinc-400 max-w-xl mx-auto">
+                    A cada 5 atendimentos realizados na Barbearia VIP, você ganha <strong>1 corte 100% grátis</strong>! Consulte seus pontos digitais abaixo:
+                </p>
+            </div>
+
+            <!-- Form de Consulta de Telefone -->
+            <div class="max-w-md mx-auto bg-[#16161D] p-5 rounded-2xl border border-white/10 shadow-2xl mb-8">
+                <label class="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2 text-left">
+                    Seu WhatsApp / Celular:
+                </label>
+                <div class="flex gap-2">
+                    <input type="tel" id="fidelidade-telefone" placeholder="(11) 99999-9999" class="dark-input flex-1 !mt-0 text-sm font-mono" onkeypress="if(event.key==='Enter') consultarFidelidade()">
+                    <button type="button" onclick="consultarFidelidade()" id="btn-consultar-fidelidade" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-lg shadow-amber-500/20 transition flex items-center gap-1.5 whitespace-nowrap">
+                        <span>🔍</span> <span>Consultar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Espaço Dinâmico do Cartão Virtual VIP -->
+            <div id="fidelidade-resultado" class="max-w-xl mx-auto">
+                <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1c1a14] via-[#121217] to-[#0d0d10] border border-amber-500/40 shadow-2xl relative overflow-hidden text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-500/20 flex items-center justify-center text-3xl mx-auto mb-4">
+                        💈
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Consulte seus Cortes Acumulados</h3>
+                    <p class="text-xs text-zinc-400">Insira seu telefone acima para visualizar seu cartão fidelidade, selos carimbados e prêmios disponíveis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 6: MURAL DE AVALIAÇÕES & DEPOIMENTOS (Funcionalidade 5) -->
+    <div id="tab-avaliacoes" class="tab-content">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-white/10">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10 mb-8">
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                        ⭐ Prova Social
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">Avaliações & Depoimentos</h2>
+                    <p class="text-xs sm:text-sm text-zinc-400 mt-1">Veja a experiência de quem frequenta a Barbearia VIP e deixe sua nota.</p>
+                </div>
+
+                <!-- Placar Geral de Avaliação -->
+                <div class="bg-[#181820] p-4 rounded-2xl border border-white/10 flex items-center gap-4 flex-shrink-0">
+                    <div class="text-center pr-4 border-r border-white/10">
+                        <div id="placar-media-nota" class="text-3xl sm:text-4xl font-extrabold text-amber-400 font-mono">4.9</div>
+                        <div id="placar-estrelas" class="text-amber-400 text-xs tracking-wider">★★★★★</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white"><span id="placar-total-avaliacoes">4</span> avaliações verificadas</div>
+                        <div class="text-[11px] text-emerald-400 font-medium">✓ 100% de satisfação VIP</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid: Formulário de Avaliação + Mural de Depoimentos -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Formulário para Deixar Avaliação (5 colunas) -->
+                <div class="lg:col-span-5 bg-[#14141A] p-6 rounded-2xl border border-white/10 shadow-xl self-start">
+                    <h3 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+                        <span>✍️</span> Deixe seu Feedback
+                    </h3>
+                    <p class="text-xs text-zinc-400 mb-5">Sua opinião é fundamental para mantermos o padrão de excelência.</p>
+
+                    <form id="form-avaliacao-vip" onsubmit="enviarAvaliacao(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-1.5">Seu Nome:</label>
+                            <input type="text" id="av-nome" placeholder="Ex: Carlos Eduardo" required class="dark-input !mt-0 text-xs">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-1.5">Telefone (Opcional):</label>
+                            <input type="tel" id="av-telefone" placeholder="(11) 99999-9999" class="dark-input !mt-0 text-xs">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-1.5">Serviço Realizado:</label>
+                            <select id="av-servico" class="dark-input !mt-0 text-xs">
+                                <option value="Corte Degradê Clássico">Corte Degradê Clássico</option>
+                                <option value="Corte Social">Corte Social</option>
+                                <option value="Barba e Cabelo">Barba e Cabelo</option>
+                                <option value="Acabamento / Barba">Acabamento / Barba</option>
+                            </select>
+                        </div>
+
+                        <!-- Seletor de Estrelas Interativo -->
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-1.5">Sua Nota (1 a 5 estrelas):</label>
+                            <div class="flex items-center gap-2 p-2.5 bg-white/5 rounded-xl border border-white/10">
+                                <div id="star-rating-container" class="flex gap-1 text-2xl cursor-pointer select-none">
+                                    <span class="star-rating text-amber-400 transition transform hover:scale-125" onclick="setAvaliacaoNota(1)" onmouseover="hoverAvaliacaoNota(1)" onmouseout="resetHoverAvaliacaoNota()">★</span>
+                                    <span class="star-rating text-amber-400 transition transform hover:scale-125" onclick="setAvaliacaoNota(2)" onmouseover="hoverAvaliacaoNota(2)" onmouseout="resetHoverAvaliacaoNota()">★</span>
+                                    <span class="star-rating text-amber-400 transition transform hover:scale-125" onclick="setAvaliacaoNota(3)" onmouseover="hoverAvaliacaoNota(3)" onmouseout="resetHoverAvaliacaoNota()">★</span>
+                                    <span class="star-rating text-amber-400 transition transform hover:scale-125" onclick="setAvaliacaoNota(4)" onmouseover="hoverAvaliacaoNota(4)" onmouseout="resetHoverAvaliacaoNota()">★</span>
+                                    <span class="star-rating text-amber-400 transition transform hover:scale-125" onclick="setAvaliacaoNota(5)" onmouseover="hoverAvaliacaoNota(5)" onmouseout="resetHoverAvaliacaoNota()">★</span>
+                                </div>
+                                <span id="star-rating-label" class="text-xs font-bold text-amber-300 ml-2">Excelente! (5/5)</span>
+                                <input type="hidden" id="av-nota" value="5">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-1.5">Seu Comentário:</label>
+                            <textarea id="av-comentario" rows="3" placeholder="Conte como foi sua experiência, o corte, o ambiente..." required class="dark-input !mt-0 text-xs"></textarea>
+                        </div>
+
+                        <button type="submit" id="btn-submit-avaliacao" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
+                            <span>⭐</span> <span>Publicar Avaliação VIP</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Mural de Depoimentos (7 colunas) -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>💬</span> O que Nossos Clientes Falam
+                        </h3>
+                        <button type="button" onclick="carregarAvaliacoesNaAba()" class="text-xs text-amber-400 hover:underline flex items-center gap-1">
+                            <span>🔄</span> Atualizar
+                        </button>
+                    </div>
+
+                    <div id="mural-avaliacoes-lista" class="space-y-3.5 max-h-[600px] overflow-y-auto pr-1">
+                        <div class="p-5 text-center text-zinc-500 text-xs">Carregando avaliações...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 <footer class="bg-[#0A0A0C] border-t border-white/10 p-8 text-center text-xs text-zinc-500 mt-12">
@@ -763,6 +911,14 @@
         </div>
         <p class="text-xs text-zinc-400 mb-5">Acesse rapidamente as ferramentas administrativas e configurações:</p>
         <div class="space-y-2.5">
+            <button type="button" onclick="changeTab('tab-fidelidade'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-sm font-semibold text-amber-300 transition text-left">
+                <span class="flex items-center gap-2.5"><span>🎁</span> Cartão Fidelidade VIP</span>
+                <span class="text-amber-400">→</span>
+            </button>
+            <button type="button" onclick="changeTab('tab-avaliacoes'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition text-left">
+                <span class="flex items-center gap-2.5"><span>⭐</span> Avaliações & Depoimentos</span>
+                <span class="text-amber-400">→</span>
+            </button>
             <a href="../views/admin/servicos.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
                 <span class="flex items-center gap-2.5"><span>📋</span> Gerenciar Serviços</span>
                 <span class="text-amber-400">→</span>
@@ -795,6 +951,8 @@
     const basePath = window.location.pathname.replace(/\/Frontend\/[^\/]*$/, '');
     const API_SERVICOS = `${basePath}/api/servico.php`;
     const API_AGENDAMENTOS = `${basePath}/api/agendamento.php`;
+    const API_FIDELIDADE = `${basePath}/api/fidelidade.php`;
+    const API_AVALIACOES = `${basePath}/api/avaliacao.php`;
 
     // Motor de Áudio Sintetizado Luxuoso (Web Audio API nativo - Sem arquivos externos)
     class ChicAudioService {
@@ -1120,6 +1278,8 @@
 
         if (tabId === 'tab-horarios') carregarGradeGerenciador();
         if (tabId === 'tab-dashboard') carregarResumoAgendamentos();
+        if (tabId === 'tab-fidelidade') carregarFidelidadeNaAba();
+        if (tabId === 'tab-avaliacoes') carregarAvaliacoesNaAba();
     }
 
     // Controle do Drawer/Modal 'Mais Opções' para celulares
@@ -2072,6 +2232,408 @@
             }
         } catch (e) {
             alert('Falha na comunicação com o servidor.');
+        }
+    }
+
+    // =========================================================================
+    // FUNCIONALIDADE 3: CARTÃO FIDELIDADE DIGITAL VIP
+    // =========================================================================
+    function carregarFidelidadeNaAba() {
+        const telInput = document.getElementById('fidelidade-telefone');
+        if (telInput && !telInput.value.trim()) {
+            const clienteTel = document.getElementById('cliente-telefone');
+            if (clienteTel && clienteTel.value.trim()) {
+                telInput.value = clienteTel.value.trim();
+                consultarFidelidade();
+            }
+        } else if (telInput && telInput.value.trim()) {
+            consultarFidelidade();
+        }
+    }
+
+    async function consultarFidelidade() {
+        const inputTel = document.getElementById('fidelidade-telefone');
+        const container = document.getElementById('fidelidade-resultado');
+        const btn = document.getElementById('btn-consultar-fidelidade');
+        if (!inputTel || !container) return;
+
+        const tel = inputTel.value.trim();
+        const numeros = tel.replace(/\D/g, '');
+
+        if (numeros.length < 8) {
+            mostrarToast('Por favor, informe seu número de telefone completo com DDD para consultar seu cartão.', 'warning');
+            inputTel.focus();
+            return;
+        }
+
+        try {
+            if (btn) btn.disabled = true;
+            container.innerHTML = `
+                <div class="p-8 text-center text-zinc-400">
+                    <div class="inline-block animate-spin text-2xl mb-2 text-amber-400">⏳</div>
+                    <p class="text-xs">Consultando pontuação VIP...</p>
+                </div>
+            `;
+
+            const resp = await fetch(`${API_FIDELIDADE}?telefone=${encodeURIComponent(tel)}`);
+            const dados = await resp.json();
+
+            if (dados.sucesso && dados.cliente) {
+                soundVIP.playSuccessSound();
+                renderizarCartaoFidelidade(dados.cliente, dados.historico || []);
+            } else {
+                container.innerHTML = `
+                    <div class="p-8 rounded-3xl bg-zinc-900/60 border border-white/10 text-center">
+                        <div class="text-3xl mb-3">🔍</div>
+                        <h4 class="text-base font-bold text-white mb-1">Nenhum agendamento encontrado</h4>
+                        <p class="text-xs text-zinc-400 max-w-md mx-auto mb-4">${dados.mensagem || 'Ainda não encontramos agendamentos ativos para este número. Faça seu primeiro agendamento para começar a pontuar!'}</p>
+                        <button type="button" onclick="changeTab('tab-agendar')" class="text-xs px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition">
+                            📅 Fazer Primeiro Agendamento
+                        </button>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            container.innerHTML = `
+                <div class="p-6 rounded-2xl bg-red-500/10 border border-red-500/30 text-center text-xs text-red-300">
+                    Falha ao conectar com a API de Fidelidade. Verifique se o banco MySQL está ativo.
+                </div>
+            `;
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    function renderizarCartaoFidelidade(cliente, historico) {
+        const container = document.getElementById('fidelidade-resultado');
+        if (!container) return;
+
+        const selosAtuais = cliente.selos_atuais;
+        const meta = cliente.meta_ciclo || 5;
+        const podeResgatar = cliente.pode_resgatar;
+        const cortesRestantes = cliente.cortes_restantes;
+
+        // Gera 5 selos visuais
+        let selosHtml = '';
+        for (let i = 1; i <= meta; i++) {
+            const conquistado = i <= selosAtuais;
+            const isRecompensa = i === meta;
+
+            if (isRecompensa) {
+                selosHtml += `
+                    <div class="flex flex-col items-center gap-1.5">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 flex items-center justify-center text-xl sm:text-2xl transition-all shadow-lg ${
+                            conquistado 
+                                ? 'bg-gradient-to-br from-amber-400 to-amber-600 border-amber-300 text-black shadow-amber-500/40 animate-pulse' 
+                                : 'bg-white/5 border-dashed border-amber-500/40 text-amber-400/50'
+                        }">
+                            🎁
+                        </div>
+                        <span class="text-[10px] font-bold ${conquistado ? 'text-amber-300' : 'text-zinc-500'}">Grátis</span>
+                    </div>
+                `;
+            } else {
+                selosHtml += `
+                    <div class="flex flex-col items-center gap-1.5">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border flex items-center justify-center text-base sm:text-lg transition-all ${
+                            conquistado 
+                                ? 'bg-amber-400/20 border-amber-400/80 text-amber-300 shadow-md shadow-amber-400/20' 
+                                : 'bg-white/5 border-white/10 text-zinc-600'
+                        }">
+                            ${conquistado ? '💈' : '⚪'}
+                        </div>
+                        <span class="text-[10px] font-semibold ${conquistado ? 'text-zinc-300' : 'text-zinc-600'}">Corte ${i}</span>
+                    </div>
+                `;
+            }
+        }
+
+        let bannerRecompensa = '';
+        if (podeResgatar) {
+            bannerRecompensa = `
+                <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 border border-amber-400/50 text-center mb-6 shadow-xl">
+                    <div class="text-2xl mb-1">🎉 PARABÉNS! 🎉</div>
+                    <h4 class="text-sm font-bold text-white">Você tem <span class="text-amber-400 font-extrabold">${cliente.recompensas_disponiveis} CORTE(S) GRÁTIS</span> disponível!</h4>
+                    <p class="text-xs text-zinc-300 mt-1 mb-3">Clique no botão abaixo para gerar seu voucher exclusivo de 100% OFF.</p>
+                    <button type="button" onclick="resgatarCorteGratisFidelidade('${cliente.telefone}', '${cliente.nome}')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/30 transition transform hover:scale-105">
+                        🎁 Resgatar Meu Corte Grátis Agora
+                    </button>
+                    <div id="voucher-resgate-area" class="mt-4 hidden"></div>
+                </div>
+            `;
+        } else {
+            bannerRecompensa = `
+                <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 text-center mb-6 text-xs text-zinc-300">
+                    Faltam apenas <strong class="text-amber-400 font-bold font-mono">${cortesRestantes} corte(s)</strong> para você completar sua cartela e ganhar seu corte na faixa!
+                </div>
+            `;
+        }
+
+        container.innerHTML = `
+            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#1d1a13] via-[#141419] to-[#0d0d12] border-2 border-amber-500/40 shadow-[0_15px_40px_rgba(0,0,0,0.8)] relative overflow-hidden">
+                <!-- Efeito holográfico de fundo -->
+                <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Cabeçalho do Cartão VIP -->
+                <div class="flex items-center justify-between pb-5 border-b border-white/10 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-xl shadow-inner">
+                            💈
+                        </div>
+                        <div>
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-amber-400 font-bold">Barbearia VIP Exclusive</p>
+                            <h3 class="text-lg font-bold text-white">${cliente.nome}</h3>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border" style="background-color: ${cliente.cor_vip}20; color: ${cliente.cor_vip}; border-color: ${cliente.cor_vip}50;">
+                        ★ ${cliente.nivel_vip}
+                    </span>
+                </div>
+
+                <!-- Selos Virtuais -->
+                <div class="flex items-center justify-between gap-1 sm:gap-2 mb-6 px-1">
+                    ${selosHtml}
+                </div>
+
+                <!-- Barra de Progresso Dourada -->
+                <div class="mb-5">
+                    <div class="flex justify-between text-xs mb-1.5">
+                        <span class="text-zinc-400">Progresso do Ciclo Atual:</span>
+                        <span class="text-amber-400 font-bold font-mono">${cliente.progresso_percentual}% (${selosAtuais}/${meta})</span>
+                    </div>
+                    <div class="w-full bg-black/50 h-3 rounded-full overflow-hidden border border-white/10 p-0.5">
+                        <div class="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full transition-all duration-700 shadow-sm" style="width: ${cliente.progresso_percentual}%;"></div>
+                    </div>
+                </div>
+
+                ${bannerRecompensa}
+
+                <!-- Estatísticas Rápidas do Cliente -->
+                <div class="grid grid-cols-3 gap-2 pt-4 border-t border-white/10 text-center">
+                    <div class="p-2 bg-white/5 rounded-xl">
+                        <span class="text-[10px] uppercase text-zinc-400 block font-semibold">Total Cortes</span>
+                        <strong class="text-base text-white font-mono">${cliente.total_cortes}</strong>
+                    </div>
+                    <div class="p-2 bg-white/5 rounded-xl">
+                        <span class="text-[10px] uppercase text-zinc-400 block font-semibold">Ciclos Feitos</span>
+                        <strong class="text-base text-amber-300 font-mono">${cliente.ciclos_concluidos}</strong>
+                    </div>
+                    <div class="p-2 bg-white/5 rounded-xl">
+                        <span class="text-[10px] uppercase text-zinc-400 block font-semibold">Prêmios Livres</span>
+                        <strong class="text-base text-emerald-400 font-mono">${cliente.recompensas_disponiveis}</strong>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    async function resgatarCorteGratisFidelidade(telefone, nome) {
+        try {
+            const resp = await fetch(API_FIDELIDADE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ acao: 'resgatar', telefone, nome })
+            });
+            const res = await resp.json();
+
+            if (res.sucesso && res.voucher) {
+                soundVIP.playSuccessSound();
+                mostrarToast('🎉 Parabéns! Seu código de corte grátis foi gerado!', 'success');
+
+                const area = document.getElementById('voucher-resgate-area');
+                if (area) {
+                    area.classList.remove('hidden');
+                    area.innerHTML = `
+                        <div class="p-4 rounded-xl bg-black/60 border border-amber-400/60 text-left space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-zinc-400">Código do Cupom 100% OFF:</span>
+                                <span class="text-[10px] text-emerald-400 font-semibold">Válido por 30 dias</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono text-lg font-bold text-amber-400 bg-white/5 px-3 py-1.5 rounded-lg border border-amber-500/30 flex-1 tracking-wider">${res.voucher.codigo}</span>
+                                <button type="button" onclick="copiarTexto('${res.voucher.codigo}', this)" class="btn-copiar text-xs">
+                                    📋 Copiar
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-zinc-400 leading-relaxed">${res.voucher.instrucoes}</p>
+                        </div>
+                    `;
+                }
+
+                setTimeout(() => consultarFidelidade(), 2500);
+            } else {
+                mostrarToast(res.mensagem || 'Não foi possível efetuar o resgate.', 'error');
+            }
+        } catch (e) {
+            mostrarToast('Erro de comunicação ao resgatar corte.', 'error');
+        }
+    }
+
+    // =========================================================================
+    // FUNCIONALIDADE 5: SISTEMA DE AVALIAÇÕES COM ESTRELAS & DEPOIMENTOS
+    // =========================================================================
+    function carregarAvaliacoesNaAba() {
+        carregarPlacarEAvaliacoes();
+    }
+
+    async function carregarPlacarEAvaliacoes() {
+        const mural = document.getElementById('mural-avaliacoes-lista');
+        const placarNota = document.getElementById('placar-media-nota');
+        const placarEstrelas = document.getElementById('placar-estrelas');
+        const placarTotal = document.getElementById('placar-total-avaliacoes');
+
+        try {
+            const resp = await fetch(API_AVALIACOES);
+            const data = await resp.json();
+
+            if (data.sucesso) {
+                const est = data.estatisticas;
+                if (placarNota) placarNota.textContent = est.media_geral.toFixed(1);
+                if (placarEstrelas) placarEstrelas.textContent = est.estrelas_texto;
+                if (placarTotal) placarTotal.textContent = est.total_avaliacoes;
+
+                if (!mural) return;
+
+                if (!data.avaliacoes || data.avaliacoes.length === 0) {
+                    mural.innerHTML = `
+                        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center text-xs text-zinc-400">
+                            Ainda não há avaliações publicadas. Seja o primeiro a avaliar nosso atendimento!
+                        </div>
+                    `;
+                    return;
+                }
+
+                mural.innerHTML = data.avaliacoes.map(av => {
+                    const iniciais = (av.cliente_nome || 'VIP').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+                    const estrelas = '★'.repeat(Number(av.nota)) + '☆'.repeat(5 - Number(av.nota));
+
+                    return `
+                        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.05] border border-white/10 transition shadow-lg">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-700/20 border border-amber-500/30 flex items-center justify-center font-bold text-amber-300 text-xs">
+                                        ${iniciais}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+                                            ${av.cliente_nome}
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-normal">✓ Verificado</span>
+                                        </h4>
+                                        <p class="text-[10px] text-zinc-500">${av.servico_nome} • ${av.data_formatada}</p>
+                                    </div>
+                                </div>
+                                <div class="text-amber-400 text-xs tracking-wider font-bold">
+                                    ${estrelas}
+                                </div>
+                            </div>
+                            <p class="text-xs text-zinc-300 italic pl-1 border-l-2 border-amber-500/40">
+                                "${av.comentario}"
+                            </p>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (e) {
+            if (mural) mural.innerHTML = `<div class="p-4 text-xs text-zinc-500 text-center">Não foi possível carregar as avaliações no momento.</div>`;
+        }
+    }
+
+    let notaSelecionada = 5;
+    const labelsNotas = {
+        1: 'Precisa melhorar (1/5)',
+        2: 'Regular (2/5)',
+        3: 'Bom (3/5)',
+        4: 'Muito Bom! (4/5)',
+        5: 'Excelente! (5/5)'
+    };
+
+    function setAvaliacaoNota(nota) {
+        notaSelecionada = nota;
+        const hidden = document.getElementById('av-nota');
+        if (hidden) hidden.value = nota;
+        soundVIP.playSoftClick();
+        atualizarVisualEstrelas(nota);
+    }
+
+    function hoverAvaliacaoNota(nota) {
+        atualizarVisualEstrelas(nota);
+    }
+
+    function resetHoverAvaliacaoNota() {
+        atualizarVisualEstrelas(notaSelecionada);
+    }
+
+    function atualizarVisualEstrelas(nota) {
+        const spans = document.querySelectorAll('#star-rating-container .star-rating');
+        const lbl = document.getElementById('star-rating-label');
+        if (lbl) lbl.textContent = labelsNotas[nota] || `${nota}/5`;
+
+        spans.forEach((span, idx) => {
+            if (idx < nota) {
+                span.classList.remove('text-zinc-600');
+                span.classList.add('text-amber-400');
+            } else {
+                span.classList.remove('text-amber-400');
+                span.classList.add('text-zinc-600');
+            }
+        });
+    }
+
+    async function enviarAvaliacao(e) {
+        e.preventDefault();
+        const nome = document.getElementById('av-nome').value.trim();
+        const telefone = document.getElementById('av-telefone').value.trim();
+        const servico = document.getElementById('av-servico').value;
+        const nota = parseInt(document.getElementById('av-nota').value, 10) || 5;
+        const comentario = document.getElementById('av-comentario').value.trim();
+        const btn = document.getElementById('btn-submit-avaliacao');
+
+        if (nome.length < 2) {
+            mostrarToast('Informe seu nome.', 'warning');
+            return;
+        }
+
+        if (comentario.length < 3) {
+            mostrarToast('Escreva seu comentário.', 'warning');
+            return;
+        }
+
+        try {
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳</span> <span>Publicando...</span>';
+            }
+
+            const resp = await fetch(API_AVALIACOES, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cliente_nome: nome,
+                    cliente_telefone: telefone,
+                    servico_nome: servico,
+                    nota: nota,
+                    comentario: comentario
+                })
+            });
+
+            const res = await resp.json();
+
+            if (res.sucesso) {
+                soundVIP.playSuccessSound();
+                mostrarToast(res.mensagem || 'Avaliação enviada com sucesso!', 'success');
+                document.getElementById('form-avaliacao-vip').reset();
+                setAvaliacaoNota(5);
+                carregarPlacarEAvaliacoes();
+            } else {
+                mostrarToast(res.mensagem || 'Erro ao enviar avaliação.', 'error');
+            }
+        } catch (err) {
+            mostrarToast('Falha na comunicação com o servidor ao publicar avaliação.', 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>⭐</span> <span>Publicar Avaliação VIP</span>';
+            }
         }
     }
 

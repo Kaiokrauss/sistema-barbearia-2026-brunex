@@ -36,6 +36,8 @@
         <button onclick="checkAdminAuth('tab-agendamentos'); closeMenu()">Agendamentos <span id="badge-count" class="badge" style="display:none;">0</span></button>
         <button onclick="checkAdminAuth('tab-lembretes'); closeMenu()">Lembretes</button>
         <button onclick="checkAdminAuth('tab-historico'); closeMenu()">Histórico</button>
+        <button onclick="checkAdminAuth('tab-fidelidade-admin'); closeMenu()">🎁 Fidelidade</button>
+        <button onclick="checkAdminAuth('tab-avaliacoes-admin'); closeMenu()">⭐ Avaliações</button>
         <button onclick="checkAdminAuth('tab-config'); closeMenu()">Configurar</button>
         <a href="../views/admin/servicos.html" style="color:var(--secondary); text-decoration:none; padding:8px 12px; font-weight:bold; display:inline-flex; align-items:center;">📋 Serviços</a>
         <a href="../views/admin/agendamentos.html" style="color:var(--secondary); text-decoration:none; padding:8px 12px; font-weight:bold; display:inline-flex; align-items:center;">📥 Exportar (CSV/XML/JSON)</a>
@@ -215,6 +217,77 @@
         </div>
         <div id="resumo-historico" style="margin-bottom: 15px; font-size: 16px; font-weight: bold;"></div>
         <div id="lista-historico"></div>
+    </div>
+
+    <div id="tab-fidelidade-admin" class="tab-content">
+        <div class="mb-5 flex flex-col gap-1">
+            <h2 class="text-2xl font-bold text-white">🎁 Ranking do Cartão Fidelidade VIP</h2>
+            <p class="text-sm text-zinc-400">Clientes com maior número de atendimentos acumulados e elegibilidade para prêmios.</p>
+        </div>
+
+        <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10 mb-5">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-white flex items-center gap-2">
+                    <span class="text-amber-400">🏆</span> Top Clientes Fiéis
+                </h3>
+                <button type="button" onclick="renderAdminFidelidade()" class="text-xs text-amber-400 hover:underline">🔄 Atualizar Ranking</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left text-sm text-zinc-200">
+                    <thead>
+                        <tr class="border-b border-white/10 text-zinc-400 text-xs uppercase tracking-wider">
+                            <th class="py-3 px-3">Posição</th>
+                            <th class="py-3 px-3">Cliente</th>
+                            <th class="py-3 px-3">WhatsApp</th>
+                            <th class="py-3 px-3">Total Cortes</th>
+                            <th class="py-3 px-3">Ciclos Feitos (a cada 5)</th>
+                            <th class="py-3 px-3">Último Atendimento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-fidelidade-admin-body" class="divide-y divide-white/5">
+                        <tr><td colspan="6" class="p-4 text-center text-zinc-500">Carregando ranking...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-avaliacoes-admin" class="tab-content">
+        <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+                <h2 class="text-2xl font-bold text-white">⭐ Avaliações dos Clientes</h2>
+                <p class="text-sm text-zinc-400">Controle de satisfação, notas de 1 a 5 estrelas e depoimentos.</p>
+            </div>
+            <div id="admin-placar-resumo" class="text-sm font-semibold text-amber-400 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10 self-start">
+                Carregando média...
+            </div>
+        </div>
+
+        <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-white flex items-center gap-2">
+                    <span>💬</span> Todos os Depoimentos Recebidos
+                </h3>
+                <button type="button" onclick="renderAdminAvaliacoes()" class="text-xs text-amber-400 hover:underline">🔄 Atualizar Avaliações</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left text-sm text-zinc-200">
+                    <thead>
+                        <tr class="border-b border-white/10 text-zinc-400 text-xs uppercase tracking-wider">
+                            <th class="py-3 px-3">Data</th>
+                            <th class="py-3 px-3">Cliente</th>
+                            <th class="py-3 px-3">Serviço</th>
+                            <th class="py-3 px-3">Nota</th>
+                            <th class="py-3 px-3">Depoimento</th>
+                            <th class="py-3 px-3 text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-avaliacoes-admin-body" class="divide-y divide-white/5">
+                        <tr><td colspan="6" class="p-4 text-center text-zinc-500">Carregando avaliações...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="tab-config" class="tab-content">

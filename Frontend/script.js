@@ -179,6 +179,8 @@ function showTab(tabId) {
         renderAdminHistorico();
     }
     if (tabId === 'tab-horarios') renderAdminHorarios();
+    if (tabId === 'tab-fidelidade-admin') renderAdminFidelidade();
+    if (tabId === 'tab-avaliacoes-admin') renderAdminAvaliacoes();
 }
 
 function checkAdminAuth(targetTab) {
@@ -935,6 +937,113 @@ setInterval(() => {
 }, 30000);
 
 
+
+// --- ADMIN: RANKING DO CARTÃO FIDELIDADE ---
+async function renderAdminFidelidade() {
+    const tbody = document.getElementById('tabela-fidelidade-admin-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-500">Buscando ranking de fidelidade...</td></tr>';
+
+    try {
+        const resp = await fetch('../api/fidelidade.php?ranking=1');
+        const res = await resp.json();
+
+        if (res.sucesso && res.ranking && res.ranking.length > 0) {
+            tbody.innerHTML = res.ranking.map((item, idx) => {
+                const medalhas = ['🥇', '🥈', '🥉'];
+                const pos = medalhas[idx] || `#${idx + 1}`;
+                const ciclos = Math.floor(Number(item.total_cortes) / 5);
+                const dataFormatada = item.ultimo_corte ? item.ultimo_corte.split('-').reverse().join('/') : '-';
+
+                return `
+                    <tr class="hover:bg-white/[0.02] transition">
+                        <td class="py-3 px-3 font-bold text-amber-400">${pos}</td>
+                        <td class="py-3 px-3 font-semibold text-white">${item.cliente_nome}</td>
+                        <td class="py-3 px-3 font-mono text-zinc-400">${item.cliente_telefone || 'Não informado'}</td>
+                        <td class="py-3 px-3 font-mono font-bold text-white">${item.total_cortes} corte(s)</td>
+                        <td class="py-3 px-3">
+                            <span class="px-2 py-0.5 rounded-full text-xs font-bold ${ciclos > 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : 'bg-white/5 text-zinc-500'}">
+                                ${ciclos} ciclo(s) completo(s)
+                            </span>
+                        </td>
+                        <td class="py-3 px-3 text-zinc-400 text-xs">${dataFormatada}</td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-500">Nenhum histórico de fidelidade registrado ainda.</td></tr>';
+        }
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-400">Falha ao buscar ranking de fidelidade.</td></tr>';
+    }
+}
+
+// --- ADMIN: AVALIAÇÕES E SATISFAÇÃO DOS CLIENTES ---
+async function renderAdminAvaliacoes() {
+    const tbody = document.getElementById('tabela-avaliacoes-admin-body');
+    const resumo = document.getElementById('admin-placar-resumo');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-500">Buscando avaliações...</td></tr>';
+
+    try {
+        const resp = await fetch('../api/avaliacao.php?todos=1');
+        const res = await resp.json();
+
+        if (res.sucesso) {
+            const est = res.estatisticas;
+            if (resumo) {
+                resumo.innerHTML = `⭐ Média Geral: <strong class="text-white">${est.media_geral.toFixed(1)}</strong> (${est.total_avaliacoes} avaliações • ${est.porcentagem_recomendacao}% recomendam)`;
+            }
+
+            if (res.avaliacoes && res.avaliacoes.length > 0) {
+                tbody.innerHTML = res.avaliacoes.map(av => {
+                    const estrelas = '★'.repeat(Number(av.nota)) + '☆'.repeat(5 - Number(av.nota));
+
+                    return `
+                        <tr class="hover:bg-white/[0.02] transition">
+                            <td class="py-3 px-3 text-xs text-zinc-400">${av.data_formatada || '-'}</td>
+                            <td class="py-3 px-3 font-semibold text-white">${av.cliente_nome}</td>
+                            <td class="py-3 px-3 text-xs text-zinc-300">${av.servico_nome}</td>
+                            <td class="py-3 px-3 text-amber-400 font-bold text-xs tracking-wider">${estrelas} (${av.nota}/5)</td>
+                            <td class="py-3 px-3 text-xs text-zinc-300 max-w-xs italic">"${av.comentario}"</td>
+                            <td class="py-3 px-3 text-right">
+                                <button type="button" onclick="excluirAvaliacaoAdmin(${av.id})" class="text-xs px-2.5 py-1 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 transition">
+                                    🗑️ Excluir
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-500">Nenhuma avaliação encontrada.</td></tr>';
+            }
+        }
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-400">Falha ao buscar avaliações.</td></tr>';
+    }
+}
+
+async function excluirAvaliacaoAdmin(id) {
+    if (!confirm('Deseja realmente remover esta avaliação do sistema?')) return;
+    try {
+        const resp = await fetch('../api/avaliacao.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ acao: 'excluir', id })
+        });
+        const res = await resp.json();
+        if (res.sucesso) {
+            mostrarToast('Avaliação excluída com sucesso.', 'sucesso');
+            renderAdminAvaliacoes();
+        } else {
+            mostrarToast(res.mensagem || 'Erro ao excluir avaliação.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro de comunicação ao excluir.', 'erro');
+    }
+}
 
 // --- CONTROLE DO MENU HAMBÚRGUER ---
 function toggleMenu() {

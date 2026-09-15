@@ -57,7 +57,8 @@ class CupomDescontoStrategy implements DescontoStrategy {
         'BEMVINDO15'   => ['tipo' => 'percentual', 'valor' => 15.0, 'desc' => 'Boas-vindas VIP (15% OFF)'],
         'PRIMEIRA_VEZ' => ['tipo' => 'percentual', 'valor' => 20.0, 'desc' => 'Primeira Experiência (20% OFF)'],
         'CLIENTEVIP'   => ['tipo' => 'percentual', 'valor' => 25.0, 'desc' => 'Membro Diamante VIP (25% OFF)'],
-        'DIAMANTE'     => ['tipo' => 'fixo',       'valor' => 20.0, 'desc' => 'Corte Diamante (R$ 20,00 OFF)']
+        'DIAMANTE'     => ['tipo' => 'fixo',       'valor' => 20.0, 'desc' => 'Corte Diamante (R$ 20,00 OFF)'],
+        'CORTEGRATIS'  => ['tipo' => 'percentual', 'valor' => 100.0, 'desc' => 'Recompensa Fidelidade VIP (100% OFF - Corte Grátis)']
     ];
 
     public function calcularDesconto(float $valorOriginal, string $dataAgendada = '', ?string $cupom = null): float {
@@ -66,6 +67,14 @@ class CupomDescontoStrategy implements DescontoStrategy {
         }
 
         $codigo = strtoupper(trim($cupom));
+
+        // Suporte a Vouchers gerados pelo Cartão Fidelidade (ex: GRATIS-A1B2C3)
+        if (str_starts_with($codigo, 'GRATIS-') || $codigo === 'CORTEGRATIS') {
+            $this->cupomAplicado = $codigo;
+            $this->descricaoRegra = "Recompensa Fidelidade VIP (100% OFF - Corte Grátis)";
+            return $valorOriginal;
+        }
+
         if (!isset(self::CUPONS[$codigo])) {
             return 0.0;
         }

@@ -67,6 +67,44 @@ CREATE TABLE IF NOT EXISTS `bloqueios_horario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
+-- Estrutura da tabela `avaliacoes` (Funcionalidade 5)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `avaliacoes` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `cliente_nome` VARCHAR(120) NOT NULL,
+  `cliente_telefone` VARCHAR(20) DEFAULT NULL,
+  `servico_nome` VARCHAR(100) DEFAULT 'Corte Clássico',
+  `nota` TINYINT NOT NULL DEFAULT 5,
+  `comentario` TEXT NOT NULL,
+  `destaque` TINYINT(1) NOT NULL DEFAULT 1,
+  `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_nota_data` (`nota`, `criado_em`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Estrutura da tabela `resgates_fidelidade` (Funcionalidade 3)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `resgates_fidelidade` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `cliente_telefone` VARCHAR(20) NOT NULL,
+  `cliente_nome` VARCHAR(120) DEFAULT NULL,
+  `codigo_voucher` VARCHAR(30) NOT NULL UNIQUE,
+  `data_resgate` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_fidelidade_tel` (`cliente_telefone`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Dados Iniciais: Avaliações Demonstrativas
+-- --------------------------------------------------------
+INSERT IGNORE INTO `avaliacoes` (`id`, `cliente_nome`, `cliente_telefone`, `servico_nome`, `nota`, `comentario`, `destaque`, `criado_em`) VALUES
+(1, 'Lucas Albuquerque', '(11) 98765-4321', 'Corte Degradê Clássico', 5, 'Atendimento impecável! O degradê navalhado ficou perfeito e o café cortesia é sensacional. Virei cliente fiel!', 1, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(2, 'Rafael Fontana', '(11) 97777-8888', 'Barba e Cabelo', 5, 'Ambiente muito profissional, produtos de primeira linha e pontualidade britânica. Melhor barbearia da região!', 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+(3, 'Guilherme Santos', '(11) 96543-2109', 'Corte Social', 5, 'Corte alinhado no capricho. O sistema de agendamento online facilita demais a vida. Recomendo de olhos fechados!', 1, DATE_SUB(NOW(), INTERVAL 8 DAY)),
+(4, 'Matheus Ribeiro', '(11) 95555-4444', 'Corte Degradê Clássico', 4, 'Excelente experiência, os barbeiros entendem muito de visagismo. Nota 10!', 1, DATE_SUB(NOW(), INTERVAL 12 DAY));
+
+-- --------------------------------------------------------
 -- Dados Iniciais: Serviços do Catálogo VIP
 -- --------------------------------------------------------
 INSERT IGNORE INTO `servicos` (`id`, `nome`, `preco`, `duracao_minutos`) VALUES
