@@ -13,6 +13,122 @@ let currentAdminTab = '';
 let ocupacaoChart = null;
 let proporcaoChart = null;
 
+// Filtros em tempo real para a Tabela de Agendamentos (Admin)
+let filtroAdminStatus = 'hoje';
+let filtroAdminBusca = '';
+
+// --- SISTEMA DE TOASTS MODERNOS (NOTIFICAÇÕES FLUTUANTES) ---
+function mostrarToast(mensagem, tipo = 'sucesso') {
+    let container = document.getElementById('toast-container-vip');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container-vip';
+        container.style.cssText = 'position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:10px; pointer-events:none; max-width:390px; width:calc(100% - 40px);';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.style.cssText = 'pointer-events:auto; display:flex; align-items:center; gap:12px; padding:12px 18px; border-radius:14px; background:rgba(18,18,24,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); color:#fff; font-size:13.5px; font-weight:500; box-shadow:0 12px 35px rgba(0,0,0,0.65); transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity:0; transform:translateY(-12px) scale(0.96); border:1px solid rgba(255,255,255,0.1);';
+
+    let icone = '✨';
+    if (tipo === 'sucesso') {
+        icone = '✅';
+        toast.style.borderColor = 'rgba(34,197,94,0.45)';
+        toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 15px rgba(34,197,94,0.15)';
+    } else if (tipo === 'erro') {
+        icone = '❌';
+        toast.style.borderColor = 'rgba(239,68,68,0.45)';
+        toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 15px rgba(239,68,68,0.15)';
+    } else if (tipo === 'aviso') {
+        icone = '⚠️';
+        toast.style.borderColor = 'rgba(234,179,8,0.45)';
+        toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 15px rgba(234,179,8,0.15)';
+    } else if (tipo === 'copiado') {
+        icone = '📋';
+        toast.style.borderColor = 'rgba(212,175,55,0.6)';
+        toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 18px rgba(212,175,55,0.25)';
+    }
+
+    toast.innerHTML = `
+        <span style="font-size:18px; flex-shrink:0;">${icone}</span>
+        <div style="flex:1; line-height:1.4;">${mensagem}</div>
+        <button style="background:transparent; border:none; color:#888; cursor:pointer; font-size:18px; padding:0; line-height:1; margin-left:4px;" onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0) scale(1)';
+    });
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px) scale(0.96)';
+        setTimeout(() => toast.remove(), 320);
+    }, 3500);
+}
+
+// --- MÁSCARA AUTOMÁTICA DE TELEFONE / WHATSAPP ---
+function aplicarMascaraTelefone(input) {
+    if (!input) return;
+    input.addEventListener('input', function(e) {
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.substring(0, 11);
+        
+        if (v.length > 10) {
+            v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+        } else if (v.length > 6) {
+            v = v.replace(/^(\d{2})(\d{4,5})(\d{0,4})$/, '($1) $2-$3');
+        } else if (v.length > 2) {
+            v = v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+        } else if (v.length > 0) {
+            v = v.replace(/^(\d*)$/, '($1');
+        }
+        e.target.value = v;
+    });
+}
+
+// --- COPIAR CÓDIGO COM 1 CLIQUE (CLIPBOARD API) ---
+function copiarTexto(texto, elementoBotao = null) {
+    if (!texto) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarToast(`Código <strong>${texto}</strong> copiado para a área de transferência!`, 'copiado');
+            if (elementoBotao) {
+                const originalHtml = elementoBotao.innerHTML;
+                elementoBotao.innerHTML = '✓ Copiado!';
+                elementoBotao.style.filter = 'brightness(1.3)';
+                setTimeout(() => {
+                    elementoBotao.innerHTML = originalHtml;
+                    elementoBotao.style.filter = 'none';
+                }, 2000);
+            }
+        }).catch(() => fallbackCopiar(texto, elementoBotao));
+    } else {
+        fallbackCopiar(texto, elementoBotao);
+    }
+}
+
+function fallbackCopiar(texto, elementoBotao) {
+    const tempInput = document.createElement('input');
+    tempInput.value = texto;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    try {
+        document.execCommand('copy');
+        mostrarToast(`Código <strong>${texto}</strong> copiado!`, 'copiado');
+        if (elementoBotao) {
+            const originalHtml = elementoBotao.innerHTML;
+            elementoBotao.innerHTML = '✓ Copiado!';
+            setTimeout(() => { elementoBotao.innerHTML = originalHtml; }, 2000);
+        }
+    } catch (err) {
+        mostrarToast('Não foi possível copiar automaticamente.', 'aviso');
+    }
+    document.body.removeChild(tempInput);
+}
+
 function saveState() {
     localStorage.setItem('barbeariaState', JSON.stringify(appState));
     updateBadge();
@@ -169,7 +285,8 @@ async function agendar() {
     const horario = document.getElementById('cliente-horario').value;
 
     if (!nome || !servico || !data || !horario) {
-        return alert('Por favor, preencha todos os campos obrigatórios.');
+        mostrarToast('Por favor, preencha todos os campos obrigatórios.', 'aviso');
+        return;
     }
 
     const msgBox = document.getElementById('agendamento-sucesso');
@@ -226,12 +343,18 @@ async function agendar() {
                 <div style="font-size:1.05rem;"><strong>🎉 Agendamento confirmado, ${nome}!</strong></div>
                 <div style="margin-top:4px;">Serviço: <strong>${servico}</strong></div>
                 <div>Data & Horário: <strong>${data} às ${horario}</strong></div>
-                <div style="margin-top:4px;">Código de cancelamento: <strong style="color:#d4af37; background:#000; padding:2px 6px; border-radius:4px;">${codigo}</strong></div>
+                <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+                    <span>Código:</span> 
+                    <strong style="color:#d4af37; background:#000; padding:2px 8px; border-radius:4px; font-family:monospace; font-size:1.05rem;">${codigo}</strong>
+                    <button type="button" onclick="copiarTexto('${codigo}', this)" style="background:#222; border:1px solid #d4af37; color:#d4af37; font-size:11px; font-weight:bold; padding:3px 8px; border-radius:6px; cursor:pointer;">📋 Copiar</button>
+                </div>
                 <div style="margin-top:8px;">${zapButtons}</div>
                 <div style="margin-top:10px;">
                     <button onclick="showTab('tab-agendamentos')" style="padding:6px 12px; font-size:0.85rem; background:#444; color:#fff; border-radius:6px; border:none; cursor:pointer;">Ver na Tabela de Agendamentos &rarr;</button>
                 </div>
             `;
+
+            mostrarToast(`🎉 Agendamento confirmado para ${nome}!`, 'sucesso');
 
             // Abre o WhatsApp do cliente automaticamente se preenchido
             if (res.whatsapp_url_cliente && telefone) {
@@ -245,7 +368,7 @@ async function agendar() {
         } else {
             msgBox.style.display = 'block';
             msgBox.innerHTML = `<span style="color:#dc3545;">❌ ${res.error || 'Erro ao realizar agendamento.'}</span>`;
-            alert(res.error || 'Não foi possível confirmar o agendamento.');
+            mostrarToast(res.error || 'Não foi possível confirmar o agendamento.', 'erro');
         }
     } catch (e) {
         console.error('Sync API erro:', e);
@@ -253,7 +376,14 @@ async function agendar() {
         appState.agendamentos.push({ id: codigo, data, horario, nome, servico, telefone, status: 'ativo' });
         saveState();
 
-        msgBox.innerHTML = `<strong>Tudo certo (modo local), ${nome}!</strong><br>Serviço: ${servico}<br>Horário: ${horario} no dia ${data}.<br>Código: <strong>${codigo}</strong>`;
+        msgBox.innerHTML = `
+            <strong>Tudo certo (modo local), ${nome}!</strong><br>
+            Serviço: ${servico}<br>
+            Horário: ${horario} no dia ${data}.<br>
+            Código: <strong style="color:#d4af37; font-family:monospace;">${codigo}</strong>
+            <button type="button" onclick="copiarTexto('${codigo}', this)" style="background:#222; border:1px solid #d4af37; color:#d4af37; font-size:11px; padding:2px 6px; border-radius:4px; cursor:pointer; margin-left:6px;">📋 Copiar</button>
+        `;
+        mostrarToast('Agendamento salvo no modo offline.', 'aviso');
         document.getElementById('cliente-nome').value = '';
         if (telInput) telInput.value = '';
         loadAvailableSlots();
@@ -261,7 +391,12 @@ async function agendar() {
 }
 
 function cancelarAgendamento() {
-    const codigo = document.getElementById('codigo-cancelamento').value.toUpperCase();
+    const codigo = document.getElementById('codigo-cancelamento').value.toUpperCase().trim();
+    if (!codigo) {
+        mostrarToast('Informe o código de cancelamento.', 'aviso');
+        return;
+    }
+
     const index = appState.agendamentos.findIndex(a => a.id === codigo && a.status === 'ativo');
 
     // Sincroniza cancelamento na API MySQL
@@ -272,7 +407,7 @@ function cancelarAgendamento() {
     }).catch(e => console.log('Sync cancel erro:', e));
 
     if (index === -1) {
-        alert('Código verificado e cancelamento solicitado.');
+        mostrarToast('Código não encontrado nos agendamentos ativos locais.', 'aviso');
         return;
     }
 
@@ -280,7 +415,7 @@ function cancelarAgendamento() {
     appState.agendamentos[index].status = 'cancelado';
     saveState();
 
-    alert('Cancelado com sucesso!');
+    mostrarToast(`Agendamento de ${agendamento.nome} cancelado com sucesso.`, 'sucesso');
     
     const text = encodeURIComponent(`AVISO: O cliente ${agendamento.nome} CANCELOU o horário das ${agendamento.horario} (Dia ${agendamento.data}) para ${agendamento.servico}.`);
     window.open(`https://wa.me/${appState.whatsappAdmin}?text=${text}`, '_blank');
@@ -319,20 +454,45 @@ function renderAdminHorarios() {
     });
 }
 
+// --- FILTROS E BUSCA INSTANTÂNEA DA TABELA (ADMIN) ---
+function setFiltroAdminStatus(status) {
+    filtroAdminStatus = status;
+    const botoes = ['hoje', 'todos', 'ativo', 'cancelado'];
+    botoes.forEach(s => {
+        const btn = document.getElementById(`btn-filtro-${s}`);
+        if (!btn) return;
+        if (s === status) {
+            btn.className = 'text-xs px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/20 text-amber-300 font-semibold transition';
+        } else {
+            btn.className = 'text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white transition';
+        }
+    });
+    renderAdminAgendamentos();
+}
+
+function filtrarAgendamentosAdmin() {
+    const input = document.getElementById('filtro-busca-admin');
+    filtroAdminBusca = (input ? input.value : '').toLowerCase().trim();
+    renderAdminAgendamentos();
+}
+
 function renderAdminAgendamentos() {
     const hoje = new Date().toISOString().split('T')[0];
-    const agendamentosHoje = appState.agendamentos.filter(a => a.data === hoje);
-    const ativosHoje = agendamentosHoje.filter(a => a.status === 'ativo');
-    const canceladosHoje = agendamentosHoje.filter(a => a.status === 'cancelado');
+    const todosAgendamentos = appState.agendamentos || [];
+    const ativosHoje = todosAgendamentos.filter(a => a.data === hoje && a.status === 'ativo');
+    const canceladosHoje = todosAgendamentos.filter(a => a.data === hoje && a.status === 'cancelado');
     const bloqueiosHoje = appState.bloqueios[hoje] || [];
     const disponiveisHoje = defaultHorarios.filter(h => !ativosHoje.some(a => a.horario === h) && !bloqueiosHoje.includes(h));
 
-    const faturamentoBrutoGeral = appState.agendamentos.reduce((acc, a) => acc + (parseFloat(a.servico_preco || a.preco || 0)), 0);
+    const faturamentoBrutoGeral = todosAgendamentos.reduce((acc, a) => acc + (parseFloat(a.servico_preco || a.preco || 0)), 0);
     const faturamentoAtivosHoje = ativosHoje.reduce((acc, a) => acc + (parseFloat(a.servico_preco || a.preco || 0)), 0);
 
-    document.getElementById('card-total-agendamentos').textContent = appState.agendamentos.filter(a => a.status === 'ativo').length;
-    document.getElementById('card-cancelamentos').textContent = appState.agendamentos.filter(a => a.status === 'cancelado').length;
-    document.getElementById('card-horarios-disponiveis').textContent = disponiveisHoje.length;
+    const cardTotal = document.getElementById('card-total-agendamentos');
+    if (cardTotal) cardTotal.textContent = todosAgendamentos.filter(a => a.status === 'ativo').length;
+    const cardCanc = document.getElementById('card-cancelamentos');
+    if (cardCanc) cardCanc.textContent = todosAgendamentos.filter(a => a.status === 'cancelado').length;
+    const cardDisp = document.getElementById('card-horarios-disponiveis');
+    if (cardDisp) cardDisp.textContent = disponiveisHoje.length;
     
     const elResumoFat = document.getElementById('resumo-faturamento');
     if (elResumoFat) {
@@ -340,50 +500,109 @@ function renderAdminAgendamentos() {
     }
 
     renderCharts();
-    renderAgendamentosTable(agendamentosHoje, disponiveisHoje);
+
+    // Aplicação dos filtros rápidos e de pesquisa em tempo real (0ms)
+    let filtrados = todosAgendamentos;
+
+    if (filtroAdminStatus === 'hoje') {
+        filtrados = filtrados.filter(a => a.data === hoje);
+    } else if (filtroAdminStatus === 'ativo') {
+        filtrados = filtrados.filter(a => a.status === 'ativo');
+    } else if (filtroAdminStatus === 'cancelado') {
+        filtrados = filtrados.filter(a => a.status === 'cancelado');
+    }
+
+    if (filtroAdminBusca) {
+        filtrados = filtrados.filter(a => 
+            (a.nome && a.nome.toLowerCase().includes(filtroAdminBusca)) ||
+            (a.id && a.id.toLowerCase().includes(filtroAdminBusca)) ||
+            (a.servico && a.servico.toLowerCase().includes(filtroAdminBusca)) ||
+            (a.telefone && a.telefone.includes(filtroAdminBusca)) ||
+            (a.data && a.data.includes(filtroAdminBusca)) ||
+            (a.horario && a.horario.includes(filtroAdminBusca))
+        );
+    }
+
+    renderAgendamentosTable(filtrados, disponiveisHoje);
 }
 
-function renderAgendamentosTable(agendamentosHoje, disponiveisHoje) {
+function renderAgendamentosTable(agendamentosFiltrados, disponiveisHoje) {
     const container = document.getElementById('tabela-agendamentos-body');
+    if (!container) return;
     const rows = [];
 
-    agendamentosHoje.sort((a, b) => a.horario.localeCompare(b.horario)).forEach(a => {
-        const statusLabel = a.status === 'ativo' ? '✅ Marcado' : '❌ Cancelado';
-        const action = a.status === 'ativo'
-            ? `<button onclick="cancelarAgendamentoAdmin('${a.id}')" class="text-red-600 hover:underline">Cancelar</button>`
-            : `<button onclick="reativarAgendamento('${a.id}')" class="text-green-600 hover:underline">Reativar</button>`;
+    const lista = [...agendamentosFiltrados];
+    lista.sort((a, b) => (b.data || '').localeCompare(a.data || '') || (a.horario || '').localeCompare(b.horario || ''));
+
+    lista.forEach(a => {
+        const isAtivo = a.status === 'ativo';
+        const statusBadge = isAtivo 
+            ? `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">✅ Marcado</span>` 
+            : `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/15 border border-red-500/30 text-red-400">❌ Cancelado</span>`;
+        
+        const action = isAtivo
+            ? `<button onclick="cancelarAgendamentoAdmin('${a.id}')" class="text-xs text-red-400 hover:text-red-300 font-semibold underline transition">Cancelar</button>`
+            : `<button onclick="reativarAgendamento('${a.id}')" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold underline transition">Reativar</button>`;
 
         const telLimpo = (a.telefone || a.cliente_telefone || '').replace(/\D/g, '');
         const telComDdi = telLimpo ? (telLimpo.length <= 11 && !telLimpo.startsWith('55') ? '55' + telLimpo : telLimpo) : '';
         const zapMsg = encodeURIComponent(`Olá ${a.nome}! Confirmando seu agendamento na Barbearia VIP para o dia ${a.data} às ${a.horario} (${a.servico || 'Atendimento'}).`);
         const zapUrl = telComDdi ? `https://api.whatsapp.com/send?phone=${telComDdi}&text=${zapMsg}` : `https://api.whatsapp.com/send?text=${zapMsg}`;
-        const zapBtn = `<a href="${zapUrl}" target="_blank" style="background:#25D366; color:#000; font-weight:600; padding:3px 8px; border-radius:6px; text-decoration:none; margin-right:8px; font-size:12px; display:inline-block;">📲 WhatsApp</a>`;
+        const zapBtn = `<a href="${zapUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/30 font-semibold transition mr-2">📲 WhatsApp</a>`;
+
+        const codigoBtn = `
+            <div class="flex items-center gap-1.5">
+                <span class="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">${a.id}</span>
+                <button type="button" onclick="copiarTexto('${a.id}', this)" title="Copiar código" class="text-[11px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-zinc-300 hover:text-white transition">📋</button>
+            </div>
+        `;
 
         rows.push(`
-            <tr class="border-t border-slate-200">
-                <td class="py-3 px-3">${a.nome}</td>
-                <td class="py-3 px-3">${a.horario}</td>
-                <td class="py-3 px-3">${statusLabel}</td>
-                <td class="py-3 px-3">${zapBtn}${action}</td>
+            <tr class="hover:bg-white/5 transition">
+                <td class="py-3 px-3">
+                    <div class="font-semibold text-white">${a.nome}</div>
+                    <div class="text-xs text-zinc-400 font-mono">${a.telefone || '--'}</div>
+                </td>
+                <td class="py-3 px-3">
+                    <div class="text-zinc-200 text-xs">${a.data || '--'}</div>
+                    <div class="text-xs font-mono text-amber-400 font-bold">${a.horario || '--'}</div>
+                </td>
+                <td class="py-3 px-3 text-zinc-300 text-xs">${a.servico || 'Atendimento'}</td>
+                <td class="py-3 px-3">${codigoBtn}</td>
+                <td class="py-3 px-3">${statusBadge}</td>
+                <td class="py-3 px-3 text-right whitespace-nowrap">${zapBtn}${action}</td>
             </tr>
         `);
     });
 
-    disponiveisHoje.slice(0, 3).forEach(hora => {
-        rows.push(`
-            <tr class="border-t border-slate-200">
-                <td class="py-3 px-3">--</td>
-                <td class="py-3 px-3">${hora}</td>
-                <td class="py-3 px-3">🔓 Disponível</td>
-                <td class="py-3 px-3"><button onclick="reservarHorario('${hora}')" class="text-blue-600 hover:underline">Reservar</button></td>
-            </tr>
-        `);
-    });
+    if (filtroAdminStatus === 'hoje' && !filtroAdminBusca) {
+        disponiveisHoje.slice(0, 3).forEach(hora => {
+            rows.push(`
+                <tr class="hover:bg-white/[0.02] border-t border-white/5 opacity-70">
+                    <td class="py-2.5 px-3 text-zinc-500 italic text-xs">Horário Livre</td>
+                    <td class="py-2.5 px-3">
+                        <span class="text-xs font-mono text-emerald-400 font-bold">${hora}</span>
+                    </td>
+                    <td class="py-2.5 px-3 text-zinc-500 text-xs">--</td>
+                    <td class="py-2.5 px-3 text-zinc-500 text-xs">--</td>
+                    <td class="py-2.5 px-3"><span class="text-xs text-emerald-400/80 font-medium">🔓 Disponível</span></td>
+                    <td class="py-2.5 px-3 text-right">
+                        <button onclick="showTab('tab-agendar')" class="text-xs text-amber-400 hover:underline">Reservar</button>
+                    </td>
+                </tr>
+            `);
+        });
+    }
 
     if (rows.length === 0) {
-        container.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-500">Nenhum registro encontrado.</td></tr>`;
+        container.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-zinc-500">Nenhum agendamento encontrado para o filtro aplicado.</td></tr>`;
     } else {
         container.innerHTML = rows.join('');
+    }
+
+    const contadorEl = document.getElementById('contador-agendamentos-admin');
+    if (contadorEl) {
+        contadorEl.innerHTML = `Exibindo <strong>${agendamentosFiltrados.length}</strong> de <strong>${appState.agendamentos.length}</strong> agendamentos cadastrados.`;
     }
 }
 
@@ -626,20 +845,32 @@ function mudarSenha() {
     if (nova.length >= 4) {
         appState.senhaAdmin = nova;
         saveState();
-        alert('Senha atualizada!');
+        document.getElementById('nova-senha').value = '';
+        mostrarToast('Senha administrativa atualizada com sucesso!', 'sucesso');
+    } else {
+        mostrarToast('A nova senha deve possuir pelo menos 4 caracteres.', 'aviso');
     }
 }
 
 function salvarConfig() {
-    appState.whatsappAdmin = document.getElementById('admin-whatsapp').value;
-    saveState();
-    alert('Configurações salvas!');
+    const num = document.getElementById('admin-whatsapp').value.replace(/\D/g, '');
+    if (num.length >= 10) {
+        appState.whatsappAdmin = num;
+        saveState();
+        mostrarToast('Número do WhatsApp salvo com sucesso!', 'sucesso');
+    } else {
+        mostrarToast('Informe um telefone válido com DDD.', 'aviso');
+    }
 }
 
 // Inicialização
 document.getElementById('cliente-data').min = new Date().toISOString().split('T')[0];
 document.getElementById('admin-data').value = new Date().toISOString().split('T')[0];
 document.getElementById('admin-whatsapp').value = appState.whatsappAdmin;
+
+// Ativação da Máscara Automática de Telefone nos inputs
+document.querySelectorAll('input[type="tel"], #cliente-telefone, #cliente-tel, #admin-whatsapp, #telefone').forEach(aplicarMascaraTelefone);
+
 updateBadge();
 carregarServicosApi();
 sincronizarAgendamentosApi();

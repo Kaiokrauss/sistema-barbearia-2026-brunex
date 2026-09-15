@@ -948,6 +948,118 @@
 
     const soundVIP = new ChicAudioService();
 
+    // --- SISTEMA DE TOASTS MODERNOS (NOTIFICAÇÕES FLUTUANTES) ---
+    function mostrarToast(mensagem, tipo = 'sucesso') {
+        let container = document.getElementById('toast-container-vip');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container-vip';
+            container.style.cssText = 'position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:10px; pointer-events:none; max-width:390px; width:calc(100% - 40px);';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.style.cssText = 'pointer-events:auto; display:flex; align-items:center; gap:12px; padding:12px 18px; border-radius:14px; background:rgba(18,18,24,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); color:#fff; font-size:13.5px; font-weight:500; box-shadow:0 12px 35px rgba(0,0,0,0.65); transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity:0; transform:translateY(-12px) scale(0.96); border:1px solid rgba(255,255,255,0.1);';
+
+        let icone = '✨';
+        if (tipo === 'sucesso') {
+            icone = '✅';
+            toast.style.borderColor = 'rgba(34,197,94,0.45)';
+            toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 15px rgba(34,197,94,0.15)';
+        } else if (tipo === 'erro') {
+            icone = '❌';
+            toast.style.borderColor = 'rgba(239,68,68,0.45)';
+            toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 15px rgba(239,68,68,0.15)';
+        } else if (tipo === 'aviso') {
+            icone = '⚠️';
+            toast.style.borderColor = 'rgba(234,179,8,0.45)';
+            toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 15px rgba(234,179,8,0.15)';
+        } else if (tipo === 'copiado') {
+            icone = '📋';
+            toast.style.borderColor = 'rgba(212,175,55,0.6)';
+            toast.style.boxShadow = '0 12px 35px rgba(0,0,0,0.65), 0 0 18px rgba(212,175,55,0.25)';
+        }
+
+        toast.innerHTML = `
+            <span style="font-size:18px; flex-shrink:0;">${icone}</span>
+            <div style="flex:1; line-height:1.4;">${mensagem}</div>
+            <button style="background:transparent; border:none; color:#888; cursor:pointer; font-size:18px; padding:0; line-height:1; margin-left:4px;" onclick="this.parentElement.remove()">&times;</button>
+        `;
+
+        container.appendChild(toast);
+
+        requestAnimationFrame(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0) scale(1)';
+        });
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-10px) scale(0.96)';
+            setTimeout(() => toast.remove(), 320);
+        }, 3500);
+    }
+
+    // --- MÁSCARA AUTOMÁTICA DE TELEFONE / WHATSAPP ---
+    function aplicarMascaraTelefone(input) {
+        if (!input) return;
+        input.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            
+            if (v.length > 10) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+            } else if (v.length > 6) {
+                v = v.replace(/^(\d{2})(\d{4,5})(\d{0,4})$/, '($1) $2-$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d*)$/, '($1');
+            }
+            e.target.value = v;
+        });
+    }
+
+    // --- COPIAR CÓDIGO COM 1 CLIQUE (CLIPBOARD API) ---
+    function copiarTexto(texto, elementoBotao = null) {
+        if (!texto) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast(`Código <strong>${texto}</strong> copiado para a área de transferência!`, 'copiado');
+                if (elementoBotao) {
+                    const originalHtml = elementoBotao.innerHTML;
+                    elementoBotao.innerHTML = '✓ Copiado!';
+                    elementoBotao.style.filter = 'brightness(1.3)';
+                    setTimeout(() => {
+                        elementoBotao.innerHTML = originalHtml;
+                        elementoBotao.style.filter = 'none';
+                    }, 2000);
+                }
+            }).catch(() => fallbackCopiar(texto, elementoBotao));
+        } else {
+            fallbackCopiar(texto, elementoBotao);
+        }
+    }
+
+    function fallbackCopiar(texto, elementoBotao) {
+        const tempInput = document.createElement('input');
+        tempInput.value = texto;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        try {
+            document.execCommand('copy');
+            mostrarToast(`Código <strong>${texto}</strong> copiado!`, 'copiado');
+            if (elementoBotao) {
+                const originalHtml = elementoBotao.innerHTML;
+                elementoBotao.innerHTML = '✓ Copiado!';
+                setTimeout(() => { elementoBotao.innerHTML = originalHtml; }, 2000);
+            }
+        } catch (err) {
+            mostrarToast('Não foi possível copiar automaticamente.', 'aviso');
+        }
+        document.body.removeChild(tempInput);
+    }
+
     function atualizarBotaoSom() {
         const btn = document.getElementById('btn-toggle-som');
         const icone = document.getElementById('som-icone');
@@ -1202,8 +1314,14 @@
                     <div class="space-y-1 text-sm text-gray-200">
                         <p>👤 Cliente: <strong>${nome}</strong></p>
                         <p>📅 Data & Horário: <strong>${data_agendada} às ${horario}</strong></p>
-                        <p>🔑 Código de cancelamento: <span class="bg-black/40 px-2 py-0.5 rounded font-mono font-bold text-[#D4AF37] text-base">${result.codigo}</span></p>
-                        ${cupomAtivo ? `<p class="text-xs text-amber-300">🏷️ Benefício aplicado: <strong>${cupomAtivo.estrategia_desc}</strong></p>` : ''}
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span>🔑 Código de cancelamento:</span>
+                            <span class="bg-black/50 px-2.5 py-0.5 rounded font-mono font-bold text-[#D4AF37] text-base border border-amber-500/30">${result.codigo}</span>
+                            <button type="button" onclick="copiarTexto('${result.codigo}', this)" class="text-xs px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-semibold border border-amber-500/30 transition flex items-center gap-1">
+                                <span>📋</span> Copiar Código
+                            </button>
+                        </div>
+                        ${cupomAtivo ? `<p class="text-xs text-amber-300 mt-1">🏷️ Benefício aplicado: <strong>${cupomAtivo.estrategia_desc}</strong></p>` : ''}
                     </div>
 
                     <div class="mt-4 pt-3 border-t border-emerald-500/20 flex flex-wrap gap-2.5">
@@ -1223,6 +1341,7 @@
                     </div>
                 `;
                 box.classList.remove('hidden');
+                mostrarToast(`🎉 Agendamento confirmado para ${nome}!`, 'sucesso');
 
                 // Se houver URL do WhatsApp para o cliente, abre automaticamente em nova aba
                 if (result.whatsapp_url_cliente && telefone) {
@@ -1817,7 +1936,12 @@
                             a.status === 'ativo' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/15 text-red-300 border border-red-500/30'
                         }">${a.status === 'ativo' ? '✓ Ativo' : '✕ Cancelado'}</span>
                     </td>
-                    <td class="p-4 font-mono text-xs text-zinc-400">${a.codigo}</td>
+                    <td class="p-4 font-mono text-xs text-zinc-400">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">${a.codigo}</span>
+                            <button type="button" onclick="copiarTexto('${a.codigo}', this)" title="Copiar código" class="text-[11px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-zinc-400 hover:text-white transition">📋</button>
+                        </div>
+                    </td>
                     <td class="p-4 text-right">
                         <div class="flex items-center justify-end gap-1.5">
                             ${whatsUrl ? `
@@ -1953,6 +2077,7 @@
 
     // Inicialização
     atualizarBotaoSom();
+    document.querySelectorAll('input[type="tel"], #cliente-tel, #telefone').forEach(aplicarMascaraTelefone);
     carregarServicosSelect();
     carregarHorariosDisponiveis();
     carregarGradeGerenciador();

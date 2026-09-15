@@ -160,19 +160,39 @@
             </div>
         </div>
 
-        <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10 overflow-x-auto">
-            <h3 class="mb-4 text-base font-semibold text-white">Tabela de Gerenciamento</h3>
-            <table class="min-w-full text-left text-sm text-zinc-200">
-                <thead>
-                    <tr class="border-b border-white/10 text-zinc-400">
-                        <th class="py-3 px-3">Cliente</th>
-                        <th class="py-3 px-3">Horário</th>
-                        <th class="py-3 px-3">Status</th>
-                        <th class="py-3 px-3">Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-agendamentos-body" class="divide-y divide-white/5"></tbody>
-            </table>
+        <div class="rounded-3xl bg-[#18181F] p-5 shadow-lg border border-white/10">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+                <div class="relative w-full sm:w-80">
+                    <input type="text" id="filtro-busca-admin" oninput="filtrarAgendamentosAdmin()" placeholder="🔍 Buscar por cliente, serviço, código ou tel..." class="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition">
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" onclick="setFiltroAdminStatus('hoje')" id="btn-filtro-hoje" class="text-xs px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/20 text-amber-300 font-semibold transition">📅 Hoje</button>
+                    <button type="button" onclick="setFiltroAdminStatus('todos')" id="btn-filtro-todos" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white transition">📋 Todos</button>
+                    <button type="button" onclick="setFiltroAdminStatus('ativo')" id="btn-filtro-ativo" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white transition">✅ Marcados</button>
+                    <button type="button" onclick="setFiltroAdminStatus('cancelado')" id="btn-filtro-cancelado" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-400 hover:text-white transition">❌ Cancelados</button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left text-sm text-zinc-200">
+                    <thead>
+                        <tr class="border-b border-white/10 text-zinc-400 text-xs uppercase tracking-wider">
+                            <th class="py-3 px-3">Cliente</th>
+                            <th class="py-3 px-3">Data & Horário</th>
+                            <th class="py-3 px-3">Serviço</th>
+                            <th class="py-3 px-3">Código</th>
+                            <th class="py-3 px-3">Status</th>
+                            <th class="py-3 px-3 text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-agendamentos-body" class="divide-y divide-white/5"></tbody>
+                </table>
+            </div>
+
+            <div class="pt-4 mt-3 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-400">
+                <div id="contador-agendamentos-admin">Carregando agendamentos...</div>
+                <div class="italic text-[11px] text-zinc-500">Filtragem instantânea com feedback visual</div>
+            </div>
         </div>
     </div>
 
