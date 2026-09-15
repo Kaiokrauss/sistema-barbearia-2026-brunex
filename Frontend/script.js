@@ -422,36 +422,74 @@ function cancelarAgendamento() {
 }
 
 // --- LÓGICA DO BARBEIRO (ADMIN) ---
-function renderAdminHorarios() {
-    const data = document.getElementById('admin-data').value;
+async function renderAdminHorarios() {
+    const inputData = document.getElementById('admin-data');
+    if (!inputData) return;
+    if (!inputData.value) {
+        inputData.value = new Date().toISOString().split('T')[0];
+    }
+    const data = inputData.value;
     const container = document.getElementById('lista-horarios-admin');
-    container.innerHTML = '';
-    if (!data) return;
+    if (!container) return;
 
-    if (!appState.bloqueios[data]) appState.bloqueios[data] = [];
+    container.innerHTML = '<div style="text-align:center; padding:15px; color:#a1a1aa;">Carregando horários do banco...</div>';
 
-    defaultHorarios.forEach(h => {
-        const agendamento = appState.agendamentos.find(a => a.data === data && a.horario === h && a.status === 'ativo');
-        const isBlocked = appState.bloqueios[data].includes(h);
-        
-        let statusHtml = '<span style="color:var(--success)">Livre</span>';
-        let btnHtml = `<button onclick="toggleBlock('${data}', '${h}')" class="btn-danger">Bloquear</button>`;
+    try {
+        const resp = await fetch(`../api/agendamento.php?grade_completa=1&data=${data}`);
+        const res = await resp.json();
+        const grade = res.grade || [];
 
-        if (agendamento) {
-            // Mostrando o serviço na agenda
-            statusHtml = `<span style="color:var(--info)">Ocupado: ${agendamento.nome} <strong>(${agendamento.servico})</strong></span>`;
-            btnHtml = `<button disabled style="opacity:0.5">Reservado</button>`;
-        } else if (isBlocked) {
-            statusHtml = '<span style="color:var(--danger)">Bloqueado</span>';
-            btnHtml = `<button onclick="toggleBlock('${data}', '${h}')" class="btn-success">Liberar</button>`;
+        container.innerHTML = '';
+        if (grade.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:15px; color:#a1a1aa;">Nenhum horário configurado no expediente.</div>';
+            return;
         }
 
-        container.innerHTML += `
-            <div class="list-item">
-                <div><strong>${h}</strong> - ${statusHtml}</div>
-                <div>${btnHtml}</div>
-            </div>`;
-    });
+        grade.forEach(item => {
+            const h = item.horario;
+            let statusHtml = '<span style="color:var(--success); font-weight:600;">Livre</span>';
+            let btnHtml = `<button onclick="toggleBlock('${data}', '${h}')" class="btn-danger" style="font-size:12px; padding:6px 14px;">Bloquear</button>`;
+
+            if (item.status === 'ocupado') {
+                statusHtml = `<span style="color:var(--info); font-weight:600;">Ocupado: ${item.cliente_nome || 'Cliente'} <strong>(${item.servico_nome || 'Serviço'})</strong></span>`;
+                btnHtml = `<button disabled style="opacity:0.5; font-size:12px; padding:6px 14px;">Reservado</button>`;
+            } else if (item.status === 'bloqueado') {
+                statusHtml = '<span style="color:var(--danger); font-weight:600;">Bloqueado</span>';
+                btnHtml = `<button onclick="toggleBlock('${data}', '${h}')" class="btn-success" style="font-size:12px; padding:6px 14px;">Liberar</button>`;
+            }
+
+            container.innerHTML += `
+                <div class="list-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid rgba(255,255,255,0.1); border-radius:8px; margin-bottom:8px; background:rgba(255,255,255,0.03);">
+                    <div><strong style="font-size:1.05rem; font-family:monospace; color:#D4AF37;">${h}</strong> — ${statusHtml}</div>
+                    <div>${btnHtml}</div>
+                </div>`;
+        });
+    } catch (e) {
+        // Fallback local caso haja falha temporária de rede
+        if (!appState.bloqueios[data]) appState.bloqueios[data] = [];
+        container.innerHTML = '';
+        defaultHorarios.forEach(h => {
+            const agendamento = appState.agendamentos.find(a => a.data === data && a.horario === h && a.status === 'ativo');
+            const isBlocked = appState.bloqueios[data].includes(h);
+
+            let statusHtml = '<span style="color:var(--success)">Livre</span>';
+            let btnHtml = `<button onclick="toggleBlock('${data}', '${h}')" class="btn-danger" style="font-size:12px; padding:6px 14px;">Bloquear</button>`;
+
+            if (agendamento) {
+                statusHtml = `<span style="color:var(--info)">Ocupado: ${agendamento.nome} <strong>(${agendamento.servico})</strong></span>`;
+                btnHtml = `<button disabled style="opacity:0.5; font-size:12px; padding:6px 14px;">Reservado</button>`;
+            } else if (isBlocked) {
+                statusHtml = '<span style="color:var(--danger)">Bloqueado</span>';
+                btnHtml = `<button onclick="toggleBlock('${data}', '${h}')" class="btn-success" style="font-size:12px; padding:6px 14px;">Liberar</button>`;
+            }
+
+            container.innerHTML += `
+                <div class="list-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid rgba(255,255,255,0.1); border-radius:8px; margin-bottom:8px; background:rgba(255,255,255,0.03);">
+                    <div><strong style="font-size:1.05rem; font-family:monospace; color:#D4AF37;">${h}</strong> — ${statusHtml}</div>
+                    <div>${btnHtml}</div>
+                </div>`;
+        });
+    }
 }
 
 // --- FILTROS E BUSCA INSTANTÂNEA DA TABELA (ADMIN) ---
@@ -746,7 +784,21 @@ function reservarHorario(hora) {
     alert(`Reservar horário ${hora} pode ser feito pela aba de agendamento.`);
 }
 
-function toggleBlock(data, horario) {
+async function toggleBlock(data, horario) {
+    try {
+        const resp = await fetch('../api/agendamento.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ acao: 'toggle_bloqueio', data: data, horario: horario })
+        });
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast(`Horário ${horario} (${data}) atualizado com sucesso!`, 'sucesso');
+        }
+    } catch (e) {
+        console.log('Sync block erro:', e);
+    }
+
     if (!appState.bloqueios[data]) {
         appState.bloqueios[data] = [];
     }

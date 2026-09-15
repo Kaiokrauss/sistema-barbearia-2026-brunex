@@ -98,12 +98,17 @@
     </div>
 
     <div id="tab-horarios" class="tab-content">
-        <h2>Gerenciar Horários</h2>
-        <div class="form-group">
-            <label>Data:</label>
-            <input type="date" id="admin-data" onchange="renderAdminHorarios()">
+        <div class="mb-5 flex flex-col gap-1">
+            <h2 class="text-2xl font-bold text-white">Gerenciar Horários</h2>
+            <p class="text-sm text-zinc-400">Controle de horários livres, ocupados e bloqueios da barbearia.</p>
         </div>
-        <div id="lista-horarios-admin"></div>
+        <div class="flex flex-wrap items-center gap-3 bg-[#18181F] p-4 rounded-2xl border border-white/10 mb-5">
+            <label class="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-0">Escolha a Data:</label>
+            <input type="date" id="admin-data" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400 transition" onchange="renderAdminHorarios()">
+            <button type="button" onclick="document.getElementById('admin-data').value = new Date().toISOString().split('T')[0]; renderAdminHorarios();" class="text-xs px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/20 text-amber-300 font-semibold transition">Hoje</button>
+            <button type="button" onclick="let d = new Date(); d.setDate(d.getDate() + 1); document.getElementById('admin-data').value = d.toISOString().split('T')[0]; renderAdminHorarios();" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-zinc-300 hover:text-white transition">Amanhã</button>
+        </div>
+        <div id="lista-horarios-admin" class="space-y-2"></div>
     </div>
 
     <div id="tab-agendamentos" class="tab-content">

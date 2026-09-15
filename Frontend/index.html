@@ -1400,11 +1400,15 @@
     // Gerenciador de Horários (Disponíveis e Bloqueados)
     async function carregarGradeGerenciador() {
         const inputData = document.getElementById('data-gerenciar-horarios');
-        const data = inputData ? inputData.value : new Date().toISOString().split('T')[0];
+        const hojeStr = new Date().toISOString().split('T')[0];
+        if (inputData && !inputData.value) {
+            inputData.value = hojeStr;
+        }
+        const data = inputData && inputData.value ? inputData.value : hojeStr;
         const container = document.getElementById('gradeGerenciadorContainer');
-        if (!container || !data) return;
+        if (!container) return;
 
-        container.innerHTML = '<p class="text-gray-400 col-span-full py-4 text-center">Consultando horários no banco de dados...</p>';
+        container.innerHTML = '<p class="text-zinc-400 col-span-full py-6 text-center animate-pulse">Consultando horários no banco de dados...</p>';
 
         try {
             const resp = await fetch(`${API_AGENDAMENTOS}?grade_completa=1&data=${data}`);
@@ -1413,7 +1417,7 @@
 
             container.innerHTML = '';
             if (grade.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 col-span-full py-4 text-center">Nenhum horário configurado no expediente.</p>';
+                container.innerHTML = '<p class="text-zinc-500 col-span-full py-6 text-center">Nenhum horário configurado no expediente.</p>';
                 return;
             }
 
@@ -1427,21 +1431,21 @@
                     borderClass = 'bg-blue-950/20 border-blue-800/40 text-blue-300';
                     badgeHtml = `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-blue-900/60 text-blue-200">👤 Reservado</span>`;
                     btnActionHtml = `
-                        <div class="text-[11px] text-gray-400 mt-2 truncate font-normal" title="${item.cliente_nome} (${item.servico_nome})">
-                            ${item.cliente_nome} <span class="text-gray-500">| ${item.servico_nome}</span>
+                        <div class="text-[11px] text-zinc-400 mt-2 truncate font-normal" title="${item.cliente_nome} (${item.servico_nome})">
+                            ${item.cliente_nome} <span class="text-zinc-500">| ${item.servico_nome}</span>
                         </div>
                     `;
                 } else if (item.status === 'bloqueado') {
                     borderClass = 'bg-red-950/30 border-red-800/50 text-red-300';
                     badgeHtml = `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-red-900/60 text-red-200">🔒 Bloqueado</span>`;
                     btnActionHtml = `
-                        <button type="button" onclick="toggleHorarioBloqueio('${data}', '${item.horario}')" class="mt-3 w-full bg-green-700/30 hover:bg-green-700/50 text-green-300 border border-green-700/40 text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center justify-center gap-1">
+                        <button type="button" onclick="toggleHorarioBloqueio('${data}', '${item.horario}')" class="mt-3 w-full bg-emerald-700/30 hover:bg-emerald-700/50 text-emerald-300 border border-emerald-700/40 text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center justify-center gap-1">
                             ✅ Liberar Horário
                         </button>
                     `;
                 } else {
-                    borderClass = 'bg-green-950/20 border-green-800/40 text-green-300';
-                    badgeHtml = `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-green-900/60 text-green-200">🔓 Disponível</span>`;
+                    borderClass = 'bg-emerald-950/20 border-emerald-800/40 text-emerald-300';
+                    badgeHtml = `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-900/60 text-emerald-200">🔓 Disponível</span>`;
                     btnActionHtml = `
                         <button type="button" onclick="toggleHorarioBloqueio('${data}', '${item.horario}')" class="mt-3 w-full bg-red-700/30 hover:bg-red-700/50 text-red-300 border border-red-700/40 text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center justify-center gap-1">
                             ⛔ Bloquear
@@ -1449,7 +1453,7 @@
                     `;
                 }
 
-                const deleteSlotBtn = `<button type="button" onclick="removerHorarioExpediente('${item.horario}')" title="Remover este horário do expediente" class="text-gray-500 hover:text-red-400 text-xs p-1">✕</button>`;
+                const deleteSlotBtn = `<button type="button" onclick="removerHorarioExpediente('${item.horario}')" title="Remover este horário do expediente" class="text-zinc-500 hover:text-red-400 text-xs p-1">✕</button>`;
 
                 card.className = `p-3.5 rounded-xl border transition flex flex-col justify-between ${borderClass}`;
                 card.innerHTML = `
@@ -1467,7 +1471,13 @@
                 container.appendChild(card);
             });
         } catch (e) {
-            container.innerHTML = '<p class="text-red-400 col-span-full py-4 text-center">Erro ao carregar horários do banco.</p>';
+            console.error('Erro ao carregar grade:', e);
+            container.innerHTML = `
+                <div class="col-span-full p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-center">
+                    <p class="text-red-300 text-sm font-semibold mb-2">⚠️ Erro ao consultar horários no banco de dados.</p>
+                    <button type="button" onclick="carregarGradeGerenciador()" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-white font-medium transition">Tentar Novamente</button>
+                </div>
+            `;
         }
     }
 
