@@ -171,40 +171,56 @@ input, select {
 }
 
 .navbar {
-    background: #202020;
-    padding: 10px 20px;
+    background: #18181f;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .menu-toggle {
     display: none; 
     width: 100%;
-    background: #444;
+    background: #282832;
     color: var(--secondary);
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: bold;
     padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .nav-links {
     display: flex;
     flex-direction: row; 
     justify-content: center;
-    gap: 15px;
+    align-items: center;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
-.nav-links button {
+.nav-links button, .nav-links a {
     background: var(--secondary);
     color: var(--primary);
     border: none;
-    padding: 10px 15px;
+    padding: 8px 14px;
     cursor: pointer;
     font-weight: bold;
-    border-radius: 5px;
-    transition: 0.2s;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    box-sizing: border-box;
+    white-space: nowrap;
 }
 
-.nav-links button:hover {
-    opacity: 0.9;
+.nav-links button:hover, .nav-links a:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
 
 @media (max-width: 768px) {

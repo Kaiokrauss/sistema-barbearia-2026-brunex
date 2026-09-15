@@ -150,41 +150,68 @@
             box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
         }
 
+        /* Barra de Navegação Horizontal Elegante com Scroll Suave */
+        .nav-scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(212, 175, 55, 0.4) transparent;
+            -webkit-overflow-scrolling: touch;
+            padding-top: 3px;
+            padding-bottom: 3px;
+        }
+        .nav-scroll-container::-webkit-scrollbar {
+            height: 4px;
+        }
+        .nav-scroll-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 9999px;
+        }
+        .nav-scroll-container::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.35);
+            border-radius: 9999px;
+        }
+        .nav-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(212, 175, 55, 0.7);
+        }
+
         /* Efeitos e Animações da Barra de Navegação */
         .nav-btn {
             position: relative;
             overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
             cursor: pointer;
             user-select: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
+            justify-content: center;
+            gap: 0.45rem;
+            flex-shrink: 0;
+            line-height: 1.25;
+            box-sizing: border-box;
         }
 
-        /* Efeito de levitação suave e brilho ao passar o mouse */
+        /* Efeito de levitação suave e brilho ao passar o mouse sem estourar limites */
         .nav-btn:hover {
-            transform: translateY(-2.5px) scale(1.04);
-            border-color: rgba(212, 175, 55, 0.35);
+            transform: translateY(-1.5px);
+            border-color: rgba(212, 175, 55, 0.4);
             background: rgba(255, 255, 255, 0.08) !important;
             color: #ffffff !important;
-            box-shadow: 0 8px 22px -4px rgba(212, 175, 55, 0.28), 0 0 12px rgba(212, 175, 55, 0.15) inset;
+            box-shadow: 0 6px 16px -3px rgba(212, 175, 55, 0.25);
         }
 
         /* Animação do ícone dentro do botão no hover */
         .nav-btn .nav-icon, .nav-btn span:first-child {
             display: inline-block;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .nav-btn:hover .nav-icon, .nav-btn:hover span:first-child {
-            transform: scale(1.3) rotate(-8deg);
+            transform: scale(1.2) rotate(-5deg);
         }
 
         /* Feedback tátil ao clicar */
         .nav-btn:active {
-            transform: translateY(0px) scale(0.97);
+            transform: translateY(0px) scale(0.98);
         }
 
         /* Brilho Shimmer de luz que percorre o botão no hover */
@@ -209,40 +236,40 @@
         /* Animações e cores temáticas personalizadas por botão */
         .nav-btn-cancel:hover {
             border-color: rgba(239, 68, 68, 0.45) !important;
-            box-shadow: 0 8px 22px -4px rgba(239, 68, 68, 0.35), 0 0 12px rgba(239, 68, 68, 0.15) inset !important;
+            box-shadow: 0 6px 16px -3px rgba(239, 68, 68, 0.35) !important;
         }
         .nav-btn-cancel:hover .nav-icon, .nav-btn-cancel:hover span:first-child {
-            transform: scale(1.3) rotate(90deg) !important;
+            transform: scale(1.2) rotate(90deg) !important;
         }
 
         .nav-btn-horarios:hover {
             border-color: rgba(56, 189, 248, 0.45) !important;
-            box-shadow: 0 8px 22px -4px rgba(56, 189, 248, 0.35), 0 0 12px rgba(56, 189, 248, 0.15) inset !important;
+            box-shadow: 0 6px 16px -3px rgba(56, 189, 248, 0.35) !important;
         }
         .nav-btn-horarios:hover .nav-icon, .nav-btn-horarios:hover span:first-child {
-            transform: scale(1.35) rotate(360deg) !important;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            transform: scale(1.2) rotate(180deg) !important;
+            transition: transform 0.5s ease !important;
         }
 
         .nav-btn-resumo:hover {
             border-color: rgba(52, 211, 153, 0.45) !important;
-            box-shadow: 0 8px 22px -4px rgba(52, 211, 153, 0.35), 0 0 12px rgba(52, 211, 153, 0.15) inset !important;
+            box-shadow: 0 6px 16px -3px rgba(52, 211, 153, 0.35) !important;
         }
         .nav-btn-resumo:hover .nav-icon, .nav-btn-resumo:hover span:first-child {
-            transform: scale(1.3) translateY(-2px) !important;
+            transform: scale(1.2) translateY(-1px) !important;
         }
 
         .nav-btn-servicos:hover {
             border-color: rgba(245, 158, 11, 0.45) !important;
-            box-shadow: 0 8px 22px -4px rgba(245, 158, 11, 0.35), 0 0 12px rgba(245, 158, 11, 0.15) inset !important;
+            box-shadow: 0 6px 16px -3px rgba(245, 158, 11, 0.35) !important;
         }
 
         .nav-btn-export:hover {
             border-color: rgba(168, 85, 247, 0.45) !important;
-            box-shadow: 0 8px 22px -4px rgba(168, 85, 247, 0.35), 0 0 12px rgba(168, 85, 247, 0.15) inset !important;
+            box-shadow: 0 6px 16px -3px rgba(168, 85, 247, 0.35) !important;
         }
         .nav-btn-export:hover .nav-icon, .nav-btn-export:hover span:first-child {
-            transform: scale(1.3) translateY(2.5px) !important;
+            transform: scale(1.2) translateY(1.5px) !important;
         }
 
         /* Aba Ativa Dourada */
@@ -250,12 +277,12 @@
             background: linear-gradient(135deg, #EAD086, #D4AF37, #B38728) !important;
             color: #0a0a0c !important;
             font-weight: 800 !important;
-            box-shadow: 0 6px 22px rgba(212, 175, 55, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.3) inset !important;
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.25) inset !important;
             border-color: #F5DF9E !important;
         }
         .active-tab-gold:hover {
-            transform: translateY(-2px) scale(1.03) !important;
-            box-shadow: 0 8px 28px rgba(212, 175, 55, 0.6) !important;
+            transform: translateY(-1.5px) !important;
+            box-shadow: 0 6px 22px rgba(212, 175, 55, 0.55) !important;
             color: #000000 !important;
         }
 
@@ -306,65 +333,68 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-<!-- CABEÇALHO GLOBAL -->
-<header class="glass-panel border-b border-white/10 sticky top-0 z-50 px-3 sm:px-4 py-2.5 sm:py-3.5 backdrop-blur-xl">
-    <div class="max-w-6xl mx-auto flex justify-between items-center gap-2">
-        <div class="flex items-center gap-2.5 sm:gap-3.5 -translate-x-1 sm:-translate-x-4 flex-shrink-0">
-            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-lg sm:text-xl shadow-lg shadow-black/40">
-                💈
+<!-- TOPO FIXO UNIFICADO: CABEÇALHO + BARRA DE NAVEGAÇÃO VIP (Sem corte ou sobreposição) -->
+<div class="sticky top-0 z-50 w-full bg-[#0d0d12]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_12px_30px_rgba(0,0,0,0.65)]">
+    <!-- Cabeçalho Principal -->
+    <header class="border-b border-white/5 px-3 sm:px-6 py-2 sm:py-2.5">
+        <div class="max-w-6xl mx-auto flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-base sm:text-lg shadow-md shadow-black/40">
+                    💈
+                </div>
+                <div class="text-left">
+                    <p class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
+                    <h1 class="text-sm sm:text-lg font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
+                </div>
             </div>
-            <div class="text-left">
-                <p class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
-                <h1 class="text-base sm:text-xl font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                <button type="button" onclick="toggleSom()" id="btn-toggle-som" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-amber-400 border border-white/10 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5" title="Ativar/Desativar som dos cliques e confirmações">
+                    <span id="som-icone">🔊</span> <span id="som-texto" class="hidden sm:inline">Som VIP</span>
+                </button>
+                <button onclick="changeTab('tab-horarios')" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5">
+                    <span class="text-sm">⏰</span> <span class="hidden sm:inline">Gerenciar Horários</span><span class="sm:hidden">Horários</span>
+                </button>
             </div>
         </div>
-        <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
-            <button type="button" onclick="toggleSom()" id="btn-toggle-som" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-amber-400 border border-white/10 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl transition-all flex items-center gap-1.5" title="Ativar/Desativar som dos cliques e confirmações">
-                <span id="som-icone">🔊</span> <span id="som-texto" class="hidden sm:inline">Som VIP</span>
-            </button>
-            <button onclick="changeTab('tab-horarios')" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl transition-all flex items-center gap-1.5">
-                <span class="text-sm">⏰</span> <span class="hidden sm:inline">Gerenciar Horários</span><span class="sm:hidden">Horários</span>
-            </button>
-        </div>
-    </div>
-</header>
+    </header>
 
-<!-- MENU DE NAVEGAÇÃO ENTRE ABAS E ARQUIVOS -->
-<nav class="bg-[#101014]/90 border-b border-white/5 px-4 sticky top-[69px] z-40 backdrop-blur-md overflow-x-auto">
-    <div class="max-w-6xl mx-auto flex gap-2 py-2.5 items-center">
-        <button onclick="changeTab('tab-agendar')" id="btn-tab-agendar" class="nav-btn nav-btn-agendar active-tab-gold text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">📅</span> <span>Agendar</span>
-        </button>
-        <button onclick="changeTab('tab-cancelar')" id="btn-tab-cancelar" class="nav-btn nav-btn-cancel text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">❌</span> <span>Cancelar</span>
-        </button>
-        <button onclick="changeTab('tab-horarios')" id="btn-tab-horarios" class="nav-btn nav-btn-horarios text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">⏰</span> <span>Gerenciar Horários</span>
-        </button>
-        <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn nav-btn-resumo text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">📊</span> <span>Resumo</span>
-        </button>
-        <button onclick="changeTab('tab-fidelidade')" id="btn-tab-fidelidade" class="nav-btn nav-btn-fidelidade text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">🎁</span> <span>Fidelidade VIP</span>
-        </button>
-        <button onclick="changeTab('tab-avaliacoes')" id="btn-tab-avaliacoes" class="nav-btn nav-btn-avaliacoes text-zinc-400 text-xs px-4 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">⭐</span> <span>Avaliações</span>
-        </button>
-        <span class="text-zinc-700 px-1">|</span>
-        <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">📋</span> <span>Serviços</span>
-        </a>
-        <a href="../views/admin/caixa.html" class="nav-btn nav-btn-caixa text-zinc-400 hover:text-amber-400 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">💼</span> <span>Caixa & Comissões</span>
-        </a>
-        <a href="../views/admin/agendamentos.html" class="nav-btn nav-btn-export text-zinc-400 hover:text-amber-400 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap">
-            <span class="nav-icon">📥</span> <span>Exportações</span>
-        </a>
-        <a href="../api/backup.php?download=1" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2.5 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
-            <span class="nav-icon">💾</span> <span>Backup</span>
-        </a>
-    </div>
-</nav>
+    <!-- Menu de Navegação Horizontal -->
+    <nav class="px-2 sm:px-6 overflow-x-auto nav-scroll-container">
+        <div class="max-w-6xl mx-auto flex gap-1.5 sm:gap-2 py-2 sm:py-2.5 items-center min-w-max">
+            <button onclick="changeTab('tab-agendar')" id="btn-tab-agendar" class="nav-btn nav-btn-agendar active-tab-gold text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">📅</span> <span>Agendar</span>
+            </button>
+            <button onclick="changeTab('tab-cancelar')" id="btn-tab-cancelar" class="nav-btn nav-btn-cancel text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">❌</span> <span>Cancelar</span>
+            </button>
+            <button onclick="changeTab('tab-horarios')" id="btn-tab-horarios" class="nav-btn nav-btn-horarios text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">⏰</span> <span>Horários</span>
+            </button>
+            <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn nav-btn-resumo text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">📊</span> <span>Resumo</span>
+            </button>
+            <button onclick="changeTab('tab-fidelidade')" id="btn-tab-fidelidade" class="nav-btn nav-btn-fidelidade text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">🎁</span> <span>Fidelidade VIP</span>
+            </button>
+            <button onclick="changeTab('tab-avaliacoes')" id="btn-tab-avaliacoes" class="nav-btn nav-btn-avaliacoes text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">⭐</span> <span>Avaliações</span>
+            </button>
+            <span class="text-zinc-700 px-1 select-none">|</span>
+            <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">📋</span> <span>Serviços</span>
+            </a>
+            <a href="../views/admin/caixa.html" class="nav-btn nav-btn-caixa text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">💼</span> <span>Caixa & Comissões</span>
+            </a>
+            <a href="../views/admin/agendamentos.html" class="nav-btn nav-btn-export text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">📥</span> <span>Exportações</span>
+            </a>
+            <a href="../api/backup.php?download=1" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
+                <span class="nav-icon">💾</span> <span>Backup</span>
+            </a>
+        </div>
+    </nav>
+</div>
 
 <!-- HERO BANNER LUXUOSO -->
 <section class="max-w-6xl mx-auto px-4 pt-6 pb-2 w-full">
@@ -2653,6 +2683,17 @@
     carregarServicosSelect();
     carregarHorariosDisponiveis();
     carregarGradeGerenciador();
+
+    // Suporte a rolagem horizontal com a roda do mouse na barra de navegação
+    const navScroll = document.querySelector('.nav-scroll-container');
+    if (navScroll) {
+        navScroll.addEventListener('wheel', (evt) => {
+            if (evt.deltaY !== 0) {
+                evt.preventDefault();
+                navScroll.scrollLeft += evt.deltaY;
+            }
+        }, { passive: false });
+    }
 
     // Se houver hash na URL (ex: #tab-horarios ou #tab-cancelar)
     if (window.location.hash) {
