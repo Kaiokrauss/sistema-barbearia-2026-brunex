@@ -112,13 +112,15 @@ if ($method === 'GET') {
         exit;
     }
 
-    // Suporta filtros: ?data=YYYY-MM-DD ou ?cliente=nome
+    // Suporta filtros: ?data=YYYY-MM-DD, ?cliente=nome ou ?barbeiro_id=ID
     $data = $_GET['data'] ?? null;
     $cliente = $_GET['cliente'] ?? null;
+    $barbeiroId = isset($_GET['barbeiro_id']) && is_numeric($_GET['barbeiro_id']) ? (int)$_GET['barbeiro_id'] : null;
 
-    $sql = "SELECT a.*, s.nome AS servico_nome, s.preco AS servico_preco 
+    $sql = "SELECT a.*, s.nome AS servico_nome, s.preco AS servico_preco, u.nome AS barbeiro_nome 
             FROM agendamentos a 
-            LEFT JOIN servicos s ON a.servico_id = s.id";
+            LEFT JOIN servicos s ON a.servico_id = s.id 
+            LEFT JOIN usuarios u ON a.barbeiro_id = u.id";
     $conds = [];
     $params = [];
     if ($data) {
@@ -128,6 +130,10 @@ if ($method === 'GET') {
     if ($cliente) {
         $conds[] = "a.cliente_nome LIKE :cliente";
         $params[':cliente'] = "%$cliente%";
+    }
+    if ($barbeiroId) {
+        $conds[] = "a.barbeiro_id = :barbeiro_id";
+        $params[':barbeiro_id'] = $barbeiroId;
     }
     if (count($conds)) $sql .= ' WHERE ' . implode(' AND ', $conds);
     $sql .= ' ORDER BY a.data_agendada, a.horario';
@@ -230,6 +236,7 @@ if ($method === 'POST') {
         $ag->cliente_nome = trim($input['cliente_nome'] ?? '');
         $ag->cliente_telefone = trim($input['cliente_telefone'] ?? '');
         $rawServico = $input['servico_id'] ?? null;
+        $ag->barbeiro_id = !empty($input['barbeiro_id']) ? (int)$input['barbeiro_id'] : null;
         $ag->data_agendada = $input['data_agendada'] ?? null; // YYYY-MM-DD
         $ag->horario = substr(trim($input['horario'] ?? ''), 0, 5); // HH:MM
 
@@ -325,6 +332,7 @@ if ($method === 'PUT') {
     if (isset($input['status'])) { $fields[] = "status = :status"; $params[':status'] = $input['status']; }
     if (isset($input['horario'])) { $fields[] = "horario = :horario"; $params[':horario'] = $input['horario']; }
     if (isset($input['data_agendada'])) { $fields[] = "data_agendada = :data"; $params[':data'] = $input['data_agendada']; }
+    if (isset($input['barbeiro_id'])) { $fields[] = "barbeiro_id = :barbeiro_id"; $params[':barbeiro_id'] = !empty($input['barbeiro_id']) ? (int)$input['barbeiro_id'] : null; }
 
     if (!count($fields)) {
         http_response_code(400);

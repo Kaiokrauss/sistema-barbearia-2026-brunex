@@ -1,7 +1,7 @@
 <?php
 /**
  * API: Fechamento de Caixa Diário & Relatório de Comissões
- * Fornece os dados financeiros consolidados, rateio de comissões e detalhamento de atendimentos.
+ * Fornece os dados financeiros consolidados, rateio de comissões por barbeiro e detalhamento de atendimentos.
  */
 header('Content-Type: application/json; charset=utf-8');
 
@@ -11,15 +11,30 @@ require_once __DIR__ . '/../Models/CaixaService.php';
 try {
     $caixaService = new CaixaService();
 
+    // Rota para listar apenas os barbeiros cadastrados
+    if (isset($_GET['barbeiros']) || (isset($_GET['acao']) && $_GET['acao'] === 'barbeiros')) {
+        echo json_encode([
+            'success' => true,
+            'barbeiros' => $caixaService->getBarbeiros()
+        ]);
+        exit;
+    }
+
+    $barbeiroId = isset($_GET['barbeiro_id']) && is_numeric($_GET['barbeiro_id']) && (int)$_GET['barbeiro_id'] > 0
+        ? (int)$_GET['barbeiro_id']
+        : null;
+
+    $taxaComissao = isset($_GET['comissao']) ? (float)$_GET['comissao'] : 50.0;
+
     // Se solicitar histórico comparativo dos últimos N dias
     if (isset($_GET['historico'])) {
         $dias = max(1, min(30, (int)$_GET['historico']));
-        $taxaComissao = isset($_GET['comissao']) ? (float)$_GET['comissao'] : 50.0;
-        $historico = $caixaService->getHistoricoResumido($dias, $taxaComissao);
+        $historico = $caixaService->getHistoricoResumido($dias, $taxaComissao, $barbeiroId);
 
         echo json_encode([
             'success' => true,
             'dias' => $dias,
+            'barbeiro_id' => $barbeiroId,
             'comissao_padrao' => $taxaComissao,
             'historico' => $historico
         ]);
@@ -28,12 +43,11 @@ try {
 
     // Fechamento da data solicitada (ou data atual)
     $data = $_GET['data'] ?? date('Y-m-d');
-    $taxaComissao = isset($_GET['comissao']) ? (float)$_GET['comissao'] : 50.0;
-
-    $fechamento = $caixaService->fecharCaixa($data, $taxaComissao);
+    $fechamento = $caixaService->fecharCaixa($data, $taxaComissao, $barbeiroId);
 
     echo json_encode([
         'success' => true,
+        'barbeiros' => $caixaService->getBarbeiros(),
         'dados' => $fechamento
     ]);
     exit;

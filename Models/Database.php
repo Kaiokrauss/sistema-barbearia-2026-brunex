@@ -111,14 +111,26 @@ class Database {
                     `cliente_nome` VARCHAR(120) NOT NULL,
                     `cliente_telefone` VARCHAR(20) DEFAULT NULL,
                     `servico_id` INT NOT NULL,
+                    `barbeiro_id` INT NULL DEFAULT NULL,
                     `data_agendada` DATE NOT NULL,
                     `horario` TIME NOT NULL,
                     `status` ENUM('ativo','cancelado','concluido') DEFAULT 'ativo',
                     `codigo` CHAR(6) NOT NULL UNIQUE,
                     `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    INDEX `idx_data_status` (`data_agendada`, `status`)
+                    INDEX `idx_data_status` (`data_agendada`, `status`),
+                    INDEX `idx_barbeiro` (`barbeiro_id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ");
+
+            // Migração automática se a coluna barbeiro_id não existir na tabela agendamentos
+            try {
+                $colCheck = $this->conn->query("SHOW COLUMNS FROM `agendamentos` LIKE 'barbeiro_id'");
+                if (!$colCheck->fetch()) {
+                    $this->conn->exec("ALTER TABLE `agendamentos` ADD COLUMN `barbeiro_id` INT NULL DEFAULT NULL, ADD INDEX `idx_barbeiro` (`barbeiro_id`)");
+                }
+            } catch (PDOException $e) {
+                // Coluna já existe ou tratada
+            }
 
             // 4. Tabela bloqueios_horario
             $this->conn->exec("
@@ -191,6 +203,38 @@ class Database {
                     ON DUPLICATE KEY UPDATE `perfil` = 'admin', `ativo` = 1
                 ");
                 $stInsAdm->execute([':senha' => $senhaHash]);
+            }
+
+            // Garante equipe de barbeiros cadastrada para rateio de comissões
+            $stBarbeiros = $this->conn->query("SELECT COUNT(*) FROM `usuarios` WHERE `perfil` = 'barbeiro'");
+            if ((int)$stBarbeiros->fetchColumn() < 3) {
+                $senhaPadrao = password_hash('barbeiro123', PASSWORD_BCRYPT);
+                $barbeirosPadrao = [
+                    ['João Barbeiro', 'joao@barbearia.com', '(11) 98888-1111'],
+                    ['Carlos Navalha', 'carlos@barbearia.com', '(11) 98888-2222'],
+                    ['Lucas Degradê', 'lucas@barbearia.com', '(11) 98888-3333']
+                ];
+
+                $stInsB = $this->conn->prepare("
+                    INSERT INTO `usuarios` (`nome`, `email`, `telefone`, `senha`, `perfil`, `ativo`)
+                    VALUES (:nome, :email, :tel, :senha, 'barbeiro', 1)
+                    ON DUPLICATE KEY UPDATE `perfil` = 'barbeiro', `ativo` = 1
+                ");
+
+                foreach ($barbeirosPadrao as $b) {
+                    $stInsB->execute([
+                        ':nome' => $b[0],
+                        ':email' => $b[1],
+                        ':tel' => $b[2],
+                        ':senha' => $senhaPadrao
+                    ]);
+                }
+            }
+
+            // Atualiza agendamentos legados que estejam sem barbeiro associado
+            $primeiroBarbeiro = $this->conn->query("SELECT id FROM `usuarios` WHERE `perfil` = 'barbeiro' AND `ativo` = 1 ORDER BY id ASC LIMIT 1")->fetchColumn();
+            if ($primeiroBarbeiro) {
+                $this->conn->exec("UPDATE `agendamentos` SET `barbeiro_id` = {$primeiroBarbeiro} WHERE `barbeiro_id` IS NULL");
             }
 
         } catch (PDOException $e) {

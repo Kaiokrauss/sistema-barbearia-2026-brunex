@@ -229,8 +229,8 @@
 
     <!-- CABEÇALHO EXCLUSIVO PARA IMPRESSÃO -->
     <div class="print-only p-6 border-b-2 border-black text-center mb-6">
-        <h1 class="text-2xl font-bold uppercase tracking-wider">Barbearia VIP — Relatório de Fechamento de Caixa</h1>
-        <p class="text-sm mt-1">Demonstrativo Diário de Vendas, Comissões e Repasse Profissional</p>
+        <h1 id="print-titulo" class="text-2xl font-bold uppercase tracking-wider">Barbearia VIP — Relatório de Fechamento de Caixa</h1>
+        <p id="print-subtitulo" class="text-sm mt-1">Demonstrativo Diário de Vendas, Comissões e Repasse Profissional</p>
         <p class="text-xs text-gray-600 mt-1" id="print-data-emissao">Emitido em: --/--/---- às --:--</p>
     </div>
 
@@ -244,7 +244,7 @@
                 <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-1 flex items-center gap-2.5">
                     <span>💼 Fechamento de Caixa Diário</span>
                 </h2>
-                <p class="text-sm text-zinc-400 mt-1">Apure o faturamento do dia, rateio de comissões da equipe e receita líquida da casa.</p>
+                <p class="text-sm text-zinc-400 mt-1">Apure o faturamento do dia, rateio de comissões por barbeiro e receita líquida da casa.</p>
             </div>
             
             <div class="flex items-center gap-2.5 flex-wrap">
@@ -259,30 +259,62 @@
 
         <!-- PAINEL DE FILTROS & TAXA DE COMISSÃO (NO-PRINT) -->
         <div class="no-print glass-panel rounded-3xl p-5 mb-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                <!-- 1. Data -->
                 <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1.5 uppercase tracking-wider">📅 Data do Fechamento</label>
                     <input type="date" id="inputData" class="dark-input w-full" onchange="carregarFechamento()">
                 </div>
+
+                <!-- 2. Seletor de Barbeiro -->
+                <div>
+                    <label class="block text-xs font-bold text-zinc-300 mb-1.5 uppercase tracking-wider">💈 Profissional / Barbeiro</label>
+                    <select id="selectBarbeiro" class="dark-input w-full font-semibold text-amber-300" onchange="carregarFechamento()">
+                        <option value="">👑 Todos os Barbeiros (Equipe)</option>
+                    </select>
+                </div>
+
+                <!-- 3. Taxa de Comissão -->
                 <div>
                     <label class="block text-xs font-bold text-zinc-300 mb-1.5 uppercase tracking-wider">✂️ Taxa de Comissão (%)</label>
                     <div class="flex items-center gap-2">
-                        <input type="number" id="inputComissao" min="0" max="100" step="1" value="50" class="dark-input w-24 text-center font-bold text-amber-400" oninput="atualizarEstiloBotoesPct(this.value)" onchange="carregarFechamento()">
-                        <span class="text-sm text-zinc-400">% barbeiro</span>
+                        <input type="number" id="inputComissao" min="0" max="100" step="1" value="50" class="dark-input w-20 text-center font-bold text-amber-400" oninput="atualizarEstiloBotoesPct(this.value)" onchange="carregarFechamento()">
+                        <span class="text-xs text-zinc-400">% repasse</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2" id="container-botoes-pct">
-                    <button type="button" data-pct="40" onclick="setComissao(40)" class="btn-pct btn-pct-inactive px-3.5 py-2 rounded-xl text-xs font-semibold" title="Aplicar 40% de comissão">40%</button>
-                    <button type="button" data-pct="50" onclick="setComissao(50)" class="btn-pct btn-pct-active px-3.5 py-2 rounded-xl text-xs font-extrabold pop-anim" title="Aplicar 50% de comissão">50%</button>
-                    <button type="button" data-pct="60" onclick="setComissao(60)" class="btn-pct btn-pct-inactive px-3.5 py-2 rounded-xl text-xs font-semibold" title="Aplicar 60% de comissão">60%</button>
-                    <button type="button" data-pct="70" onclick="setComissao(70)" class="btn-pct btn-pct-inactive px-3.5 py-2 rounded-xl text-xs font-semibold" title="Aplicar 70% de comissão">70%</button>
+
+                <!-- 4. Botões Rápidos de % -->
+                <div class="flex items-center gap-1.5" id="container-botoes-pct">
+                    <button type="button" data-pct="40" onclick="setComissao(40)" class="btn-pct btn-pct-inactive px-2.5 py-2 rounded-xl text-xs font-semibold" title="Aplicar 40% de comissão">40%</button>
+                    <button type="button" data-pct="50" onclick="setComissao(50)" class="btn-pct btn-pct-active px-2.5 py-2 rounded-xl text-xs font-extrabold pop-anim" title="Aplicar 50% de comissão">50%</button>
+                    <button type="button" data-pct="60" onclick="setComissao(60)" class="btn-pct btn-pct-inactive px-2.5 py-2 rounded-xl text-xs font-semibold" title="Aplicar 60% de comissão">60%</button>
+                    <button type="button" data-pct="70" onclick="setComissao(70)" class="btn-pct btn-pct-inactive px-2.5 py-2 rounded-xl text-xs font-semibold" title="Aplicar 70% de comissão">70%</button>
                 </div>
-                <div class="text-right">
+
+                <!-- 5. Botão Atualizar -->
+                <div>
                     <button type="button" onclick="carregarFechamento()" class="gold-btn w-full py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2">
-                        <span>🔄</span> Atualizar Dados
+                        <span>🔄</span> Atualizar
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- BANNER DE BARBEIRO SELECIONADO (NO-PRINT) -->
+        <div id="banner-filtro-barbeiro" class="hidden no-print glass-panel rounded-3xl p-4 mb-8 border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-amber-600/5 to-transparent flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-2xl shadow-lg shadow-black/40">
+                    ✂️
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold tracking-widest text-amber-400">Apuração Individual de Comissões</span>
+                    <h4 id="banner-nome-barbeiro" class="text-lg font-display font-bold text-white leading-tight">Carlos Navalha</h4>
+                    <p class="text-xs text-zinc-400 mt-0.5">Exibindo atendimentos, comissão líquida e métricas deste profissional.</p>
+                </div>
+            </div>
+            <button type="button" onclick="limparFiltroBarbeiro()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-zinc-300 hover:text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+                <span>✕</span> <span>Ver Toda a Equipe</span>
+            </button>
         </div>
 
         <!-- MENSAGEM / NOTIFICAÇÃO -->
@@ -302,10 +334,10 @@
                 </p>
             </div>
 
-            <!-- 2. Comissão dos Barbeiros -->
+            <!-- 2. Comissão dos Barbeiros / Individual -->
             <div class="glass-panel rounded-3xl p-5 border border-amber-500/20">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-widest text-amber-300">Comissão da Equipe</span>
+                    <span id="titulo-card-comissao" class="text-[11px] font-bold uppercase tracking-widest text-amber-300">Comissão da Equipe</span>
                     <span class="text-lg">✂️</span>
                 </div>
                 <p id="card-comissao" class="mt-3 text-3xl font-display font-extrabold text-amber-400">R$ 0,00</p>
@@ -338,6 +370,21 @@
                 </p>
             </div>
         </div>
+
+        <!-- SEÇÃO: RATEIO E COMISSÕES POR BARBEIRO (VISÍVEL NO MODO CONSOLIDADO) -->
+        <section id="secao-rateio-barbeiros" class="glass-panel rounded-3xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                    <span>💈</span> Rateio de Comissões por Barbeiro
+                </h3>
+                <span id="badge-total-barbeiros-comissao" class="text-xs text-amber-400 font-mono font-bold">0 profissionais</span>
+            </div>
+            <p class="text-xs text-zinc-400 mb-4">Apuração consolidada da remuneração a repassar para cada barbeiro. Clique no profissional para visualizar seu extrato individual.</p>
+            
+            <div id="grid-cards-barbeiros" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Cards de rateio injetados via JavaScript -->
+            </div>
+        </section>
 
         <!-- BREAKDOWN DE SERVIÇOS DO DIA -->
         <section class="glass-panel rounded-3xl p-6 mb-8">
@@ -373,7 +420,7 @@
                     <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
                         <span>🧾</span> Extrato Detalhado de Atendimentos
                     </h3>
-                    <p class="text-xs text-zinc-400 mt-0.5">Relação completa de todos os agendamentos registrados para esta data.</p>
+                    <p class="text-xs text-zinc-400 mt-0.5">Relação completa de todos os atendimentos registrados para esta data.</p>
                 </div>
                 <div class="flex items-center gap-2 text-xs">
                     <span id="filtro-badge-status" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300 font-mono">0 registros</span>
@@ -388,6 +435,7 @@
                             <th class="p-3">Cliente</th>
                             <th class="p-3">Telefone</th>
                             <th class="p-3">Serviço</th>
+                            <th class="p-3">Barbeiro</th>
                             <th class="p-3 text-right">Valor</th>
                             <th class="p-3 text-right">Comissão</th>
                             <th class="p-3 text-right">Casa</th>
@@ -395,7 +443,7 @@
                         </tr>
                     </thead>
                     <tbody id="tabela-atendimentos" class="divide-y divide-white/5">
-                        <tr><td colspan="8" class="p-6 text-center text-zinc-500">Nenhum atendimento encontrado para esta data.</td></tr>
+                        <tr><td colspan="9" class="p-6 text-center text-zinc-500">Nenhum atendimento encontrado para esta data.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -411,7 +459,7 @@
                 </div>
                 <div>
                     <div class="border-b border-black pb-8 mb-2"></div>
-                    <p class="font-bold">Assinatura do Profissional / Barbeiro</p>
+                    <p class="font-bold" id="print-label-assinatura-barbeiro">Assinatura do Profissional / Barbeiro</p>
                     <p class="text-gray-600">Conferência de Comissões</p>
                 </div>
             </div>
@@ -460,9 +508,9 @@
                 const bPct = Number(b.getAttribute('data-pct'));
                 b.classList.remove('pop-anim');
                 if (bPct === Number(pct)) {
-                    b.className = 'btn-pct btn-pct-active px-3.5 py-2 rounded-xl text-xs font-extrabold pop-anim';
+                    b.className = 'btn-pct btn-pct-active px-2.5 py-2 rounded-xl text-xs font-extrabold pop-anim';
                 } else {
-                    b.className = 'btn-pct btn-pct-inactive px-3.5 py-2 rounded-xl text-xs font-semibold';
+                    b.className = 'btn-pct btn-pct-inactive px-2.5 py-2 rounded-xl text-xs font-semibold';
                 }
             });
         }
@@ -472,6 +520,35 @@
             atualizarEstiloBotoesPct(pct);
             playChime();
             carregarFechamento();
+        }
+
+        function preencherSelectBarbeiros(barbeiros, barbeiroSelecionadoId) {
+            const sel = document.getElementById('selectBarbeiro');
+            if (!sel) return;
+            const currentVal = barbeiroSelecionadoId !== undefined ? String(barbeiroSelecionadoId) : sel.value;
+            sel.innerHTML = '<option value="">👑 Todos os Barbeiros (Equipe)</option>';
+            barbeiros.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.id;
+                opt.textContent = `✂️ ${b.nome}`;
+                if (String(b.id) === currentVal) {
+                    opt.selected = true;
+                }
+                sel.appendChild(opt);
+            });
+        }
+
+        function filtrarPorBarbeiro(barbeiroId) {
+            const sel = document.getElementById('selectBarbeiro');
+            if (sel) {
+                sel.value = barbeiroId || '';
+                playChime();
+                carregarFechamento();
+            }
+        }
+
+        function limparFiltroBarbeiro() {
+            filtrarPorBarbeiro('');
         }
 
         // Inicializa o campo de data com a data atual local
@@ -486,8 +563,12 @@
         function carregarFechamento() {
             const data = document.getElementById('inputData').value;
             const comissao = document.getElementById('inputComissao').value || 50;
+            const barbeiroId = document.getElementById('selectBarbeiro').value;
 
-            const url = `${API_CAIXA}?data=${data}&comissao=${comissao}`;
+            let url = `${API_CAIXA}?data=${data}&comissao=${comissao}`;
+            if (barbeiroId) {
+                url += `&barbeiro_id=${encodeURIComponent(barbeiroId)}`;
+            }
 
             fetch(url)
                 .then(r => r.json())
@@ -496,14 +577,49 @@
                         alert(res.error || 'Erro ao carregar fechamento de caixa.');
                         return;
                     }
+
+                    // Preenche o select de barbeiros se ainda contiver apenas a opção padrão
+                    if (res.barbeiros && res.barbeiros.length > 0) {
+                        const sel = document.getElementById('selectBarbeiro');
+                        if (sel && sel.children.length <= 1) {
+                            preencherSelectBarbeiros(res.barbeiros, barbeiroId);
+                        }
+                    }
+
                     renderizarDados(res.dados);
                 })
                 .catch(err => {
-                    console.error(err);
+                    console.error('Falha ao obter fechamento:', err);
                 });
         }
 
         function renderizarDados(d) {
+            const barbeiro = d.barbeiro_selecionado;
+            const banner = document.getElementById('banner-filtro-barbeiro');
+            const secaoRateio = document.getElementById('secao-rateio-barbeiros');
+            const tituloCardComissao = document.getElementById('titulo-card-comissao');
+            const printTitulo = document.getElementById('print-titulo');
+            const printSubtitulo = document.getElementById('print-subtitulo');
+            const printAssinatura = document.getElementById('print-label-assinatura-barbeiro');
+
+            // Configuração do modo individual vs consolidado
+            if (barbeiro) {
+                banner.classList.remove('hidden');
+                document.getElementById('banner-nome-barbeiro').textContent = barbeiro.nome;
+                secaoRateio.classList.add('hidden');
+                tituloCardComissao.textContent = `Comissão: ${barbeiro.nome}`;
+                printTitulo.textContent = `Barbearia VIP — Relatório Individual de Comissões`;
+                printSubtitulo.textContent = `Apuração Diária do Profissional: ${barbeiro.nome}`;
+                printAssinatura.textContent = `Assinatura: ${barbeiro.nome} (Profissional)`;
+            } else {
+                banner.classList.add('hidden');
+                secaoRateio.classList.remove('hidden');
+                tituloCardComissao.textContent = 'Comissão da Equipe';
+                printTitulo.textContent = 'Barbearia VIP — Relatório de Fechamento de Caixa';
+                printSubtitulo.textContent = 'Demonstrativo Diário de Vendas, Comissões e Repasse Profissional';
+                printAssinatura.textContent = 'Assinatura do Profissional / Barbeiro';
+            }
+
             // Data e dia
             document.getElementById('label-dia-semana').textContent = `${d.dia_semana}, ${d.data_formatada}`;
             const printEl = document.getElementById('print-data-emissao');
@@ -523,6 +639,61 @@
             document.getElementById('badge-taxa-comissao').textContent = `${taxa}% taxa`;
             document.getElementById('badge-taxa-casa').textContent = `${(100 - taxa)}% margem`;
             atualizarEstiloBotoesPct(taxa);
+
+            // Rateio por Barbeiro (Grid de Cards)
+            const gridBarbeiros = document.getElementById('grid-cards-barbeiros');
+            gridBarbeiros.innerHTML = '';
+            const breakdownBarbeiros = d.breakdown_barbeiros || [];
+            document.getElementById('badge-total-barbeiros-comissao').textContent = `${breakdownBarbeiros.length} profissionais com atendimentos`;
+
+            if (breakdownBarbeiros.length === 0) {
+                gridBarbeiros.innerHTML = `
+                    <div class="col-span-full p-6 text-center text-zinc-500 rounded-2xl bg-white/[0.02] border border-white/5">
+                        💈 Nenhum atendimento comissionado registrado nesta data.
+                    </div>
+                `;
+            } else {
+                breakdownBarbeiros.forEach(b => {
+                    const card = document.createElement('div');
+                    card.className = 'rounded-2xl p-4 bg-white/[0.03] border border-white/10 hover:border-amber-500/40 hover:bg-white/[0.05] transition flex flex-col justify-between';
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-sm font-bold text-amber-400">
+                                        ✂️
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-white">${b.barbeiro_nome}</h4>
+                                        <p class="text-[11px] text-zinc-400 font-mono">${b.quantidade} ${b.quantidade === 1 ? 'atendimento' : 'atendimentos'}</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold">
+                                    ${taxa}%
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 my-3 p-2.5 rounded-xl bg-black/40 border border-white/5 text-xs">
+                                <div>
+                                    <span class="text-[10px] uppercase text-zinc-400 block">Faturado</span>
+                                    <span class="font-bold font-mono text-zinc-200">${formatarMoeda(b.total_faturado)}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] uppercase text-amber-400 block font-bold">A Receber</span>
+                                    <span class="font-bold font-mono text-amber-300">${formatarMoeda(b.total_comissao)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${b.barbeiro_id ? `
+                            <button type="button" onclick="filtrarPorBarbeiro(${b.barbeiro_id})" class="mt-2 w-full py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-bold text-xs transition flex items-center justify-center gap-1.5">
+                                <span>🔍</span> <span>Ver Extrato Deste Barbeiro</span>
+                            </button>
+                        ` : ''}
+                    `;
+                    gridBarbeiros.appendChild(card);
+                });
+            }
 
             // Breakdown de Serviços
             const tbServicos = document.getElementById('tabela-servicos');
@@ -550,10 +721,10 @@
             const tbAtendimentos = document.getElementById('tabela-atendimentos');
             tbAtendimentos.innerHTML = '';
             const atendimentos = d.atendimentos || [];
-            document.getElementById('filtro-badge-status').textContent = `${atendimentos.length} registros no dia`;
+            document.getElementById('filtro-badge-status').textContent = `${atendimentos.length} registros`;
 
             if (atendimentos.length === 0) {
-                tbAtendimentos.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-zinc-500">Nenhum atendimento registrado nesta data.</td></tr>';
+                tbAtendimentos.innerHTML = '<tr><td colspan="9" class="p-6 text-center text-zinc-500">Nenhum atendimento registrado com os filtros selecionados.</td></tr>';
             } else {
                 atendimentos.forEach(a => {
                     const tr = document.createElement('tr');
@@ -567,6 +738,7 @@
                         <td class="p-3 font-semibold text-white">${a.cliente_nome}</td>
                         <td class="p-3 font-mono text-xs text-zinc-400">${a.cliente_telefone || '-'}</td>
                         <td class="p-3 text-zinc-300">${a.servico}</td>
+                        <td class="p-3 text-amber-300 font-medium text-xs">✂️ ${a.barbeiro_nome || 'Equipe'}</td>
                         <td class="p-3 text-right font-mono ${isCancelado ? 'line-through text-zinc-500' : 'text-white font-bold'}">${formatarMoeda(a.preco)}</td>
                         <td class="p-3 text-right font-mono ${isCancelado ? 'text-zinc-600' : 'text-amber-300 font-semibold'}">${formatarMoeda(a.comissao_barbeiro)}</td>
                         <td class="p-3 text-right font-mono ${isCancelado ? 'text-zinc-600' : 'text-emerald-300 font-semibold'}">${formatarMoeda(a.lucro_casa)}</td>

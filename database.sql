@@ -45,13 +45,15 @@ CREATE TABLE IF NOT EXISTS `agendamentos` (
   `cliente_nome` VARCHAR(120) NOT NULL,
   `cliente_telefone` VARCHAR(20) DEFAULT NULL,
   `servico_id` INT(11) NOT NULL,
+  `barbeiro_id` INT(11) DEFAULT NULL,
   `data_agendada` DATE NOT NULL,
   `horario` TIME NOT NULL,
   `status` ENUM('ativo','cancelado','concluido') DEFAULT 'ativo',
   `codigo` CHAR(6) NOT NULL UNIQUE,
   `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  INDEX `idx_data_status` (`data_agendada`, `status`)
+  INDEX `idx_data_status` (`data_agendada`, `status`),
+  INDEX `idx_barbeiro` (`barbeiro_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -113,10 +115,13 @@ INSERT IGNORE INTO `servicos` (`id`, `nome`, `preco`, `duracao_minutos`) VALUES
 (3, 'Barba e Cabelo', 50.00, 30);
 
 -- --------------------------------------------------------
--- Dados Iniciais: Usuário Administrador Padrão (senha: admin123)
+-- Dados Iniciais: Usuários (Administrador e Barbeiros)
 -- --------------------------------------------------------
 INSERT IGNORE INTO `usuarios` (`id`, `nome`, `email`, `telefone`, `senha`, `perfil`, `ativo`) VALUES
-(1, 'Administrador VIP', 'admin@barbeariavip.com', '(11) 99999-9999', '$2y$10$tZ9sD3Qj8hC2yB1K0mNv4uK6f5fK3p4m3j2l1k0j9h8g7f6e5d4c3', 'admin', 1);
+(1, 'Administrador VIP', 'admin@barbeariavip.com', '(11) 99999-9999', '$2y$10$tZ9sD3Qj8hC2yB1K0mNv4uK6f5fK3p4m3j2l1k0j9h8g7f6e5d4c3', 'admin', 1),
+(2, 'João Barbeiro', 'joao@barbearia.com', '(11) 98888-1111', '$2y$10$tZ9sD3Qj8hC2yB1K0mNv4uK6f5fK3p4m3j2l1k0j9h8g7f6e5d4c3', 'barbeiro', 1),
+(3, 'Carlos Navalha', 'carlos@barbearia.com', '(11) 98888-2222', '$2y$10$tZ9sD3Qj8hC2yB1K0mNv4uK6f5fK3p4m3j2l1k0j9h8g7f6e5d4c3', 'barbeiro', 1),
+(4, 'Lucas Degradê', 'lucas@barbearia.com', '(11) 98888-3333', '$2y$10$tZ9sD3Qj8hC2yB1K0mNv4uK6f5fK3p4m3j2l1k0j9h8g7f6e5d4c3', 'barbeiro', 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
 

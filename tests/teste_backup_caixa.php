@@ -98,6 +98,59 @@ if ($servico) {
         $historico = $caixa->getHistoricoResumido(7);
         assertTeste(count($historico) === 7, "getHistoricoResumido(7) retornou exatamente 7 dias de comparativo.");
 
+        // ------------------------------------------------------------
+        // [3] TESTANDO RATEIO E FILTRO DE COMISSÕES POR BARBEIRO
+        // ------------------------------------------------------------
+        echo "\n[3] TESTANDO RATEIO E FILTRO DE COMISSÕES POR BARBEIRO:\n";
+
+        $barbeiros = $caixa->getBarbeiros();
+        assertTeste(is_array($barbeiros) && count($barbeiros) >= 1, "getBarbeiros() retornou lista ativa de profissionais cadastrados.");
+
+        $b1 = $barbeiros[0];
+        $b1Id = (int)$b1['id'];
+        $b1Nome = $b1['nome'];
+
+        assertTeste(!empty($b1Nome), "Primeiro barbeiro possui nome válido ({$b1Nome}).");
+
+        // Inserir agendamento atribuído especificamente ao barbeiro 1
+        $codigoB1 = 'TB' . str_pad((string)mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $stInsB = $db->prepare("INSERT INTO agendamentos (cliente_nome, cliente_telefone, servico_id, barbeiro_id, data_agendada, horario, status, codigo) 
+                               VALUES ('Cliente Barbeiro Teste', '(11) 98888-0000', :servico_id, :barbeiro_id, :data, '15:00:00', 'ativo', :codigo)");
+        $stInsB->execute([
+            ':servico_id' => $servicoId,
+            ':barbeiro_id' => $b1Id,
+            ':data' => $hoje,
+            ':codigo' => $codigoB1
+        ]);
+
+        try {
+            // 1. Fechamento filtrado pelo barbeiro 1
+            $fechamentoB1 = $caixa->fecharCaixa($hoje, 50.0, $b1Id);
+            assertTeste(isset($fechamentoB1['barbeiro_selecionado']), "fecharCaixa() incluiu metadados 'barbeiro_selecionado'.");
+            assertTeste($fechamentoB1['barbeiro_selecionado']['id'] == $b1Id, "barbeiro_selecionado corresponde ao ID filtrado.");
+            assertTeste(count($fechamentoB1['atendimentos']) >= 1, "Atendimento do barbeiro foi filtrado corretamente.");
+
+            // 2. Fechamento geral (sem filtro de barbeiro)
+            $fechamentoGeral = $caixa->fecharCaixa($hoje, 50.0, null);
+            assertTeste($fechamentoGeral['barbeiro_selecionado'] === null, "fecharCaixa() geral possui 'barbeiro_selecionado' como null.");
+            assertTeste(isset($fechamentoGeral['breakdown_barbeiros']), "fecharCaixa() geral gerou bloco 'breakdown_barbeiros'.");
+
+            // Verificar se o barbeiro 1 aparece no rateio de comissões consolidado
+            $encontrouB1NoRateio = false;
+            foreach ($fechamentoGeral['breakdown_barbeiros'] as $bb) {
+                if ($bb['barbeiro_id'] == $b1Id) {
+                    $encontrouB1NoRateio = true;
+                    assertTeste($bb['quantidade'] >= 1, "Rateio consolidado registrou quantidade de atendimentos do barbeiro.");
+                    assertTeste($bb['total_comissao'] > 0, "Rateio consolidado calculou comissão a pagar para o barbeiro.");
+                    break;
+                }
+            }
+            assertTeste($encontrouB1NoRateio, "Barbeiro avaliado está presente no breakdown_barbeiros.");
+
+        } finally {
+            $db->exec("DELETE FROM agendamentos WHERE codigo = '{$codigoB1}'");
+        }
+
     } finally {
         // Limpar o agendamento temporário
         $db->exec("DELETE FROM agendamentos WHERE codigo = '{$codigoTemp}'");

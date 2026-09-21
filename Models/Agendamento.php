@@ -12,6 +12,7 @@ class Agendamento {
     public $cliente_nome;
     public $cliente_telefone;
     public $servico_id;
+    public $barbeiro_id;  // ID do profissional responsável
     public $data_agendada;
     public $horario;
     public $status;       // 'ativo' | 'cancelado' | 'concluido'
@@ -142,18 +143,29 @@ class Agendamento {
      * Insere um novo agendamento. Retorna true em caso de sucesso.
      */
     public function criar(): bool {
+        // Se o barbeiro_id não foi informado, busca o primeiro barbeiro ativo
+        if (empty($this->barbeiro_id)) {
+            try {
+                $stB = $this->conn->query("SELECT id FROM usuarios WHERE perfil = 'barbeiro' AND ativo = 1 ORDER BY id ASC LIMIT 1");
+                $this->barbeiro_id = $stB ? $stB->fetchColumn() : null;
+            } catch (Exception $e) {
+                $this->barbeiro_id = null;
+            }
+        }
+
         $sql = "INSERT INTO {$this->table}
-                    (cliente_nome, cliente_telefone, servico_id, data_agendada, horario, status, codigo)
+                    (cliente_nome, cliente_telefone, servico_id, barbeiro_id, data_agendada, horario, status, codigo)
                 VALUES
-                    (:nome, :telefone, :servico_id, :data, :horario, 'ativo', :codigo)";
+                    (:nome, :telefone, :servico_id, :barbeiro_id, :data, :horario, 'ativo', :codigo)";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':nome',       $this->cliente_nome);
-        $stmt->bindParam(':telefone',   $this->cliente_telefone);
-        $stmt->bindParam(':servico_id', $this->servico_id);
-        $stmt->bindParam(':data',       $this->data_agendada);
-        $stmt->bindParam(':horario',    $this->horario);
-        $stmt->bindParam(':codigo',     $this->codigo);
+        $stmt->bindParam(':nome',         $this->cliente_nome);
+        $stmt->bindParam(':telefone',     $this->cliente_telefone);
+        $stmt->bindParam(':servico_id',   $this->servico_id);
+        $stmt->bindParam(':barbeiro_id',  $this->barbeiro_id);
+        $stmt->bindParam(':data',         $this->data_agendada);
+        $stmt->bindParam(':horario',      $this->horario);
+        $stmt->bindParam(':codigo',       $this->codigo);
 
         return $stmt->execute();
     }
@@ -209,12 +221,14 @@ class Agendamento {
                 cliente_nome    VARCHAR(120)    NOT NULL,
                 cliente_telefone VARCHAR(20)    DEFAULT NULL,
                 servico_id      INT             NOT NULL,
+                barbeiro_id     INT             NULL DEFAULT NULL,
                 data_agendada   DATE            NOT NULL,
                 horario         TIME            NOT NULL,
                 status          ENUM('ativo','cancelado','concluido') DEFAULT 'ativo',
                 codigo          CHAR(6)         NOT NULL UNIQUE,
                 criado_em       DATETIME        DEFAULT CURRENT_TIMESTAMP,
-                INDEX idx_data_status (data_agendada, status)
+                INDEX idx_data_status (data_agendada, status),
+                INDEX idx_barbeiro (barbeiro_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         ");
 
