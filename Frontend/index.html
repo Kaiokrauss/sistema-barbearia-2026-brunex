@@ -8,6 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Barbearia VIP">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
     <link rel="manifest" href="./manifest.json">
     <title>Barbearia VIP - Sistema Premium de Agendamento</title>
@@ -343,8 +345,8 @@
     <header class="border-b border-white/5 px-3 sm:px-6 py-2 sm:py-2.5">
         <div class="max-w-6xl mx-auto flex justify-between items-center gap-2">
             <div class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-base sm:text-lg shadow-md shadow-black/40">
-                    💈
+                <div class="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full p-[2px] bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-600 shadow-md shadow-amber-500/25 flex-shrink-0">
+                    <img src="./icons/apple-touch-icon.png" alt="Mascote Barbearia VIP" class="w-full h-full rounded-full object-cover bg-[#121217]">
                 </div>
                 <div class="text-left">
                     <p class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
@@ -410,17 +412,22 @@
 <section class="max-w-6xl mx-auto px-4 pt-6 pb-2 w-full">
     <div class="glass-panel rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
         <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="relative z-10 text-left">
-            <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25 mb-3">
-                <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                Atendimento VIP & Agendamento Instantâneo
-            </span>
-            <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-wide">
-                Estilo, Precisão & <span class="gold-gradient-text">Tradição</span>
-            </h2>
-            <p class="text-zinc-400 text-sm mt-2 max-w-xl leading-relaxed">
-                Garanta seu horário com os melhores mestres barbeiros. Escolha o serviço, selecione seu horário preferido e confirme em segundos.
-            </p>
+        <div class="flex items-center gap-4 sm:gap-6 relative z-10 text-left">
+            <div class="relative w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-amber-400 via-amber-200 to-amber-600 shadow-2xl shadow-amber-500/20 flex-shrink-0">
+                <img src="./icons/apple-touch-icon.png" alt="Mascote Barbearia VIP" class="w-full h-full rounded-2xl sm:rounded-3xl object-cover bg-[#121217]">
+            </div>
+            <div>
+                <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25 mb-2.5">
+                    <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    Atendimento VIP & Agendamento Instantâneo
+                </span>
+                <h2 class="text-xl sm:text-2xl md:text-4xl font-display font-bold text-white tracking-wide">
+                    Estilo, Precisão & <span class="gold-gradient-text">Tradição</span>
+                </h2>
+                <p class="text-zinc-400 text-xs sm:text-sm mt-1.5 max-w-xl leading-relaxed">
+                    Garanta seu horário com os melhores mestres barbeiros. Escolha o serviço, selecione seu horário preferido e confirme em segundos.
+                </p>
+            </div>
         </div>
         <div class="flex items-center gap-3 relative z-10">
             <div class="text-center px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5 shadow-inner">
@@ -1088,8 +1095,8 @@
     <div onclick="event.stopPropagation()" class="w-full bg-[#121217] border-t border-amber-500/30 rounded-t-3xl p-6 shadow-2xl transform translate-y-full transition-transform duration-300 max-h-[85vh] overflow-y-auto pb-[max(2rem,env(safe-area-inset-bottom))]">
         <div class="w-12 h-1.5 bg-zinc-600/50 rounded-full mx-auto mb-5"></div>
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-base font-display font-bold text-white flex items-center gap-2">
-                <span class="text-amber-400">💈</span> Menu Barbearia VIP
+            <h3 class="text-base font-display font-bold text-white flex items-center gap-2.5">
+                <img src="./icons/apple-touch-icon.png" alt="Barbearia VIP" class="w-6 h-6 rounded-full border border-amber-400/50 object-cover"> Menu Barbearia VIP
             </h3>
             <button onclick="toggleMobileMenuMais()" class="text-zinc-400 hover:text-white text-xl p-1 leading-none">✕</button>
         </div>
