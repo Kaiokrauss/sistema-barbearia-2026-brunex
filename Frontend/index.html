@@ -1245,6 +1245,44 @@
     </div>
 </div>
 
+<!-- MODAL DE SUCESSO DE AGENDAMENTO VIP (Experiência Mobile Perfeita) -->
+<div id="modal-sucesso-agendamento" onclick="fecharModalSucessoAgendamento()" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-[#121217] border border-amber-500/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto">
+        <div class="absolute -right-20 -top-20 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 -bottom-20 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="text-center relative z-10 mb-5">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full p-[2px] bg-gradient-to-tr from-amber-400 via-amber-200 to-amber-600 shadow-xl shadow-amber-500/25 flex items-center justify-center">
+                <img src="./icons/logo-personagem.jpg?v=2" alt="Barbearia VIP" class="w-full h-full rounded-full object-cover">
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 mb-2">
+                <span>✓</span> Horário Confirmado no Sistema
+            </span>
+            <h3 class="text-2xl font-display font-bold text-white">Agendamento Realizado!</h3>
+            <p class="text-xs text-zinc-400 mt-1">Seu horário VIP foi garantido com sucesso.</p>
+        </div>
+
+        <!-- Detalhes do Agendamento -->
+        <div id="modal-sucesso-detalhes" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2 text-sm text-zinc-200 mb-6 relative z-10">
+        </div>
+
+        <!-- Botões de Ação Direta -->
+        <div class="space-y-2.5 relative z-10">
+            <a id="btn-modal-whatsapp" href="#" target="_blank" class="w-full py-3.5 px-4 rounded-2xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                <span>📲 Abrir no WhatsApp</span>
+            </a>
+            
+            <a id="btn-modal-voucher" href="#" target="_blank" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-[#EAD086] via-[#D4AF37] to-[#B38728] text-black font-bold text-xs transition shadow-md hover:brightness-110 flex items-center justify-center gap-2">
+                <span>🎫 Baixar Voucher VIP (PDF / QR Code)</span>
+            </a>
+
+            <button type="button" onclick="fecharModalSucessoAgendamento()" class="w-full py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition flex items-center justify-center gap-2">
+                <span>🔄 Fazer Outro Agendamento / Concluir</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     const basePath = window.location.pathname.replace(/\/Frontend\/[^\/]*$/, '');
     const API_SERVICOS = `${basePath}/api/servico.php`;
@@ -1775,55 +1813,101 @@
                 const sNome = result.dados?.servico_nome || '';
                 const sComBarbeiro = bNome ? `${sNome} com ${bNome}` : sNome;
 
-                const box = document.getElementById('boxSucessoAgendamento');
-                box.innerHTML = `
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-2xl">🎉</span>
-                        <h3 class="font-bold text-lg text-white">Agendamento Confirmado com Sucesso!</h3>
-                    </div>
-                    <div class="space-y-1 text-sm text-gray-200">
-                        <p>👤 Cliente: <strong>${nome}</strong></p>
-                        <p>✂️ Serviço: <strong>${sComBarbeiro}</strong></p>
-                        ${bNome ? `<p>💈 Barbeiro: <strong>${bNome}</strong></p>` : ''}
-                        <p>📅 Data & Horário: <strong>${data_agendada} às ${horario}</strong></p>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span>🔑 Código de cancelamento:</span>
-                            <span class="bg-black/50 px-2.5 py-0.5 rounded font-mono font-bold text-[#D4AF37] text-base border border-amber-500/30">${result.codigo}</span>
-                            <button type="button" onclick="copiarTexto('${result.codigo}', this)" class="text-xs px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-semibold border border-amber-500/30 transition flex items-center gap-1">
-                                <span>📋</span> Copiar Código
-                            </button>
+                // Popula o Modal de Sucesso VIP
+                const modalDetalhes = document.getElementById('modal-sucesso-detalhes');
+                if (modalDetalhes) {
+                    modalDetalhes.innerHTML = `
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-zinc-400 text-xs">👤 Cliente:</span>
+                            <strong class="text-white text-sm">${nome}</strong>
                         </div>
-                        ${cupomAtivo ? `<p class="text-xs text-amber-300 mt-1">🏷️ Benefício aplicado: <strong>${cupomAtivo.estrategia_desc}</strong></p>` : ''}
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-emerald-500/20 flex flex-wrap gap-2.5">
-                        <a href="../api/comprovante.php?codigo=${result.codigo}" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#EAD086] via-[#D4AF37] to-[#B38728] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-lg hover:brightness-110">
-                            <span>🎫 Baixar Voucher VIP (PDF / QR Code)</span>
-                        </a>
-                        ${result.whatsapp_url_cliente ? `
-                            <a href="${result.whatsapp_url_cliente}" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow">
-                                <span>📲 Enviar via WhatsApp</span>
-                            </a>
-                        ` : ''}
-                        ${result.whatsapp_url_barbeiro ? `
-                            <a href="${result.whatsapp_url_barbeiro}" target="_blank" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-xs py-2.5 px-4 rounded-xl transition">
-                                <span>💬 Notificar Barbeiro</span>
-                            </a>
-                        ` : ''}
-                    </div>
-                `;
-                box.classList.remove('hidden');
-                mostrarToast(`🎉 Agendamento confirmado para ${nome}!`, 'sucesso');
-
-                // Se houver URL do WhatsApp para o cliente, abre automaticamente em nova aba
-                if (result.whatsapp_url_cliente && telefone) {
-                    window.open(result.whatsapp_url_cliente, '_blank');
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-zinc-400 text-xs">✂️ Serviço:</span>
+                            <strong class="text-amber-300 text-sm text-right">${sComBarbeiro}</strong>
+                        </div>
+                        ${bNome ? `
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-zinc-400 text-xs">💈 Barbeiro:</span>
+                            <strong class="text-white text-sm">${bNome}</strong>
+                        </div>` : ''}
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-zinc-400 text-xs">📅 Data & Horário:</span>
+                            <strong class="text-white text-sm">${data_agendada} às ${horario}</strong>
+                        </div>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="text-zinc-400 text-xs">🔑 Código de Cancelamento:</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="bg-black/60 px-2.5 py-0.5 rounded-lg font-mono font-bold text-amber-400 text-sm border border-amber-500/30">${result.codigo}</span>
+                                <button type="button" onclick="copiarTexto('${result.codigo}', this)" class="text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 font-semibold transition">
+                                    Copiar
+                                </button>
+                            </div>
+                        </div>
+                        ${cupomAtivo ? `<div class="text-[11px] text-amber-300/90 pt-1">🏷️ Benefício: <strong>${cupomAtivo.estrategia_desc}</strong></div>` : ''}
+                    `;
                 }
 
-                document.getElementById('formAgendarIndex').reset();
-                cupomAtivo = null;
-                const feedbackEl = document.getElementById('cupom-feedback');
-                if (feedbackEl) feedbackEl.classList.add('hidden');
+                // Configura botões de ação do Modal
+                const btnWhats = document.getElementById('btn-modal-whatsapp');
+                if (btnWhats) {
+                    if (result.whatsapp_url_cliente) {
+                        btnWhats.href = result.whatsapp_url_cliente;
+                        btnWhats.style.display = 'flex';
+                    } else {
+                        btnWhats.style.display = 'none';
+                    }
+                }
+
+                const btnVoucher = document.getElementById('btn-modal-voucher');
+                if (btnVoucher) {
+                    btnVoucher.href = `../api/comprovante.php?codigo=${result.codigo}`;
+                }
+
+                // Exibe o modal na tela do celular/computador
+                const modal = document.getElementById('modal-sucesso-agendamento');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
+
+                // Alimenta também a caixa de sucesso do formulário
+                const box = document.getElementById('boxSucessoAgendamento');
+                if (box) {
+                    box.innerHTML = `
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-2xl">🎉</span>
+                            <h3 class="font-bold text-lg text-white">Agendamento Confirmado com Sucesso!</h3>
+                        </div>
+                        <div class="space-y-1 text-sm text-gray-200">
+                            <p>👤 Cliente: <strong>${nome}</strong></p>
+                            <p>✂️ Serviço: <strong>${sComBarbeiro}</strong></p>
+                            ${bNome ? `<p>💈 Barbeiro: <strong>${bNome}</strong></p>` : ''}
+                            <p>📅 Data & Horário: <strong>${data_agendada} às ${horario}</strong></p>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span>🔑 Código de cancelamento:</span>
+                                <span class="bg-black/50 px-2.5 py-0.5 rounded font-mono font-bold text-[#D4AF37] text-base border border-amber-500/30">${result.codigo}</span>
+                                <button type="button" onclick="copiarTexto('${result.codigo}', this)" class="text-xs px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-semibold border border-amber-500/30 transition flex items-center gap-1">
+                                    <span>📋</span> Copiar Código
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-emerald-500/20 flex flex-wrap gap-2.5">
+                            <a href="../api/comprovante.php?codigo=${result.codigo}" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#EAD086] via-[#D4AF37] to-[#B38728] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-lg hover:brightness-110">
+                                <span>🎫 Baixar Voucher VIP</span>
+                            </a>
+                            ${result.whatsapp_url_cliente ? `
+                                <a href="${result.whatsapp_url_cliente}" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow">
+                                    <span>📲 Abrir no WhatsApp</span>
+                                </a>
+                            ` : ''}
+                            <button type="button" onclick="novoAgendamentoSucesso()" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-xs py-2.5 px-4 rounded-xl transition">
+                                <span>🔄 Fazer Outro Agendamento</span>
+                            </button>
+                        </div>
+                    `;
+                    box.classList.remove('hidden');
+                }
+
+                mostrarToast(`🎉 Agendamento confirmado para ${nome}!`, 'sucesso');
                 carregarHorariosDisponiveis();
             } else {
                 alert(result.error || 'Erro ao realizar agendamento.');
@@ -1834,6 +1918,27 @@
             btn.disabled = false;
             btn.textContent = 'Confirmar Agendamento';
         }
+    }
+
+    // Fecha o modal de sucesso e reseta a tela para novo agendamento
+    function fecharModalSucessoAgendamento() {
+        const modal = document.getElementById('modal-sucesso-agendamento');
+        if (modal) modal.classList.add('hidden');
+        novoAgendamentoSucesso();
+    }
+
+    function novoAgendamentoSucesso() {
+        document.getElementById('formAgendarIndex').reset();
+        cupomAtivo = null;
+        assinanteAtivoDetectado = null;
+        const bannerAssinante = document.getElementById('banner-assinante-vip');
+        if (bannerAssinante) bannerAssinante.classList.add('hidden');
+        const feedbackEl = document.getElementById('cupom-feedback');
+        if (feedbackEl) feedbackEl.classList.add('hidden');
+        const box = document.getElementById('boxSucessoAgendamento');
+        if (box) box.classList.add('hidden');
+        carregarHorariosDisponiveis();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Cancelar Agendamento via API
