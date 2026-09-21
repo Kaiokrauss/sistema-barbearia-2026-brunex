@@ -379,6 +379,9 @@
             <button onclick="changeTab('tab-avaliacoes')" id="btn-tab-avaliacoes" class="nav-btn nav-btn-avaliacoes text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">⭐</span> <span>Avaliações</span>
             </button>
+            <button onclick="changeTab('tab-clube-vip')" id="btn-tab-clube-vip" class="nav-btn nav-btn-clube-vip text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">👑</span> <span>Clube VIP</span>
+            </button>
             <span class="text-zinc-700 px-1 select-none">|</span>
             <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">📋</span> <span>Serviços</span>
@@ -445,14 +448,67 @@
             </div>
             
             <form id="formAgendarIndex" onsubmit="realizarAgendamento(event)">
+                <!-- BANNER DE AGENDAMENTO VIA LINK DO INSTAGRAM DO BARBEIRO (Funcionalidade 11) -->
+                <div id="banner-bio-barbeiro" class="hidden mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-600/10 to-transparent border border-amber-500/40 flex items-center justify-between">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/25 border border-amber-500/50 flex items-center justify-center text-2xl shadow-md flex-shrink-0">
+                            ✂️
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-amber-400">Agendamento Exclusivo via Instagram</span>
+                            <h4 id="bio-barbeiro-nome" class="text-base font-bold text-white leading-tight">Carlos Navalha</h4>
+                            <p id="bio-barbeiro-esp" class="text-xs text-zinc-300">Degradê Navalhado & Visagismo</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="limparSelecaoBarbeiro()" class="text-xs px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition flex-shrink-0">
+                        ✕ Trocar
+                    </button>
+                </div>
+
+                <!-- BANNER DE RECONHECIMENTO DE ASSINANTE VIP (Funcionalidade 5) -->
+                <div id="banner-assinante-vip" class="hidden mb-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 via-amber-500/15 to-transparent border border-emerald-500/40 flex items-center justify-between">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/25 border border-emerald-500/50 flex items-center justify-center text-2xl shadow-md flex-shrink-0">
+                            👑
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-400">Assinante VIP Ativo!</span>
+                            <h4 id="assinante-vip-nome-plano" class="text-base font-bold text-white leading-tight">Plano VIP Gold</h4>
+                            <p class="text-xs text-zinc-300">Atendimento 100% coberto pelo seu plano mensal.</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold border border-emerald-500/40">
+                        R$ 0,00
+                    </span>
+                </div>
+
                 <div class="mb-5">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Seu Nome Completo *</label>
                     <input type="text" id="cliente-nome" class="dark-input" placeholder="Ex: Carlos Silva" required>
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Telefone / WhatsApp</label>
-                    <input type="tel" id="cliente-tel" class="dark-input" placeholder="Ex: (11) 98888-7777">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Telefone / WhatsApp *</label>
+                    <input type="tel" id="cliente-tel" class="dark-input" placeholder="Ex: (11) 98888-7777" oninput="checarAssinanteVip(this.value)" required>
+                    <p class="text-[11px] text-zinc-500 mt-1">Membros do Clube VIP têm gratuidade reconhecida automaticamente pelo número.</p>
+                </div>
+
+                <!-- ESCOLHA DO BARBEIRO PREFERIDO (Funcionalidade 1) -->
+                <div class="mb-5">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400">Escolha o Profissional / Barbeiro</label>
+                        <span class="text-xs text-amber-400 font-medium">Opcional</span>
+                    </div>
+                    <!-- Select tradicional para formulário -->
+                    <select id="cliente-barbeiro" class="dark-input text-zinc-200 mb-2 font-semibold" onchange="aoMudarSelectBarbeiro(this.value)">
+                        <option value="">👑 Qualquer Profissional Disponível</option>
+                    </select>
+                    <!-- Cards visuais dos barbeiros -->
+                    <div id="cards-barbeiros-selecao" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-2">
+                        <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/5 text-center text-xs text-zinc-500 col-span-full">
+                            Carregando equipe de profissionais...
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="mb-5">
@@ -928,6 +984,58 @@
         </div>
     </div>
 
+    <!-- TELA 7: CLUBE DE ASSINATURA VIP (Funcionalidade 5: Barber Pass) -->
+    <div id="tab-clube-vip" class="tab-content">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-amber-500/20">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10 mb-8">
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                        👑 Barber Pass 2026
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">Clube de Assinatura VIP</h2>
+                    <p class="text-xs sm:text-sm text-zinc-400 mt-1">Cortes e barbas ilimitados no mês com benefícios exclusivos. Escolha o seu plano ideal.</p>
+                </div>
+
+                <!-- Consulta Rápida de Membro -->
+                <div class="bg-[#181820] p-4 rounded-2xl border border-white/10 flex-shrink-0 w-full md:w-auto">
+                    <span class="text-[11px] uppercase font-bold text-zinc-400 block mb-2">Já é assinante do clube?</span>
+                    <div class="flex gap-2">
+                        <input type="tel" id="input-consulta-assinante-vip" placeholder="Seu WhatsApp..." class="dark-input !mt-0 !py-1.5 !px-3 text-xs w-40">
+                        <button type="button" onclick="consultarAssinanteNaAba()" class="px-3 py-1.5 rounded-xl bg-amber-500 text-black font-bold text-xs hover:brightness-110 transition flex items-center gap-1">
+                            <span>🔍</span> <span>Verificar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultado da Consulta Rápida (Card de Membro) -->
+            <div id="box-resultado-assinante" class="hidden mb-8 p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-600/10 to-transparent border border-amber-500/40">
+                <!-- Injetado dinamicamente -->
+            </div>
+
+            <!-- Grid de Planos Oficiais -->
+            <div id="grid-planos-vip" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-8 text-center text-zinc-500 text-sm col-span-full">
+                    Carregando planos de assinatura do clube...
+                </div>
+            </div>
+
+            <!-- Faixa de Dúvidas / Atendimento VIP -->
+            <div class="mt-10 p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">💬</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-white">Ficou com alguma dúvida sobre os planos?</h4>
+                        <p class="text-xs text-zinc-400 mt-0.5">Fale diretamente com nossa equipe no WhatsApp e tire todas as suas dúvidas.</p>
+                    </div>
+                </div>
+                <a href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20tirar%20d%C3%BAvidas%20sobre%20os%20Planos%20do%20Clube%20VIP." target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition flex items-center gap-2 flex-shrink-0">
+                    <span>📱</span> <span>Falar no WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 <footer class="bg-[#0A0A0C] border-t border-white/10 p-8 text-center text-xs text-zinc-500 mt-12">
@@ -980,6 +1088,10 @@
         </div>
         <p class="text-xs text-zinc-400 mb-5">Acesse rapidamente as ferramentas administrativas e configurações:</p>
         <div class="space-y-2.5">
+            <button type="button" onclick="changeTab('tab-clube-vip'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
+                <span class="flex items-center gap-2.5"><span>💎</span> Clube VIP / Barber Pass</span>
+                <span class="text-amber-400">→</span>
+            </button>
             <button type="button" onclick="changeTab('tab-fidelidade'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-sm font-semibold text-amber-300 transition text-left">
                 <span class="flex items-center gap-2.5"><span>🎁</span> Cartão Fidelidade VIP</span>
                 <span class="text-amber-400">→</span>
@@ -1349,6 +1461,7 @@
         if (tabId === 'tab-dashboard') carregarResumoAgendamentos();
         if (tabId === 'tab-fidelidade') carregarFidelidadeNaAba();
         if (tabId === 'tab-avaliacoes') carregarAvaliacoesNaAba();
+        if (tabId === 'tab-clube-vip') carregarPlanosNaAba();
     }
 
     // Controle do Drawer/Modal 'Mais Opções' para celulares
@@ -1506,6 +1619,12 @@
         const data_agendada = document.getElementById('cliente-data').value;
         const horario = document.getElementById('cliente-horario').value;
         const cupom = document.getElementById('cliente-cupom')?.value.trim() || '';
+        const barbeiro_id = document.getElementById('cliente-barbeiro')?.value || null;
+
+        let cupomFinal = cupom;
+        if (assinanteAtivoDetectado && !cupomFinal) {
+            cupomFinal = assinanteAtivoDetectado.voucher_assinante || 'ASSINANTEVIP';
+        }
 
         if (!nome || !servico_id || !data_agendada || !horario) {
             alert('Por favor, preencha todos os campos obrigatórios.');
@@ -1524,9 +1643,10 @@
                     cliente_nome: nome,
                     cliente_telefone: telefone,
                     servico_id: servico_id,
+                    barbeiro_id: barbeiro_id ? Number(barbeiro_id) : null,
                     data_agendada: data_agendada,
                     horario: horario,
-                    cupom: cupom
+                    cupom: cupomFinal
                 })
             });
 
@@ -2706,6 +2826,292 @@
         }
     }
 
+    // ========================================================
+    // [FUNCIONALIDADES 1, 11 & 5]: BARBEIROS, INSTAGRAM BIO & CLUBE VIP
+    // ========================================================
+    const API_BARBEIROS = `${basePath}/api/barbeiro.php`;
+    const API_ASSINATURA = `${basePath}/api/assinatura.php`;
+    let listaBarbeirosFrontend = [];
+    let assinanteAtivoDetectado = null;
+
+    // 1. Carregar barbeiros no agendamento e montar cards visuais
+    async function carregarBarbeirosFrontend() {
+        try {
+            const resp = await fetch(API_BARBEIROS);
+            const res = await resp.json();
+            if (!res.success || !res.barbeiros) return;
+
+            listaBarbeirosFrontend = res.barbeiros;
+            const select = document.getElementById('cliente-barbeiro');
+            const cardsContainer = document.getElementById('cards-barbeiros-selecao');
+
+            if (select) {
+                select.innerHTML = '<option value="">👑 Qualquer Profissional Disponível</option>';
+                res.barbeiros.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b.id;
+                    opt.textContent = `✂️ ${b.nome} — ${b.especialidade}`;
+                    select.appendChild(opt);
+                });
+            }
+
+            if (cardsContainer) {
+                cardsContainer.innerHTML = '';
+
+                // Opção 1: Qualquer profissional
+                const cardQualquer = document.createElement('div');
+                cardQualquer.id = 'chip-barbeiro-qualquer';
+                cardQualquer.className = 'cursor-pointer p-3 rounded-2xl border border-amber-500/50 bg-amber-500/10 text-white transition hover:scale-[1.02] flex items-center gap-2.5 relative';
+                cardQualquer.onclick = () => selecionarBarbeiroChip('');
+                cardQualquer.innerHTML = `
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-base flex-shrink-0">
+                        👑
+                    </div>
+                    <div class="text-left overflow-hidden">
+                        <div class="text-xs font-bold text-amber-300 truncate">Qualquer Barbeiro</div>
+                        <div class="text-[10px] text-zinc-400 truncate">Mais rápido disponível</div>
+                    </div>
+                `;
+                cardsContainer.appendChild(cardQualquer);
+
+                // Barbeiros da equipe
+                res.barbeiros.forEach(b => {
+                    const card = document.createElement('div');
+                    card.id = `chip-barbeiro-${b.id}`;
+                    card.className = 'cursor-pointer p-3 rounded-2xl border border-white/10 bg-white/[0.02] text-zinc-300 hover:border-amber-500/40 hover:text-white transition hover:scale-[1.02] flex items-center gap-2.5 relative';
+                    card.onclick = () => selecionarBarbeiroChip(b.id);
+                    card.innerHTML = `
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-base flex-shrink-0">
+                            ✂️
+                        </div>
+                        <div class="text-left overflow-hidden">
+                            <div class="text-xs font-bold text-white truncate">${b.nome}</div>
+                            <div class="text-[10px] text-zinc-400 truncate">${b.especialidade}</div>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                });
+            }
+
+            // Checar se há barbeiro passado via URL (Bio do Instagram: ?barbeiro=carlos ou ?barbeiro_id=16)
+            verificarParametroBarbeiroUrl();
+
+        } catch (e) {
+            console.error('Erro ao carregar barbeiros:', e);
+        }
+    }
+
+    function selecionarBarbeiroChip(barbeiroId) {
+        soundVIP.playSoftClick();
+        const select = document.getElementById('cliente-barbeiro');
+        if (select) select.value = barbeiroId || '';
+
+        // Atualizar estilos dos cards
+        const todosChips = document.querySelectorAll('#cards-barbeiros-selecao > div');
+        todosChips.forEach(c => {
+            c.className = 'cursor-pointer p-3 rounded-2xl border border-white/10 bg-white/[0.02] text-zinc-300 hover:border-amber-500/40 hover:text-white transition hover:scale-[1.02] flex items-center gap-2.5 relative';
+        });
+
+        const chipAtivo = barbeiroId 
+            ? document.getElementById(`chip-barbeiro-${barbeiroId}`)
+            : document.getElementById('chip-barbeiro-qualquer');
+
+        if (chipAtivo) {
+            chipAtivo.className = 'cursor-pointer p-3 rounded-2xl border border-amber-500/60 bg-amber-500/15 text-white shadow-lg shadow-amber-500/10 transition hover:scale-[1.02] flex items-center gap-2.5 relative font-bold';
+        }
+
+        carregarHorariosDisponiveis();
+    }
+
+    function aoMudarSelectBarbeiro(valor) {
+        selecionarBarbeiroChip(valor);
+    }
+
+    function limparSelecaoBarbeiro() {
+        document.getElementById('banner-bio-barbeiro')?.classList.add('hidden');
+        selecionarBarbeiroChip('');
+    }
+
+    // 2. Reconhecimento automático de Link da Bio do Instagram (?barbeiro=carlos)
+    function verificarParametroBarbeiroUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('barbeiro') || urlParams.get('barbeiro_id') || urlParams.get('b');
+        if (!query) return;
+
+        const barbeiroEncontrado = listaBarbeirosFrontend.find(b => 
+            String(b.id) === String(query) || 
+            (b.slug && b.slug.toLowerCase() === query.toLowerCase()) ||
+            b.nome.toLowerCase().includes(query.toLowerCase())
+        );
+
+        if (barbeiroEncontrado) {
+            selecionarBarbeiroChip(barbeiroEncontrado.id);
+            const banner = document.getElementById('banner-bio-barbeiro');
+            if (banner) {
+                banner.classList.remove('hidden');
+                document.getElementById('bio-barbeiro-nome').textContent = barbeiroEncontrado.nome;
+                document.getElementById('bio-barbeiro-esp').textContent = barbeiroEncontrado.especialidade || 'Mestre Barbeiro VIP';
+            }
+            setTimeout(() => {
+                document.getElementById('tab-agendar')?.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+    }
+
+    // 3. Verificação em tempo real de Assinante VIP (pelo WhatsApp digitado)
+    let timerCheckAssinante = null;
+    async function checarAssinanteVip(telefone) {
+        clearTimeout(timerCheckAssinante);
+        const telLimpo = (telefone || '').replace(/\D/g, '');
+        const banner = document.getElementById('banner-assinante-vip');
+
+        if (telLimpo.length < 10) {
+            if (banner) banner.classList.add('hidden');
+            assinanteAtivoDetectado = null;
+            return;
+        }
+
+        timerCheckAssinante = setTimeout(async () => {
+            try {
+                const resp = await fetch(`${API_ASSINATURA}?check_telefone=${encodeURIComponent(telefone)}`);
+                const res = await resp.json();
+
+                if (res.success && res.assinante) {
+                    soundVIP.playChicSuccess();
+                    assinanteAtivoDetectado = res.dados;
+                    if (banner) {
+                        banner.classList.remove('hidden');
+                        document.getElementById('assinante-vip-nome-plano').textContent = `Plano ${res.dados.plano_nome} Ativo`;
+                    }
+                    mostrarToast(`👑 Bem-vindo, <strong>${res.dados.cliente_nome}</strong>! Sua assinatura cobre este atendimento.`, 'sucesso');
+                } else {
+                    if (banner) banner.classList.add('hidden');
+                    assinanteAtivoDetectado = null;
+                }
+            } catch (e) {}
+        }, 500);
+    }
+
+    // 4. Carregar Planos na Aba "Clube VIP"
+    async function carregarPlanosNaAba() {
+        const grid = document.getElementById('grid-planos-vip');
+        if (!grid) return;
+        grid.innerHTML = '<div class="p-8 text-center text-zinc-500 text-sm col-span-full">Carregando planos de assinatura...</div>';
+
+        try {
+            const resp = await fetch(`${API_ASSINATURA}?planos=1`);
+            const res = await resp.json();
+            if (!res.success || !res.planos) return;
+
+            grid.innerHTML = '';
+            res.planos.forEach(p => {
+                const card = document.createElement('div');
+                const isBlack = p.slug === 'black';
+                const isGold = p.slug === 'gold';
+                const borda = isBlack ? 'border-emerald-500/40 bg-gradient-to-b from-emerald-950/20 to-black/40' : (isGold ? 'border-amber-500/40 bg-gradient-to-b from-amber-950/20 to-black/40' : 'border-white/10 bg-white/[0.02]');
+                const badgeTxt = isBlack ? 'MAIS EXCLUSIVO' : (isGold ? 'MAIS POPULAR' : 'ECONÔMICO');
+                const badgeClass = isBlack ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : (isGold ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-white/10 text-zinc-300 border-white/20');
+
+                let listaLi = '';
+                (p.beneficios_lista || []).forEach(b => {
+                    listaLi += `
+                        <li class="flex items-start gap-2 text-xs text-zinc-300">
+                            <span class="text-amber-400 text-sm leading-none flex-shrink-0">✓</span>
+                            <span>${b}</span>
+                        </li>
+                    `;
+                });
+
+                const msgWhats = encodeURIComponent(`Olá! Gostaria de assinar o plano ${p.nome} (R$ ${Number(p.preco_mensal).toFixed(2).replace('.', ',')}/mês) do Clube VIP.`);
+                const linkWhats = `https://wa.me/5511999999999?text=${msgWhats}`;
+
+                card.className = `p-6 rounded-3xl border ${borda} flex flex-col justify-between shadow-2xl relative`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badgeClass}">
+                                ${badgeTxt}
+                            </span>
+                            <span class="text-xl">👑</span>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-white">${p.nome}</h3>
+                        <p class="text-xs text-zinc-400 mt-1 mb-4">${p.descricao}</p>
+
+                        <div class="p-4 rounded-2xl bg-black/40 border border-white/5 mb-5 flex items-baseline gap-1.5">
+                            <span class="text-xs text-zinc-400 font-semibold">R$</span>
+                            <span class="text-3xl font-display font-extrabold text-white">${Number(p.preco_mensal).toFixed(2).replace('.', ',')}</span>
+                            <span class="text-xs text-zinc-400">/mês</span>
+                        </div>
+
+                        <ul class="space-y-2.5 mb-6">
+                            ${listaLi}
+                        </ul>
+                    </div>
+
+                    <a href="${linkWhats}" target="_blank" class="w-full py-3 px-4 rounded-xl ${isGold || isBlack ? 'gold-btn' : 'bg-white/10 hover:bg-white/20 text-white'} text-center font-bold text-xs transition flex items-center justify-center gap-2">
+                        <span>📱</span> <span>Assinar pelo WhatsApp</span>
+                    </a>
+                `;
+                grid.appendChild(card);
+            });
+        } catch (e) {
+            grid.innerHTML = '<div class="p-8 text-center text-red-400 text-sm col-span-full">Erro ao carregar planos de assinatura.</div>';
+        }
+    }
+
+    // 5. Consulta de Membro na Aba Clube VIP
+    async function consultarAssinanteNaAba() {
+        const input = document.getElementById('input-consulta-assinante-vip');
+        const box = document.getElementById('box-resultado-assinante');
+        if (!input || !box) return;
+
+        const tel = input.value.trim();
+        if (!tel) {
+            mostrarToast('Informe seu telefone para consulta.', 'aviso');
+            return;
+        }
+
+        try {
+            const resp = await fetch(`${API_ASSINATURA}?check_telefone=${encodeURIComponent(tel)}`);
+            const res = await resp.json();
+
+            box.classList.remove('hidden');
+            if (res.success && res.assinante) {
+                soundVIP.playChicSuccess();
+                const d = res.dados;
+                box.innerHTML = `
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-2xl shadow-sm">
+                                👑
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-400">Assinatura VIP Ativa</span>
+                                <h4 class="text-lg font-bold text-white">${d.cliente_nome} — ${d.plano_nome}</h4>
+                                <p class="text-xs text-zinc-300">Renovação prevista para: <strong>${d.data_renovacao}</strong> (${d.dias_restantes} dias restantes)</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="changeTab('tab-agendar')" class="px-4 py-2 rounded-xl gold-btn text-xs font-bold whitespace-nowrap">
+                            📅 Agendar Corte com Gratuidade
+                        </button>
+                    </div>
+                `;
+            } else {
+                box.innerHTML = `
+                    <div class="flex items-center gap-3 text-amber-300 text-xs">
+                        <span class="text-xl">⚠️</span>
+                        <div>
+                            <strong>Nenhuma assinatura ativa encontrada para este telefone.</strong>
+                            <p class="text-zinc-400 mt-0.5">Escolha um dos planos abaixo e junte-se ao nosso clube exclusivo!</p>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            mostrarToast('Erro ao consultar assinatura.', 'erro');
+        }
+    }
+
     // Configuração inicial de datas
     const hojeStr = new Date().toISOString().split('T')[0];
     document.getElementById('cliente-data').min = hojeStr;
@@ -2720,6 +3126,7 @@
     atualizarBotaoSom();
     document.querySelectorAll('input[type="tel"], #cliente-tel, #telefone').forEach(aplicarMascaraTelefone);
     carregarServicosSelect();
+    carregarBarbeirosFrontend();
     carregarHorariosDisponiveis();
     carregarGradeGerenciador();
 

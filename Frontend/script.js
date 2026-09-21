@@ -181,6 +181,8 @@ function showTab(tabId) {
     if (tabId === 'tab-horarios') renderAdminHorarios();
     if (tabId === 'tab-fidelidade-admin') renderAdminFidelidade();
     if (tabId === 'tab-avaliacoes-admin') renderAdminAvaliacoes();
+    if (tabId === 'tab-assinaturas-admin') carregarAssinantesAdmin();
+    if (tabId === 'tab-barbeiros-admin') carregarBarbeirosAdmin();
 }
 
 function checkAdminAuth(targetTab) {
@@ -923,7 +925,7 @@ document.getElementById('admin-data').value = new Date().toISOString().split('T'
 document.getElementById('admin-whatsapp').value = appState.whatsappAdmin;
 
 // Ativação da Máscara Automática de Telefone nos inputs
-document.querySelectorAll('input[type="tel"], #cliente-telefone, #cliente-tel, #admin-whatsapp, #telefone').forEach(aplicarMascaraTelefone);
+document.querySelectorAll('input[type="tel"], #cliente-telefone, #cliente-tel, #admin-whatsapp, #telefone, #novo-ass-telefone').forEach(aplicarMascaraTelefone);
 
 updateBadge();
 carregarServicosApi();
@@ -1056,4 +1058,309 @@ function closeMenu() {
     if (window.innerWidth <= 768) {
         document.getElementById('navLinks').classList.remove('mostrar');
     }
+}
+
+// ==========================================================================
+// --- ADMIN: CLUBE DE ASSINATURAS VIP (BARBER PASS) ---
+// ==========================================================================
+
+let cachePlanosVipAdmin = [];
+
+async function carregarPlanosSelectAdmin() {
+    const select = document.getElementById('novo-ass-plano');
+    if (!select) return;
+    try {
+        const resp = await fetch('../api/assinatura.php?planos=1');
+        const res = await resp.json();
+        if (res.success && res.planos) {
+            cachePlanosVipAdmin = res.planos;
+            select.innerHTML = '<option value="">-- Selecione o Plano --</option>' + res.planos.map(p => `
+                <option value="${p.id}">${p.nome} — R$ ${p.preco_mensal.toFixed(2).replace('.', ',')}/mês</option>
+            `).join('');
+        }
+    } catch (e) {
+        console.error('Erro ao carregar planos:', e);
+    }
+}
+
+function abrirModalNovoAssinante() {
+    const modal = document.getElementById('modal-novo-assinante');
+    if (!modal) return;
+    carregarPlanosSelectAdmin();
+    modal.classList.remove('hidden');
+}
+
+function fecharModalNovoAssinante() {
+    const modal = document.getElementById('modal-novo-assinante');
+    if (!modal) return;
+    modal.classList.add('hidden');
+}
+
+async function salvarAssinanteAdmin(event) {
+    event.preventDefault();
+    const nome = document.getElementById('novo-ass-nome').value.trim();
+    const telefone = document.getElementById('novo-ass-telefone').value.trim();
+    const email = document.getElementById('novo-ass-email').value.trim();
+    const plano_id = parseInt(document.getElementById('novo-ass-plano').value, 10);
+    const meses = parseInt(document.getElementById('novo-ass-meses').value, 10) || 1;
+
+    if (!nome || !telefone || !plano_id) {
+        mostrarToast('Preencha os campos obrigatórios!', 'aviso');
+        return;
+    }
+
+    try {
+        const resp = await fetch('../api/assinatura.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                cliente_nome: nome,
+                cliente_telefone: telefone,
+                cliente_email: email,
+                plano_id: plano_id,
+                meses: meses
+            })
+        });
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast(res.mensagem || 'Assinante cadastrado com sucesso!', 'sucesso');
+            fecharModalNovoAssinante();
+            document.getElementById('novo-ass-nome').value = '';
+            document.getElementById('novo-ass-telefone').value = '';
+            document.getElementById('novo-ass-email').value = '';
+            carregarAssinantesAdmin();
+        } else {
+            mostrarToast(res.error || 'Erro ao cadastrar assinante.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro de conexão ao salvar assinante.', 'erro');
+    }
+}
+
+async function carregarAssinantesAdmin() {
+    const tbody = document.getElementById('tabela-assinantes-admin-body');
+    const metricTotal = document.getElementById('metric-total-assinantes');
+    const metricAtivas = document.getElementById('metric-ativas-assinantes');
+    const metricMrr = document.getElementById('metric-mrr-assinantes');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-zinc-500">Buscando assinantes VIP...</td></tr>';
+
+    try {
+        const resp = await fetch('../api/assinatura.php?assinantes=1');
+        const res = await resp.json();
+
+        if (res.success && res.assinantes) {
+            const assinantes = res.assinantes;
+            const total = assinantes.length;
+            const ativas = assinantes.filter(a => a.status === 'ativo' && a.em_dia).length;
+            const mrr = assinantes
+                .filter(a => a.status === 'ativo' && a.em_dia)
+                .reduce((acc, cur) => acc + (cur.preco_mensal || 0), 0);
+
+            if (metricTotal) metricTotal.textContent = total;
+            if (metricAtivas) metricAtivas.textContent = ativas;
+            if (metricMrr) metricMrr.textContent = `R$ ${mrr.toFixed(2).replace('.', ',')}`;
+
+            if (total === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-zinc-500">Nenhum assinante cadastrado ainda.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = assinantes.map(a => {
+                let badgeStatus = '';
+                if (a.status === 'ativo' && a.em_dia) {
+                    badgeStatus = '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Ativo</span>';
+                } else if (a.status === 'ativo' && !a.em_dia) {
+                    badgeStatus = '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">Vencido</span>';
+                } else if (a.status === 'suspenso') {
+                    badgeStatus = '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">Suspenso</span>';
+                } else {
+                    badgeStatus = '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-zinc-500/20 text-zinc-400 border border-zinc-500/30">Cancelado</span>';
+                }
+
+                const planoCor = a.cor_badge || '#D4AF37';
+
+                return `
+                    <tr class="hover:bg-white/[0.02] transition">
+                        <td class="py-3 px-3">
+                            <div class="font-semibold text-white">${a.cliente_nome}</div>
+                            ${a.cliente_email ? `<div class="text-[11px] text-zinc-500">${a.cliente_email}</div>` : ''}
+                        </td>
+                        <td class="py-3 px-3 font-mono text-xs text-zinc-300">${a.cliente_telefone}</td>
+                        <td class="py-3 px-3">
+                            <span class="px-2.5 py-1 rounded-xl text-xs font-bold" style="background:${planoCor}18; color:${planoCor}; border:1px solid ${planoCor}40">
+                                ${a.plano_nome}
+                            </span>
+                        </td>
+                        <td class="py-3 px-3 font-mono text-zinc-200">R$ ${a.preco_mensal.toFixed(2).replace('.', ',')}</td>
+                        <td class="py-3 px-3 text-xs text-zinc-300">${a.data_renovacao_formatada}</td>
+                        <td class="py-3 px-3">${badgeStatus}</td>
+                        <td class="py-3 px-3 text-right">
+                            <div class="flex items-center justify-end gap-1.5">
+                                <button type="button" title="Renovar +30 dias" onclick="renovarAssinanteAdmin(${a.id})" class="px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/30 text-xs transition">
+                                    🔄 +30d
+                                </button>
+                                ${a.status === 'ativo' ? `
+                                    <button type="button" title="Suspender" onclick="alterarStatusAssinanteAdmin(${a.id}, 'suspenso')" class="px-2 py-1 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30 text-xs transition">
+                                        ⏸️
+                                    </button>
+                                ` : `
+                                    <button type="button" title="Reativar" onclick="alterarStatusAssinanteAdmin(${a.id}, 'ativo')" class="px-2 py-1 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 border border-blue-500/30 text-xs transition">
+                                        ▶️
+                                    </button>
+                                `}
+                                <button type="button" title="Excluir" onclick="excluirAssinanteAdmin(${a.id})" class="px-2 py-1 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 text-xs transition">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-zinc-500">Nenhum assinante cadastrado.</td></tr>';
+        }
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-red-400">Falha ao carregar assinantes VIP.</td></tr>';
+    }
+}
+
+async function renovarAssinanteAdmin(id) {
+    if (!confirm('Deseja renovar a assinatura deste cliente por mais 30 dias a partir de hoje?')) return;
+    const novaData = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    try {
+        const resp = await fetch('../api/assinatura.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, status: 'ativo', data_renovacao: novaData })
+        });
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast('Assinatura renovada com sucesso!', 'sucesso');
+            carregarAssinantesAdmin();
+        } else {
+            mostrarToast(res.error || 'Erro ao renovar.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro ao se comunicar com o servidor.', 'erro');
+    }
+}
+
+async function alterarStatusAssinanteAdmin(id, status) {
+    try {
+        const resp = await fetch('../api/assinatura.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, status })
+        });
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast(`Status alterado para ${status}!`, 'sucesso');
+            carregarAssinantesAdmin();
+        } else {
+            mostrarToast(res.error || 'Erro ao atualizar status.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro de comunicação.', 'erro');
+    }
+}
+
+async function excluirAssinanteAdmin(id) {
+    if (!confirm('Deseja realmente remover este assinante VIP do sistema?')) return;
+    try {
+        const resp = await fetch(`../api/assinatura.php?id=${id}`, {
+            method: 'DELETE'
+        });
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast('Assinante removido com sucesso.', 'sucesso');
+            carregarAssinantesAdmin();
+        } else {
+            mostrarToast(res.error || 'Erro ao excluir assinante.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro de comunicação.', 'erro');
+    }
+}
+
+// ==========================================================================
+// --- ADMIN: BARBEIROS DA EQUIPE & LINKS PARA BIO DO INSTAGRAM ---
+// ==========================================================================
+
+async function carregarBarbeirosAdmin() {
+    const container = document.getElementById('grid-barbeiros-admin');
+    if (!container) return;
+
+    container.innerHTML = '<div class="p-5 rounded-3xl bg-[#18181F] border border-white/10 text-center text-zinc-500">Buscando equipe de barbeiros...</div>';
+
+    try {
+        const resp = await fetch('../api/barbeiro.php');
+        const res = await resp.json();
+
+        if (res.success && res.barbeiros && res.barbeiros.length > 0) {
+            container.innerHTML = res.barbeiros.map(b => {
+                const avatar = b.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
+                const linkBio = b.link_bio_instagram;
+
+                return `
+                    <div class="rounded-3xl bg-[#18181F] p-5 border border-white/10 shadow-xl flex flex-col justify-between hover:border-amber-500/30 transition">
+                        <div>
+                            <div class="flex items-center gap-3.5 mb-4">
+                                <img src="${avatar}" alt="${b.nome}" class="w-14 h-14 rounded-2xl object-cover border-2 border-amber-400/40 shadow-md">
+                                <div>
+                                    <h3 class="font-bold text-white text-base leading-tight">${b.nome}</h3>
+                                    <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                                        ✂️ ${b.especialidade || 'Mestre Barbeiro'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-zinc-400 space-y-1 mb-4">
+                                <div><strong class="text-zinc-300">ID / Slug:</strong> <span class="font-mono text-amber-400/90">${b.slug || b.id}</span></div>
+                                <div><strong class="text-zinc-300">Telefone:</strong> ${b.telefone || 'Não cadastrado'}</div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">🔗 Link para Bio do Instagram:</label>
+                                <div class="flex items-center gap-1.5">
+                                    <input type="text" readonly value="${linkBio}" id="bio-input-${b.id}" class="w-full px-3 py-2 text-xs bg-black/50 border border-white/10 rounded-xl text-zinc-300 font-mono select-all focus:border-amber-400 outline-none">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/5">
+                            <button type="button" onclick="copiarLinkBioBarbeiro('${linkBio}', '${b.nome}')" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs hover:brightness-110 shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-1">
+                                <span>📋</span> Copiar Bio
+                            </button>
+                            <a href="${linkBio}" target="_blank" class="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs transition flex items-center justify-center gap-1">
+                                <span>🔗</span> Testar
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            container.innerHTML = '<div class="p-5 rounded-3xl bg-[#18181F] border border-white/10 text-center text-zinc-500">Nenhum barbeiro ativo cadastrado.</div>';
+        }
+    } catch (e) {
+        container.innerHTML = '<div class="p-5 rounded-3xl bg-[#18181F] border border-white/10 text-center text-red-400">Falha ao carregar barbeiros.</div>';
+    }
+}
+
+function copiarLinkBioBarbeiro(url, nome) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+            mostrarToast(`Link da Bio de ${nome} copiado com sucesso!`, 'sucesso');
+        }).catch(() => fallbackCopiar(url, nome));
+    } else {
+        fallbackCopiar(url, nome);
+    }
+}
+
+function fallbackCopiar(url, nome) {
+    const temp = document.createElement('input');
+    temp.value = url;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+    mostrarToast(`Link da Bio de ${nome} copiado!`, 'sucesso');
 }

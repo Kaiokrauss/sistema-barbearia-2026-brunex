@@ -123,6 +123,54 @@ INSERT IGNORE INTO `usuarios` (`id`, `nome`, `email`, `telefone`, `senha`, `perf
 (3, 'Carlos Navalha', 'carlos@barbearia.com', '(11) 98888-2222', '$2y$10$tZ9sD3Qj8hC2yB1K0mNv4uK6f5fK3p4m3j2l1k0j9h8g7f6e5d4c3', 'barbeiro', 1),
 (4, 'Lucas Degradê', 'lucas@barbearia.com', '(11) 98888-3333', '$2y$10$tZ9sD3Qj8hC2yB1K0mNv4uK6f5fK3p4m3j2l1k0j9h8g7f6e5d4c3', 'barbeiro', 1);
 
+-- --------------------------------------------------------
+-- Estrutura da tabela `planos_assinatura` (Funcionalidade 5: Clube VIP)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `planos_assinatura` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `preco_mensal` DECIMAL(10,2) NOT NULL,
+  `descricao` VARCHAR(255) NOT NULL,
+  `beneficios` TEXT NOT NULL,
+  `cor_badge` VARCHAR(30) DEFAULT 'amber',
+  `ativo` TINYINT(1) NOT NULL DEFAULT 1,
+  `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Estrutura da tabela `assinantes_vip` (Funcionalidade 5: Clube VIP)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `assinantes_vip` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `cliente_nome` VARCHAR(120) NOT NULL,
+  `cliente_telefone` VARCHAR(20) NOT NULL,
+  `cliente_email` VARCHAR(120) DEFAULT NULL,
+  `plano_id` INT(11) NOT NULL,
+  `status` ENUM('ativo','suspenso','cancelado') NOT NULL DEFAULT 'ativo',
+  `data_inicio` DATE NOT NULL,
+  `data_renovacao` DATE NOT NULL,
+  `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_tel_status` (`cliente_telefone`, `status`),
+  INDEX `idx_plano` (`plano_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Dados Iniciais: Planos de Assinatura VIP
+-- --------------------------------------------------------
+INSERT IGNORE INTO `planos_assinatura` (`id`, `nome`, `slug`, `preco_mensal`, `descricao`, `beneficios`, `cor_badge`, `ativo`) VALUES
+(1, 'VIP Silver', 'silver', 89.90, 'O plano ideal para quem mantém o corte sempre alinhado todo mês.', 'Cortes de Cabelo Ilimitados no Mês\nAtendimento com Horário Preferencial\nCafé Espresso Cortesia em Cada Visita\n10% de Desconto em Produtos de Barba', 'zinc', 1),
+(2, 'VIP Gold', 'gold', 149.90, 'Experiência completa com cabelo impecável e barba sempre alinhada.', 'Cabelo & Barba Ilimitados no Mês\nBarboterapia com Toalha Quente\nCafé Gourmet & Água Mineral Premium\n15% de Desconto em Pomadas e Óleos', 'amber', 1),
+(3, 'VIP Black Diamond', 'black', 199.90, 'Acesso ilimitado e exclusivo a todos os serviços da casa com tratamento VIP.', 'Acesso Total Ilimitado (Cabelo + Barba + Sobrancelha)\nCerveja Artesanal Gelada Cortesia por Visita\n20% de Desconto em Toda a Linha de Produtos\nVaga de Garagem VIP Reservada', 'emerald', 1);
+
+-- --------------------------------------------------------
+-- Dados Iniciais: Assinante VIP Demonstrativo
+-- --------------------------------------------------------
+INSERT IGNORE INTO `assinantes_vip` (`id`, `cliente_nome`, `cliente_telefone`, `cliente_email`, `plano_id`, `status`, `data_inicio`, `data_renovacao`) VALUES
+(1, 'Marcos Assinante VIP', '(11) 99999-7777', 'marcos.vip@email.com', 2, 'ativo', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY));
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ========================================================

@@ -68,10 +68,16 @@ class CupomDescontoStrategy implements DescontoStrategy {
 
         $codigo = strtoupper(trim($cupom));
 
-        // Suporte a Vouchers gerados pelo Cartão Fidelidade (ex: GRATIS-A1B2C3)
+        // Suporte a Vouchers gerados pelo Cartão Fidelidade ou Clube de Assinatura VIP
         if (str_starts_with($codigo, 'GRATIS-') || $codigo === 'CORTEGRATIS') {
             $this->cupomAplicado = $codigo;
             $this->descricaoRegra = "Recompensa Fidelidade VIP (100% OFF - Corte Grátis)";
+            return $valorOriginal;
+        }
+
+        if (str_starts_with($codigo, 'VIPCLUB-') || str_starts_with($codigo, 'ASSINANTE-') || $codigo === 'ASSINANTEVIP') {
+            $this->cupomAplicado = $codigo;
+            $this->descricaoRegra = "Clube de Assinatura VIP (100% OFF - Benefício do Plano)";
             return $valorOriginal;
         }
 
@@ -136,5 +142,28 @@ class DiaPromocionalStrategy implements DescontoStrategy {
 
     public function getTipo(): string {
         return "DIA_PROMOCIONAL";
+    }
+}
+
+/**
+ * Estratégia 4: Assinatura VIP / Barber Pass (100% OFF nos Serviços Inclusos)
+ */
+class AssinaturaVipStrategy implements DescontoStrategy {
+    private string $nomePlano;
+
+    public function __construct(string $nomePlano = 'VIP Gold') {
+        $this->nomePlano = $nomePlano;
+    }
+
+    public function calcularDesconto(float $valorOriginal, string $dataAgendada = '', ?string $cupom = null): float {
+        return $valorOriginal; // 100% de desconto para membros assinantes VIP
+    }
+
+    public function getDescricao(): string {
+        return "Clube de Assinatura VIP ({$this->nomePlano} - 100% OFF Coberto)";
+    }
+
+    public function getTipo(): string {
+        return "ASSINATURA_VIP";
     }
 }

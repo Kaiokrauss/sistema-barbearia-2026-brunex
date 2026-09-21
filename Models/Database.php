@@ -170,6 +170,38 @@ class Database {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ");
 
+            // 7. Tabela planos_assinatura (Funcionalidade 5: Clube VIP / Barber Pass)
+            $this->conn->exec("
+                CREATE TABLE IF NOT EXISTS `planos_assinatura` (
+                    `id` INT AUTO_INCREMENT PRIMARY KEY,
+                    `nome` VARCHAR(100) NOT NULL,
+                    `slug` VARCHAR(50) NOT NULL UNIQUE,
+                    `preco_mensal` DECIMAL(10,2) NOT NULL,
+                    `descricao` VARCHAR(255) NOT NULL,
+                    `beneficios` TEXT NOT NULL,
+                    `cor_badge` VARCHAR(30) DEFAULT 'amber',
+                    `ativo` TINYINT(1) NOT NULL DEFAULT 1,
+                    `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+
+            // 8. Tabela assinantes_vip (Funcionalidade 5: Clube VIP / Barber Pass)
+            $this->conn->exec("
+                CREATE TABLE IF NOT EXISTS `assinantes_vip` (
+                    `id` INT AUTO_INCREMENT PRIMARY KEY,
+                    `cliente_nome` VARCHAR(120) NOT NULL,
+                    `cliente_telefone` VARCHAR(20) NOT NULL,
+                    `cliente_email` VARCHAR(120) DEFAULT NULL,
+                    `plano_id` INT NOT NULL,
+                    `status` ENUM('ativo','suspenso','cancelado') NOT NULL DEFAULT 'ativo',
+                    `data_inicio` DATE NOT NULL,
+                    `data_renovacao` DATE NOT NULL,
+                    `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    INDEX `idx_tel_status` (`cliente_telefone`, `status`),
+                    INDEX `idx_plano` (`plano_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+
             // Popula serviços padrão caso tabela esteja vazia
             $stSvc = $this->conn->query("SELECT COUNT(*) FROM `servicos`");
             if ((int)$stSvc->fetchColumn() === 0) {
@@ -205,20 +237,28 @@ class Database {
                 $stInsAdm->execute([':senha' => $senhaHash]);
             }
 
-            // Garante equipe de barbeiros cadastrada para rateio de comissões
+            // Garante campos de perfil estendido na tabela usuarios (especialidade, slug, avatar)
+            try {
+                $colEsp = $this->conn->query("SHOW COLUMNS FROM `usuarios` LIKE 'especialidade'");
+                if (!$colEsp->fetch()) {
+                    $this->conn->exec("ALTER TABLE `usuarios` ADD COLUMN `especialidade` VARCHAR(100) DEFAULT 'Mestre Barbeiro', ADD COLUMN `slug` VARCHAR(60) DEFAULT NULL, ADD COLUMN `avatar` VARCHAR(255) DEFAULT NULL");
+                }
+            } catch (PDOException $e) {}
+
+            // Garante equipe de barbeiros cadastrada com perfil estendido
             $stBarbeiros = $this->conn->query("SELECT COUNT(*) FROM `usuarios` WHERE `perfil` = 'barbeiro'");
             if ((int)$stBarbeiros->fetchColumn() < 3) {
                 $senhaPadrao = password_hash('barbeiro123', PASSWORD_BCRYPT);
                 $barbeirosPadrao = [
-                    ['João Barbeiro', 'joao@barbearia.com', '(11) 98888-1111'],
-                    ['Carlos Navalha', 'carlos@barbearia.com', '(11) 98888-2222'],
-                    ['Lucas Degradê', 'lucas@barbearia.com', '(11) 98888-3333']
+                    ['João Barbeiro', 'joao@barbearia.com', '(11) 98888-1111', 'Cortes Clássicos & Barboterapia', 'joao'],
+                    ['Carlos Navalha', 'carlos@barbearia.com', '(11) 98888-2222', 'Degradê Navalhado & Visagismo', 'carlos'],
+                    ['Lucas Degradê', 'lucas@barbearia.com', '(11) 98888-3333', 'Fade Moderno, Riscas & Barba Esculpida', 'lucas']
                 ];
 
                 $stInsB = $this->conn->prepare("
-                    INSERT INTO `usuarios` (`nome`, `email`, `telefone`, `senha`, `perfil`, `ativo`)
-                    VALUES (:nome, :email, :tel, :senha, 'barbeiro', 1)
-                    ON DUPLICATE KEY UPDATE `perfil` = 'barbeiro', `ativo` = 1
+                    INSERT INTO `usuarios` (`nome`, `email`, `telefone`, `senha`, `perfil`, `ativo`, `especialidade`, `slug`)
+                    VALUES (:nome, :email, :tel, :senha, 'barbeiro', 1, :esp, :slug)
+                    ON DUPLICATE KEY UPDATE `perfil` = 'barbeiro', `ativo` = 1, `especialidade` = VALUES(`especialidade`), `slug` = VALUES(`slug`)
                 ");
 
                 foreach ($barbeirosPadrao as $b) {
@@ -226,15 +266,48 @@ class Database {
                         ':nome' => $b[0],
                         ':email' => $b[1],
                         ':tel' => $b[2],
-                        ':senha' => $senhaPadrao
+                        ':senha' => $senhaPadrao,
+                        ':esp' => $b[3],
+                        ':slug' => $b[4]
                     ]);
                 }
             }
+
+            // Atualiza especialidade e slug dos barbeiros existentes caso vazios
+            $this->conn->exec("UPDATE `usuarios` SET `especialidade` = 'Cortes Clássicos & Barboterapia', `slug` = 'joao' WHERE `email` = 'joao@barbearia.com' AND (`slug` IS NULL OR `slug` = '')");
+            $this->conn->exec("UPDATE `usuarios` SET `especialidade` = 'Degradê Navalhado & Visagismo', `slug` = 'carlos' WHERE `email` = 'carlos@barbearia.com' AND (`slug` IS NULL OR `slug` = '')");
+            $this->conn->exec("UPDATE `usuarios` SET `especialidade` = 'Fade Moderno, Riscas & Barba Esculpida', `slug` = 'lucas' WHERE `email` = 'lucas@barbearia.com' AND (`slug` IS NULL OR `slug` = '')");
+
+            // Atualiza avatares dos barbeiros caso nulos
+            $this->conn->exec("UPDATE `usuarios` SET `avatar` = 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=150&auto=format&fit=crop&q=80' WHERE `email` = 'joao@barbearia.com' AND (`avatar` IS NULL OR `avatar` = '')");
+            $this->conn->exec("UPDATE `usuarios` SET `avatar` = 'https://images.unsplash.com/photo-1517832606589-7629c33971a6?w=150&auto=format&fit=crop&q=80' WHERE `email` = 'carlos@barbearia.com' AND (`avatar` IS NULL OR `avatar` = '')");
+            $this->conn->exec("UPDATE `usuarios` SET `avatar` = 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=150&auto=format&fit=crop&q=80' WHERE `email` = 'lucas@barbearia.com' AND (`avatar` IS NULL OR `avatar` = '')");
 
             // Atualiza agendamentos legados que estejam sem barbeiro associado
             $primeiroBarbeiro = $this->conn->query("SELECT id FROM `usuarios` WHERE `perfil` = 'barbeiro' AND `ativo` = 1 ORDER BY id ASC LIMIT 1")->fetchColumn();
             if ($primeiroBarbeiro) {
                 $this->conn->exec("UPDATE `agendamentos` SET `barbeiro_id` = {$primeiroBarbeiro} WHERE `barbeiro_id` IS NULL");
+            }
+
+            // Popula Planos de Assinatura VIP padrão se vazio
+            $stPl = $this->conn->query("SELECT COUNT(*) FROM `planos_assinatura`");
+            if ((int)$stPl->fetchColumn() === 0) {
+                $this->conn->exec("
+                    INSERT INTO `planos_assinatura` (`nome`, `slug`, `preco_mensal`, `descricao`, `beneficios`, `cor_badge`, `ativo`) VALUES
+                    ('VIP Silver', 'silver', 89.90, 'O plano ideal para quem mantém o corte sempre alinhado todo mês.', 'Cortes de Cabelo Ilimitados no Mês\nAtendimento com Horário Preferencial\nCafé Espresso Cortesia em Cada Visita\n10% de Desconto em Produtos de Barba', 'zinc', 1),
+                    ('VIP Gold', 'gold', 149.90, 'Experiência completa com cabelo impecável e barba sempre alinhada.', 'Cabelo & Barba Ilimitados no Mês\nBarboterapia com Toalha Quente\nCafé Gourmet & Água Mineral Premium\n15% de Desconto em Pomadas e Óleos', 'amber', 1),
+                    ('VIP Black Diamond', 'black', 199.90, 'Acesso ilimitado e exclusivo a todos os serviços da casa com tratamento VIP.', 'Acesso Total Ilimitado (Cabelo + Barba + Sobrancelha)\nCerveja Artesanal Gelada Cortesia por Visita\n20% de Desconto em Toda a Linha de Produtos\nVaga de Garagem VIP Reservada', 'emerald', 1);
+                ");
+            }
+
+            // Popula Assinante VIP demonstrativo se vazio
+            $stAss = $this->conn->query("SELECT COUNT(*) FROM `assinantes_vip`");
+            if ((int)$stAss->fetchColumn() === 0) {
+                $stPlanoGold = $this->conn->query("SELECT id FROM `planos_assinatura` WHERE `slug` = 'gold' LIMIT 1")->fetchColumn() ?: 2;
+                $this->conn->exec("
+                    INSERT INTO `assinantes_vip` (`cliente_nome`, `cliente_telefone`, `cliente_email`, `plano_id`, `status`, `data_inicio`, `data_renovacao`)
+                    VALUES ('Marcos Assinante VIP', '(11) 99999-7777', 'marcos.vip@email.com', {$stPlanoGold}, 'ativo', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY));
+                ");
             }
 
         } catch (PDOException $e) {
