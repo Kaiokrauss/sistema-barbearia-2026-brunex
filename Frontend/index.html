@@ -6,6 +6,10 @@
     <meta name="theme-color" content="#0A0A0C">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Barbearia VIP">
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+    <link rel="manifest" href="./manifest.json">
     <title>Barbearia VIP - Sistema Premium de Agendamento</title>
     <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -381,6 +385,9 @@
             </button>
             <button onclick="changeTab('tab-clube-vip')" id="btn-tab-clube-vip" class="nav-btn nav-btn-clube-vip text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">👑</span> <span>Clube VIP</span>
+            </button>
+            <button type="button" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
+                <span class="nav-icon">📱</span> <span>App iOS</span>
             </button>
             <span class="text-zinc-700 px-1 select-none">|</span>
             <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
@@ -1088,6 +1095,10 @@
         </div>
         <p class="text-xs text-zinc-400 mb-5">Acesse rapidamente as ferramentas administrativas e configurações:</p>
         <div class="space-y-2.5">
+            <button type="button" onclick="abrirModalInstalarIos(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-blue-400/40 text-sm font-semibold text-blue-200 transition text-left shadow-lg">
+                <span class="flex items-center gap-2.5"><span>📱</span> <strong>Instalar App no iPhone (iOS)</strong></span>
+                <span class="px-2 py-0.5 rounded-md bg-blue-500/30 text-[11px] font-bold text-blue-300">Grátis</span>
+            </button>
             <button type="button" onclick="changeTab('tab-clube-vip'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
                 <span class="flex items-center gap-2.5"><span>💎</span> Clube VIP / Barber Pass</span>
                 <span class="text-amber-400">→</span>
@@ -1123,6 +1134,105 @@
             <button type="button" onclick="toggleSom(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-zinc-300 transition">
                 <span class="flex items-center gap-2.5"><span id="mobile-drawer-som-icone">🔊</span> Efeitos Sonoros VIP</span>
                 <span id="mobile-drawer-som-status" class="text-xs text-amber-400 font-bold">Ativado</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- BANNER FLUTUANTE DE INSTALAÇÃO NO SAFARI (iOS) -->
+<div id="ios-install-banner" class="hidden fixed bottom-4 left-4 right-4 z-50 md:hidden p-4 rounded-3xl bg-[#121217]/95 border border-amber-500/40 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+        <img src="./icons/apple-touch-icon.png" alt="Barbearia VIP" class="w-12 h-12 rounded-2xl border border-amber-400/50 shadow-md flex-shrink-0">
+        <div>
+            <h4 class="text-sm font-bold text-white leading-tight">Instalar App no iPhone</h4>
+            <p class="text-xs text-zinc-300 mt-0.5">Toque em <strong class="text-amber-400">⎋ Compartilhar</strong> e <strong class="text-amber-400">Adicionar à Tela de Início</strong>.</p>
+        </div>
+    </div>
+    <div class="flex items-center gap-1.5 flex-shrink-0">
+        <button type="button" onclick="abrirModalInstalarIos()" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black transition">Ver</button>
+        <button type="button" onclick="document.getElementById('ios-install-banner').classList.add('hidden')" class="text-zinc-400 hover:text-white text-base p-1 leading-none">✕</button>
+    </div>
+</div>
+
+<!-- MODAL DE INSTALAÇÃO DO APP NO IPHONE (iOS) -->
+<div id="modal-instalar-ios" onclick="fecharModalInstalarIos()" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-[#121217] border border-amber-500/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto">
+        <div class="absolute -right-20 -top-20 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 -bottom-20 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6 relative z-10">
+            <div class="flex items-center gap-3.5">
+                <img src="./icons/apple-touch-icon.png" alt="Logo Barbearia VIP" class="w-14 h-14 rounded-2xl border-2 border-amber-400/50 shadow-xl object-cover">
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-amber-400 font-bold">App iOS Oficial</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white leading-tight">Barbearia VIP no seu iPhone</h3>
+                    <p class="text-xs text-zinc-400 mt-0.5">Versão nativa para iOS Safari (PWA)</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalInstalarIos()" class="text-zinc-400 hover:text-white text-2xl p-1.5 leading-none transition">✕</button>
+        </div>
+
+        <p class="text-xs sm:text-sm text-zinc-300 mb-6 relative z-10">
+            Tenha a <strong>Barbearia VIP</strong> na tela inicial do seu iPhone ou iPad como um <strong>aplicativo completo</strong>, com tela cheia, sem barra de endereços do navegador e com carregamento instantâneo.
+        </p>
+
+        <!-- Passos Ilustrados no iOS Safari -->
+        <div class="space-y-3 mb-6 relative z-10">
+            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-start gap-3.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-bold flex items-center justify-center flex-shrink-0 text-sm border border-amber-500/30">1</div>
+                <div>
+                    <h4 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                        <span>No Safari do iPhone, toque em Compartilhar</span>
+                        <span class="px-2 py-0.5 rounded bg-white/10 text-xs font-mono font-bold text-amber-300">⎋</span>
+                    </h4>
+                    <p class="text-xs text-zinc-400 mt-0.5">O ícone de um quadrado com seta para cima na barra inferior do Safari.</p>
+                </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-start gap-3.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-bold flex items-center justify-center flex-shrink-0 text-sm border border-amber-500/30">2</div>
+                <div>
+                    <h4 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                        <span>Role para baixo e selecione</span>
+                        <span class="px-2 py-0.5 rounded bg-white/10 text-xs font-bold text-amber-300 flex items-center gap-1">➕ Adicionar à Tela de Início</span>
+                    </h4>
+                    <p class="text-xs text-zinc-400 mt-0.5">Toque nessa opção no menu de ações do seu iPhone.</p>
+                </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-start gap-3.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold flex items-center justify-center flex-shrink-0 text-sm border border-emerald-500/30">3</div>
+                <div>
+                    <h4 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                        <span>Toque em "Adicionar" no topo direito</span>
+                        <span class="text-emerald-400 text-xs font-bold">✓ Pronto!</span>
+                    </h4>
+                    <p class="text-xs text-zinc-400 mt-0.5">O ícone VIP aparecerá na tela do seu iPhone ao lado dos seus outros apps.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code para abrir direto no iPhone caso esteja no PC -->
+        <div class="p-4 rounded-2xl bg-black/50 border border-amber-500/20 text-center mb-6 relative z-10">
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2">📸 Abrir direto pela câmera do iPhone</span>
+            <div class="inline-block p-2 bg-white rounded-2xl shadow-2xl mb-2">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http://192.168.1.46/sistema-barbearia-2026-brunex/Frontend/index.html" alt="QR Code iOS App" class="w-36 h-36 rounded-lg block">
+            </div>
+            <p class="text-[11px] text-zinc-400">Aponte a câmera do seu celular para escanear e abrir agora mesmo no Safari.</p>
+            <div class="mt-3 flex items-center gap-2">
+                <input type="text" readonly value="http://192.168.1.46/sistema-barbearia-2026-brunex/Frontend/index.html" id="link-ios-ip" class="w-full px-3 py-2 text-xs bg-black/70 border border-white/10 rounded-xl text-zinc-300 font-mono select-all focus:border-amber-400 outline-none">
+                <button type="button" onclick="copiarLinkIos()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs hover:brightness-110 shadow-lg transition flex-shrink-0">
+                    Copiar
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 pt-3 border-t border-white/10 relative z-10">
+            <span class="text-xs text-zinc-400 flex items-center gap-1.5">
+                <span>⚡</span> Tela Cheia Nativa • Sem App Store
+            </span>
+            <button type="button" onclick="fecharModalInstalarIos()" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition">
+                Fechar
             </button>
         </div>
     </div>
@@ -3153,6 +3263,57 @@
         const hashTab = window.location.hash.replace('#', '');
         if (document.getElementById(hashTab)) changeTab(hashTab);
     }
+
+    // --- FUNÇÕES DO APP PARA IPHONE (iOS) & PWA ---
+    function abrirModalInstalarIos() {
+        soundVIP.playSoftClick();
+        const modal = document.getElementById('modal-instalar-ios');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function fecharModalInstalarIos() {
+        soundVIP.playSoftClick();
+        const modal = document.getElementById('modal-instalar-ios');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    function copiarLinkIos() {
+        const input = document.getElementById('link-ios-ip');
+        if (input) {
+            input.select();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(input.value);
+            } else {
+                document.execCommand('copy');
+            }
+            mostrarToast('Link do App copiado! Abra no Safari do iPhone.', 'sucesso');
+        }
+    }
+
+    // Detecção inteligente de iOS Safari para exibir banner de instalação
+    function checarDispositivoIos() {
+        const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+        const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+        if (isIos && !isStandalone) {
+            const banner = document.getElementById('ios-install-banner');
+            if (banner) {
+                setTimeout(() => banner.classList.remove('hidden'), 2000);
+            }
+        }
+    }
+
+    // Registro do Service Worker para suporte PWA e funcionamento offline no iOS
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then((reg) => {
+                console.log('Service Worker PWA VIP registrado:', reg.scope);
+            }).catch((err) => {
+                console.log('Falha ao registrar Service Worker:', err);
+            });
+        });
+    }
+
+    checarDispositivoIos();
 </script>
 </body>
 </html>

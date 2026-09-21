@@ -1,0 +1,14 @@
+{
+  "appId": "com.barbeariavip.app",
+  "appName": "Barbearia VIP Borcelle",
+  "webDir": "Frontend",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "http://192.168.1.46/sistema-barbearia-2026-brunex/Frontend/index.html",
+    "cleartext": true
+  },
+  "ios": {
+    "contentInset": "always",
+    "scheme": "Barbearia VIP"
+  }
+}
