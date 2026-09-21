@@ -346,7 +346,7 @@
         <div class="max-w-6xl mx-auto flex justify-between items-center gap-2">
             <div class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
                 <div class="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full p-[2px] bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-600 shadow-md shadow-amber-500/25 flex-shrink-0">
-                    <img src="./icons/apple-touch-icon.png" alt="Mascote Barbearia VIP" class="w-full h-full rounded-full object-cover bg-[#121217]">
+                    <img src="./icons/logo-personagem.jpg?v=2" alt="Mascote Barbearia VIP" class="w-full h-full rounded-full object-cover bg-[#121217]">
                 </div>
                 <div class="text-left">
                     <p class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
@@ -414,7 +414,7 @@
         <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="flex items-center gap-4 sm:gap-6 relative z-10 text-left">
             <div class="relative w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-amber-400 via-amber-200 to-amber-600 shadow-2xl shadow-amber-500/20 flex-shrink-0">
-                <img src="./icons/apple-touch-icon.png" alt="Mascote Barbearia VIP" class="w-full h-full rounded-2xl sm:rounded-3xl object-cover bg-[#121217]">
+                <img src="./icons/logo-personagem.jpg?v=2" alt="Mascote Barbearia VIP" class="w-full h-full rounded-2xl sm:rounded-3xl object-cover bg-[#121217]">
             </div>
             <div>
                 <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25 mb-2.5">
@@ -1096,7 +1096,7 @@
         <div class="w-12 h-1.5 bg-zinc-600/50 rounded-full mx-auto mb-5"></div>
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-base font-display font-bold text-white flex items-center gap-2.5">
-                <img src="./icons/apple-touch-icon.png" alt="Barbearia VIP" class="w-6 h-6 rounded-full border border-amber-400/50 object-cover"> Menu Barbearia VIP
+                <img src="./icons/logo-personagem.jpg?v=2" alt="Barbearia VIP" class="w-7 h-7 rounded-full border border-amber-400/50 object-cover shadow-sm"> Menu Barbearia VIP
             </h3>
             <button onclick="toggleMobileMenuMais()" class="text-zinc-400 hover:text-white text-xl p-1 leading-none">✕</button>
         </div>
@@ -1149,7 +1149,7 @@
 <!-- BANNER FLUTUANTE DE INSTALAÇÃO NO SAFARI (iOS) -->
 <div id="ios-install-banner" class="hidden fixed bottom-4 left-4 right-4 z-50 md:hidden p-4 rounded-3xl bg-[#121217]/95 border border-amber-500/40 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3">
     <div class="flex items-center gap-3">
-        <img src="./icons/apple-touch-icon.png" alt="Barbearia VIP" class="w-12 h-12 rounded-2xl border border-amber-400/50 shadow-md flex-shrink-0">
+        <img src="./icons/logo-personagem.jpg?v=2" alt="Barbearia VIP" class="w-12 h-12 rounded-2xl border border-amber-400/50 shadow-md flex-shrink-0 object-cover">
         <div>
             <h4 class="text-sm font-bold text-white leading-tight">Instalar App no iPhone</h4>
             <p class="text-xs text-zinc-300 mt-0.5">Toque em <strong class="text-amber-400">⎋ Compartilhar</strong> e <strong class="text-amber-400">Adicionar à Tela de Início</strong>.</p>
@@ -1169,7 +1169,7 @@
 
         <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6 relative z-10">
             <div class="flex items-center gap-3.5">
-                <img src="./icons/apple-touch-icon.png" alt="Logo Barbearia VIP" class="w-14 h-14 rounded-2xl border-2 border-amber-400/50 shadow-xl object-cover">
+                <img src="./icons/logo-personagem.jpg?v=2" alt="Logo Barbearia VIP" class="w-14 h-14 rounded-2xl border-2 border-amber-400/50 shadow-xl object-cover">
                 <div>
                     <span class="text-[10px] uppercase tracking-widest text-amber-400 font-bold">App iOS Oficial</span>
                     <h3 class="text-lg sm:text-xl font-bold text-white leading-tight">Barbearia VIP no seu iPhone</h3>
@@ -3313,7 +3313,8 @@
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').then((reg) => {
-                console.log('Service Worker PWA VIP registrado:', reg.scope);
+                reg.update();
+                console.log('Service Worker PWA VIP registrado e atualizado:', reg.scope);
             }).catch((err) => {
                 console.log('Falha ao registrar Service Worker:', err);
             });
