@@ -278,6 +278,21 @@ function carregarServicosApi() {
         .catch(e => console.log('Servicos API:', e));
 }
 
+function carregarBarbeirosSelectAdmin() {
+    const select = document.getElementById('cliente-barbeiro-admin');
+    if (!select) return;
+    fetch('../api/barbeiro.php')
+        .then(r => r.json())
+        .then(res => {
+            if (res.success && res.barbeiros && res.barbeiros.length > 0) {
+                select.innerHTML = '<option value="">👑 Qualquer Profissional Disponível</option>' + res.barbeiros.map(b => `
+                    <option value="${b.id}">✂️ ${b.nome} (${b.especialidade || 'Barbeiro'})</option>
+                `).join('');
+            }
+        })
+        .catch(e => console.log('Barbeiros API:', e));
+}
+
 async function agendar() {
     const nome = document.getElementById('cliente-nome').value.trim();
     const telInput = document.getElementById('cliente-telefone');
@@ -285,6 +300,8 @@ async function agendar() {
     const servicoSelect = document.getElementById('cliente-servico');
     const servico = servicoSelect.value;
     const servicoId = servicoSelect.options[servicoSelect.selectedIndex]?.dataset?.id || 1;
+    const barbeiroSelect = document.getElementById('cliente-barbeiro-admin');
+    const barbeiroId = barbeiroSelect ? barbeiroSelect.value : null;
     const data = document.getElementById('cliente-data').value;
     const horario = document.getElementById('cliente-horario').value;
 
@@ -305,6 +322,7 @@ async function agendar() {
                 cliente_nome: nome,
                 cliente_telefone: telefone,
                 servico_id: servicoId,
+                barbeiro_id: barbeiroId ? Number(barbeiroId) : null,
                 data_agendada: data,
                 horario: horario
             })
@@ -314,6 +332,8 @@ async function agendar() {
 
         if (resp.ok && res.success) {
             const codigo = res.codigo || Math.random().toString(36).substring(2, 8).toUpperCase();
+            const bNome = res.dados?.barbeiro_nome || res.barbeiro_nome || '';
+            const servicoCompleto = bNome ? `${servico} com ${bNome}` : servico;
             
             // Salvando no estado local
             appState.agendamentos.push({ 
@@ -321,8 +341,9 @@ async function agendar() {
                 data, 
                 horario, 
                 nome, 
-                servico, 
-                telefone,
+                servico: servicoCompleto, 
+                barbeiro_nome: bNome,
+                telefone, 
                 status: 'ativo' 
             });
             saveState();
@@ -345,7 +366,8 @@ async function agendar() {
 
             msgBox.innerHTML = `
                 <div style="font-size:1.05rem;"><strong>🎉 Agendamento confirmado, ${nome}!</strong></div>
-                <div style="margin-top:4px;">Serviço: <strong>${servico}</strong></div>
+                <div style="margin-top:4px;">Serviço: <strong>${servicoCompleto}</strong></div>
+                ${bNome ? `<div>Barbeiro: <strong>${bNome}</strong></div>` : ''}
                 <div>Data & Horário: <strong>${data} às ${horario}</strong></div>
                 <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
                     <span>Código:</span> 
@@ -421,7 +443,8 @@ function cancelarAgendamento() {
 
     mostrarToast(`Agendamento de ${agendamento.nome} cancelado com sucesso.`, 'sucesso');
     
-    const text = encodeURIComponent(`AVISO: O cliente ${agendamento.nome} CANCELOU o horário das ${agendamento.horario} (Dia ${agendamento.data}) para ${agendamento.servico}.`);
+    const barbTxt = agendamento.barbeiro_nome ? ` com ${agendamento.barbeiro_nome}` : '';
+    const text = encodeURIComponent(`AVISO: O cliente ${agendamento.nome} CANCELOU o horário das ${agendamento.horario} (Dia ${agendamento.data}) para ${agendamento.servico}${barbTxt}.`);
     window.open(`https://wa.me/${appState.whatsappAdmin}?text=${text}`, '_blank');
 }
 
@@ -588,7 +611,8 @@ function renderAgendamentosTable(agendamentosFiltrados, disponiveisHoje) {
 
         const telLimpo = (a.telefone || a.cliente_telefone || '').replace(/\D/g, '');
         const telComDdi = telLimpo ? (telLimpo.length <= 11 && !telLimpo.startsWith('55') ? '55' + telLimpo : telLimpo) : '';
-        const zapMsg = encodeURIComponent(`Olá ${a.nome}! Confirmando seu agendamento na Barbearia VIP para o dia ${a.data} às ${a.horario} (${a.servico || 'Atendimento'}).`);
+        const barbTxt = a.barbeiro_nome ? ` com ${a.barbeiro_nome}` : '';
+        const zapMsg = encodeURIComponent(`Olá ${a.nome}! Confirmando seu agendamento na Barbearia VIP para o dia ${a.data} às ${a.horario} (${a.servico || 'Atendimento'}${barbTxt}).`);
         const zapUrl = telComDdi ? `https://api.whatsapp.com/send?phone=${telComDdi}&text=${zapMsg}` : `https://api.whatsapp.com/send?text=${zapMsg}`;
         const zapBtn = `<a href="${zapUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366]/30 font-semibold transition mr-2">📲 WhatsApp</a>`;
 
@@ -873,7 +897,8 @@ function renderAdminLembretes() {
         const diffMins = Math.floor((hAgend - agora) / 60000);
         
         let tempoTxt = diffMins < 0 ? "Já passou" : `Faltam ${diffMins} min`;
-        const msg = encodeURIComponent(`Olá ${a.nome}, confirmando seu horário hoje às ${a.horario} para ${a.servico || 'atendimento'}. Te aguardamos na Barbearia VIP!`);
+        const barbTxt = a.barbeiro_nome ? ` com ${a.barbeiro_nome}` : '';
+        const msg = encodeURIComponent(`Olá ${a.nome}, confirmando seu horário hoje às ${a.horario} para ${(a.servico || 'atendimento')}${barbTxt}. Te aguardamos na Barbearia VIP!`);
         const telLimpo = (a.telefone || a.cliente_telefone || '').replace(/\D/g, '');
         const phoneWithCountry = telLimpo ? (telLimpo.length <= 11 && !telLimpo.startsWith('55') ? '55' + telLimpo : telLimpo) : '';
         const zapUrl = phoneWithCountry
@@ -929,6 +954,7 @@ document.querySelectorAll('input[type="tel"], #cliente-telefone, #cliente-tel, #
 
 updateBadge();
 carregarServicosApi();
+carregarBarbeirosSelectAdmin();
 sincronizarAgendamentosApi();
 
 setInterval(() => {

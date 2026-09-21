@@ -40,15 +40,21 @@ class WhatsAppService {
         $nome = $dados['cliente_nome'] ?? 'Cliente';
         $tel = $dados['cliente_telefone'] ?? 'Não informado';
         $servico = $dados['servico_nome'] ?? 'Serviço Barbearia';
+        $barbeiroNome = $dados['barbeiro_nome'] ?? '';
         $data = $dados['data_agendada'] ?? date('d/m/Y');
         $horario = $dados['horario'] ?? '00:00';
         $codigo = $dados['codigo'] ?? '';
 
+        $servicoComBarbeiro = $barbeiroNome ? "{$servico} com {$barbeiroNome}" : $servico;
+
         $msg = "💈 *NOVO AGENDAMENTO RECEBIDO - BARBEARIA VIP*\n\n"
              . "👤 *Cliente:* {$nome}\n"
              . "📞 *Telefone:* {$tel}\n"
-             . "✂️ *Serviço:* {$servico}\n"
-             . "📅 *Data:* {$data}\n"
+             . "✂️ *Serviço:* {$servicoComBarbeiro}\n";
+        if ($barbeiroNome) {
+            $msg .= "💈 *Barbeiro:* {$barbeiroNome}\n";
+        }
+        $msg .= "📅 *Data:* {$data}\n"
              . "⏰ *Horário:* {$horario}\n"
              . "🔑 *Código:* {$codigo}\n\n"
              . "_Agendamento cadastrado com sucesso no sistema._";
@@ -63,18 +69,24 @@ class WhatsAppService {
         $tel = $dados['cliente_telefone'] ?? '';
         $nome = $dados['cliente_nome'] ?? 'Cliente';
         $servico = $dados['servico_nome'] ?? 'Serviço Barbearia';
+        $barbeiroNome = $dados['barbeiro_nome'] ?? '';
         $data = $dados['data_agendada'] ?? date('d/m/Y');
         $horario = $dados['horario'] ?? '00:00';
         $codigo = $dados['codigo'] ?? '';
 
+        $servicoComBarbeiro = $barbeiroNome ? "{$servico} com {$barbeiroNome}" : $servico;
+
         $msg = "💈 *CONFIRMAÇÃO DE AGENDAMENTO - BARBEARIA VIP*\n\n"
              . "Olá, *{$nome}*! Seu horário foi agendado com sucesso:\n\n"
-             . "✂️ *Serviço:* {$servico}\n"
-             . "📅 *Data:* {$data}\n"
-             . "⏰ *Horário:* {$horario}\n"
-             . "🔑 *Código do Agendamento:* {$codigo}\n\n"
-             . "Caso precise cancelar, você pode usar seu código no site.\n"
-             . "Te aguardamos! Obrigado pela preferência! ✂️🔥";
+             . "✂️ *Serviço:* {$servicoComBarbeiro}\n";
+        if ($barbeiroNome) {
+            $msg .= "💈 *Barbeiro:* {$barbeiroNome}\n";
+        }
+        $msg .= "📅 *Data:* {$data}\n"
+              . "⏰ *Horário:* {$horario}\n"
+              . "🔑 *Código do Agendamento:* {$codigo}\n\n"
+              . "Caso precise cancelar, você pode usar seu código no site.\n"
+              . "Te aguardamos! Obrigado pela preferência! ✂️🔥";
 
         return self::criarLinkWhatsApp($tel, $msg);
     }
@@ -87,9 +99,11 @@ class WhatsAppService {
         $nome = $dados['cliente_nome'] ?? 'Cliente';
         $horario = $dados['horario'] ?? '00:00';
         $servico = $dados['servico_nome'] ?? 'atendimento';
+        $barbeiroNome = $dados['barbeiro_nome'] ?? '';
+        $servicoComBarbeiro = $barbeiroNome ? "{$servico} com {$barbeiroNome}" : $servico;
 
         $msg = "Olá *{$nome}*! 👋\n"
-             . "Passando para confirmar seu horário na *Barbearia VIP* hoje às *{$horario}* ({$servico}).\n"
+             . "Passando para confirmar seu horário na *Barbearia VIP* hoje às *{$horario}* ({$servicoComBarbeiro}).\n"
              . "Até já!";
 
         return self::criarLinkWhatsApp($tel, $msg);

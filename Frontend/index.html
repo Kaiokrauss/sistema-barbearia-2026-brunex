@@ -1654,6 +1654,10 @@
 
             if (resp.ok && result.success) {
                 soundVIP.playChicSuccess();
+                const bNome = result.dados?.barbeiro_nome || result.barbeiro_nome || '';
+                const sNome = result.dados?.servico_nome || '';
+                const sComBarbeiro = bNome ? `${sNome} com ${bNome}` : sNome;
+
                 const box = document.getElementById('boxSucessoAgendamento');
                 box.innerHTML = `
                     <div class="flex items-center gap-2 mb-2">
@@ -1662,6 +1666,8 @@
                     </div>
                     <div class="space-y-1 text-sm text-gray-200">
                         <p>👤 Cliente: <strong>${nome}</strong></p>
+                        <p>✂️ Serviço: <strong>${sComBarbeiro}</strong></p>
+                        ${bNome ? `<p>💈 Barbeiro: <strong>${bNome}</strong></p>` : ''}
                         <p>📅 Data & Horário: <strong>${data_agendada} às ${horario}</strong></p>
                         <div class="flex items-center gap-2 flex-wrap">
                             <span>🔑 Código de cancelamento:</span>
@@ -2268,9 +2274,10 @@
         tbody.innerHTML = lista.map(a => {
             const precoFmt = a.servico_preco ? `R$ ${parseFloat(a.servico_preco).toFixed(2).replace('.', ',')}` : 'R$ --';
             const servicoLabel = a.servico_nome || 'Serviço Padrão';
+            const barbTexto = a.barbeiro_nome ? ` com ${a.barbeiro_nome}` : '';
             const whatsTel = (a.cliente_telefone || '').replace(/\D/g, '');
             const whatsUrl = whatsTel 
-                ? `https://api.whatsapp.com/send?phone=${whatsTel}&text=${encodeURIComponent(`Olá ${a.cliente_nome}, tudo bem? Confirmando seu horário na Barbearia VIP dia ${a.data_agendada} às ${a.horario}.`)}`
+                ? `https://api.whatsapp.com/send?phone=${whatsTel}&text=${encodeURIComponent(`Olá ${a.cliente_nome}, tudo bem? Confirmando seu horário na Barbearia VIP dia ${a.data_agendada} às ${a.horario} (${servicoLabel}${barbTexto}).`)}`
                 : null;
 
             return `

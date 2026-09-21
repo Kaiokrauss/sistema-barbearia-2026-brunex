@@ -22,12 +22,17 @@ class NotificacaoWhatsAppObserver implements AgendamentoObserver {
         $data = $dados['data_agendada'] ?? date('Y-m-d');
         $horario = $dados['horario'] ?? '--:--';
         $servico = $dados['servico_nome'] ?? 'Serviço Barbearia VIP';
+        $barbeiroNome = $dados['barbeiro_nome'] ?? '';
+        $servicoComBarbeiro = $barbeiroNome ? "{$servico} com {$barbeiroNome}" : $servico;
         $codigo = $dados['codigo'] ?? '';
 
         if ($tipo === 'AGENDAMENTO_CRIADO') {
             $msg = "💈 *Barbearia VIP Borcelle*\n";
             $msg .= "Olá, *{$cliente}*! Seu agendamento foi confirmado:\n";
-            $msg .= "✂️ Serviço: {$servico}\n";
+            $msg .= "✂️ Serviço: {$servicoComBarbeiro}\n";
+            if ($barbeiroNome) {
+                $msg .= "💈 Barbeiro: {$barbeiroNome}\n";
+            }
             $msg .= "📅 Data: {$data} às {$horario}\n";
             $msg .= "🔑 Código de Segurança: #{$codigo}\n";
             $msg .= "Tolerância de 10 minutos. Apresente seu código na recepção!";

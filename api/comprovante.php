@@ -13,9 +13,10 @@ if (empty($codigo)) {
 }
 
 $db = Database::getInstance()->getConnection();
-$sql = "SELECT a.*, s.nome AS servico_nome, s.preco AS servico_preco, s.duracao_minutos 
+$sql = "SELECT a.*, s.nome AS servico_nome, s.preco AS servico_preco, s.duracao_minutos, u.nome AS barbeiro_nome 
         FROM agendamentos a 
         LEFT JOIN servicos s ON a.servico_id = s.id 
+        LEFT JOIN usuarios u ON a.barbeiro_id = u.id 
         WHERE a.codigo = :codigo 
         LIMIT 1";
 $stmt = $db->prepare($sql);
@@ -277,6 +278,9 @@ $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" . 
                             <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Serviço Solicitado</p>
                             <p class="text-base font-semibold text-white mt-1 flex items-center gap-2">
                                 <span>✂️</span> <?php echo htmlspecialchars($ag['servico_nome'] ?: 'Corte Masculino VIP'); ?>
+                                <?php if (!empty($ag['barbeiro_nome'])): ?>
+                                    <span class="text-xs text-amber-300 font-bold ml-1">(com <?php echo htmlspecialchars($ag['barbeiro_nome']); ?>)</span>
+                                <?php endif; ?>
                             </p>
                         </div>
 
@@ -338,7 +342,11 @@ $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" . 
 
     <!-- BOTÕES COMPARTILHAR (NO-PRINT) -->
     <div class="no-print mt-6 flex items-center gap-3 flex-wrap">
-        <a href="https://api.whatsapp.com/send?text=<?php echo urlencode("💈 Olá! Meu agendamento na Barbearia VIP está confirmado para {$dataFormatada} às {$horarioFmt}. Código: #{$codigo}\nVeja meu voucher: {$urlValidacaoSemIcs}"); ?>" target="_blank" class="px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-xs flex items-center gap-2 transition shadow-lg">
+        <?php 
+            $barbTxtWhats = !empty($ag['barbeiro_nome']) ? " com " . $ag['barbeiro_nome'] : "";
+            $msgWhatsComprovante = "💈 Olá! Meu agendamento na Barbearia VIP está confirmado para {$dataFormatada} às {$horarioFmt} ({$ag['servico_nome']}{$barbTxtWhats}). Código: #{$codigo}\nVeja meu voucher: {$urlValidacaoSemIcs}";
+        ?>
+        <a href="https://api.whatsapp.com/send?text=<?php echo urlencode($msgWhatsComprovante); ?>" target="_blank" class="px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-xs flex items-center gap-2 transition shadow-lg">
             <span>📲</span> Enviar no WhatsApp
         </a>
         <button onclick="navigator.clipboard.writeText('<?php echo $urlValidacaoSemIcs; ?>'); alert('Link do Voucher copiado para a área de transferência!');" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-zinc-300 transition flex items-center gap-2">

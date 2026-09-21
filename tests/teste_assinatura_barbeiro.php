@@ -175,6 +175,50 @@ $linkGerado = "http://localhost/sistema-barbearia-2026-brunex/Frontend/index.htm
 assertTeste(str_contains($linkGerado, '?barbeiro='), "Link gerado contém o parâmetro '?barbeiro=' para pré-seleção no frontend.");
 assertTeste(str_contains($linkGerado, $busca), "Link gerado contém a referência correta do barbeiro ({$busca}).");
 
+// ------------------------------------------------------------
+// [5] TESTANDO MENSAGENS DO WHATSAPP COM NOME DO BARBEIRO
+// ------------------------------------------------------------
+echo "\n[5] TESTANDO MENSAGENS DO WHATSAPP COM NOME DO BARBEIRO:\n";
+
+require_once __DIR__ . '/../Models/WhatsAppService.php';
+require_once __DIR__ . '/../Models/ObserverInterface.php';
+require_once __DIR__ . '/../Models/NotificacaoWhatsAppObserver.php';
+
+$dadosMockZap = [
+    'cliente_nome' => 'Bruno Krauss',
+    'cliente_telefone' => '(11) 98765-4321',
+    'servico_nome' => 'Corte e Barba',
+    'barbeiro_nome' => 'Carlos Navalha',
+    'data_agendada' => '25/09/2026',
+    'horario' => '15:00',
+    'codigo' => 'BARB01'
+];
+
+$linkWhatsCliente = WhatsAppService::gerarLinkConfirmacaoCliente($dadosMockZap);
+$textoDecodificado = urldecode($linkWhatsCliente);
+
+assertTeste(str_contains($textoDecodificado, 'Corte e Barba com Carlos Navalha'), "Link WhatsApp do cliente formata 'Corte e Barba com Carlos Navalha'.");
+assertTeste(str_contains($textoDecodificado, 'Carlos Navalha'), "Link WhatsApp do cliente contém linha com o nome do barbeiro.");
+
+$linkWhatsBarbeiro = WhatsAppService::gerarLinkNovoAgendamentoBarbeiro($dadosMockZap, '5511988882222');
+$textoBarbDecodificado = urldecode($linkWhatsBarbeiro);
+
+assertTeste(str_contains($textoBarbDecodificado, 'Corte e Barba com Carlos Navalha'), "Notificação WhatsApp para o profissional cita 'Corte e Barba com Carlos Navalha'.");
+assertTeste(str_contains($linkWhatsBarbeiro, 'phone=5511988882222'), "Link do WhatsApp direciona para o telefone cadastrado do barbeiro.");
+
+$linkLembrete = WhatsAppService::gerarLinkLembrete($dadosMockZap);
+assertTeste(str_contains(urldecode($linkLembrete), 'Corte e Barba com Carlos Navalha'), "Lembrete de agendamento WhatsApp cita o serviço com o barbeiro.");
+
+// Testando NotificacaoWhatsAppObserver com Barbeiro
+$obsWhatsApp = new NotificacaoWhatsAppObserver();
+$subjectMock = new AgendamentoSubject();
+$subjectMock->attach($obsWhatsApp);
+$subjectMock->dispararEvento('AGENDAMENTO_CRIADO', $dadosMockZap);
+
+$msgObserver = $obsWhatsApp->getUltimaMensagem();
+assertTeste(str_contains($msgObserver, 'Corte e Barba com Carlos Navalha'), "NotificacaoWhatsAppObserver inclui 'Corte e Barba com Carlos Navalha'.");
+assertTeste(str_contains($msgObserver, 'Barbeiro: Carlos Navalha'), "NotificacaoWhatsAppObserver inclui linha 'Barbeiro: Carlos Navalha'.");
+
 echo "\n============================================================\n";
 echo "                   RESUMO DOS TESTES                        \n";
 echo "============================================================\n";
@@ -189,3 +233,4 @@ if ($reprovados === 0) {
     echo "\n>>> FALHA! Alguns testes reprovaram. Verifique os erros acima. <<<\n";
     exit(1);
 }
+

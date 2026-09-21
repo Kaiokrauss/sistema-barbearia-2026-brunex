@@ -280,18 +280,35 @@ if ($method === 'POST') {
                 }
             } catch (Exception $e) {}
 
+            // Busca dados do barbeiro escolhido
+            $barbeiroNome = null;
+            $barbeiroTelefone = null;
+            if ($ag->barbeiro_id) {
+                try {
+                    $stB = $conn->prepare("SELECT nome, telefone FROM usuarios WHERE id = :id AND perfil = 'barbeiro'");
+                    $stB->execute([':id' => $ag->barbeiro_id]);
+                    $bRow = $stB->fetch(PDO::FETCH_ASSOC);
+                    if ($bRow) {
+                        $barbeiroNome = $bRow['nome'];
+                        $barbeiroTelefone = $bRow['telefone'];
+                    }
+                } catch (Exception $e) {}
+            }
+
             $dadosAgendamento = [
                 'cliente_nome' => $ag->cliente_nome,
                 'cliente_telefone' => $ag->cliente_telefone,
                 'servico_nome' => $servicoNome,
+                'barbeiro_id' => $ag->barbeiro_id,
+                'barbeiro_nome' => $barbeiroNome,
                 'data_agendada' => date('d/m/Y', strtotime($ag->data_agendada)),
                 'horario' => $ag->horario,
                 'codigo' => $ag->codigo
             ];
 
-            // Gera links da API do WhatsApp para o cliente e para o barbeiro
+            // Gera links da API do WhatsApp para o cliente e para o barbeiro (com nome do barbeiro no texto)
             $whatsappUrlCliente = WhatsAppService::gerarLinkConfirmacaoCliente($dadosAgendamento);
-            $whatsappUrlBarbeiro = WhatsAppService::gerarLinkNovoAgendamentoBarbeiro($dadosAgendamento);
+            $whatsappUrlBarbeiro = WhatsAppService::gerarLinkNovoAgendamentoBarbeiro($dadosAgendamento, $barbeiroTelefone ?: '5511999999999');
 
             // Padrão GoF Observer: Notifica observadores (Auditoria e WhatsApp)
             try {
@@ -304,6 +321,7 @@ if ($method === 'POST') {
                 'success' => 'Agendamento confirmado com sucesso!',
                 'codigo' => $ag->codigo,
                 'dados' => $dadosAgendamento,
+                'barbeiro_nome' => $barbeiroNome,
                 'whatsapp_url_cliente' => $whatsappUrlCliente,
                 'whatsapp_url_barbeiro' => $whatsappUrlBarbeiro
             ]);
