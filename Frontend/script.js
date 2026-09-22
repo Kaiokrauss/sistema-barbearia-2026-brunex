@@ -183,6 +183,7 @@ function showTab(tabId) {
     if (tabId === 'tab-avaliacoes-admin') renderAdminAvaliacoes();
     if (tabId === 'tab-assinaturas-admin') carregarAssinantesAdmin();
     if (tabId === 'tab-barbeiros-admin') carregarBarbeirosAdmin();
+    if (tabId === 'tab-produtos-admin') carregarProdutosAdmin();
 }
 
 function checkAdminAuth(targetTab) {
@@ -1389,4 +1390,202 @@ function fallbackCopiar(url, nome) {
     document.execCommand('copy');
     document.body.removeChild(temp);
     mostrarToast(`Link da Bio de ${nome} copiado!`, 'sucesso');
+}
+
+// --- GESTÃO DE PRODUTOS E ESTOQUE (ADMIN) ---
+let produtosAdminCache = [];
+
+async function carregarProdutosAdmin() {
+    const tbody = document.getElementById('tabela-produtos-admin-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-400 animate-pulse">Atualizando estoque no banco de dados...</td></tr>';
+
+    try {
+        // Busca estatísticas
+        fetch('../api/produto.php?stats=1')
+            .then(r => r.json())
+            .then(sRes => {
+                if (sRes.success && sRes.dados) {
+                    const st = sRes.dados;
+                    const elTot = document.getElementById('stat-prod-total');
+                    const elUn = document.getElementById('stat-prod-unidades');
+                    const elVal = document.getElementById('stat-prod-valor');
+                    if (elTot) elTot.textContent = st.total_produtos || 0;
+                    if (elUn) elUn.textContent = `${st.total_unidades || 0} un`;
+                    if (elVal) elVal.textContent = `R$ ${Number(st.valor_total_estoque || 0).toFixed(2).replace('.', ',')}`;
+                }
+            })
+            .catch(() => {});
+
+        // Busca lista de produtos
+        const resp = await fetch('../api/produto.php');
+        const res = await resp.json();
+
+        if (res.success && Array.isArray(res.dados)) {
+            produtosAdminCache = res.dados;
+            renderizarProdutosAdmin(res.dados);
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-500">Nenhum produto cadastrado.</td></tr>';
+        }
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-400">Falha ao carregar produtos.</td></tr>';
+    }
+}
+
+function renderizarProdutosAdmin(produtos) {
+    const tbody = document.getElementById('tabela-produtos-admin-body');
+    if (!tbody) return;
+
+    if (!produtos || produtos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-zinc-500">Nenhum produto encontrado.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = produtos.map(p => {
+        const precoFmt = `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}`;
+        const estoque = Number(p.estoque);
+        const imgUrl = p.imagem || 'https://images.unsplash.com/photo-1598452963314-b09f397a5c48?w=100&auto=format&fit=crop&q=80';
+
+        let badgeEstoque = '';
+        if (estoque <= 0) {
+            badgeEstoque = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">0 un (Esgotado)</span>';
+        } else if (estoque <= 5) {
+            badgeEstoque = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">${estoque} un (Baixo)</span>`;
+        } else {
+            badgeEstoque = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">${estoque} un</span>`;
+        }
+
+        const badgeDestaque = Number(p.destaque) === 1
+            ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">★ Sim</span>'
+            : '<span class="text-zinc-500 text-[10px]">Não</span>';
+
+        return `
+            <tr class="hover:bg-white/[0.02] transition">
+                <td class="py-3 px-3">
+                    <div class="flex items-center gap-3">
+                        <img src="${imgUrl}" alt="${p.nome}" class="w-10 h-10 rounded-xl object-cover border border-white/10 flex-shrink-0">
+                        <div>
+                            <strong class="text-white text-xs block">${p.nome}</strong>
+                            <span class="text-[11px] text-zinc-400 line-clamp-1">${p.descricao || 'Sem descrição'}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-3 px-3">
+                    <span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] text-zinc-300 font-semibold">${p.categoria}</span>
+                </td>
+                <td class="py-3 px-3 font-semibold text-white font-mono">${precoFmt}</td>
+                <td class="py-3 px-3">${badgeEstoque}</td>
+                <td class="py-3 px-3">${badgeDestaque}</td>
+                <td class="py-3 px-3 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                        <button type="button" onclick="ajustarEstoqueAdmin(${p.id}, -1)" title="Diminuir 1 un" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 text-zinc-300 font-bold text-xs flex items-center justify-center transition border border-white/10">-</button>
+                        <button type="button" onclick="ajustarEstoqueAdmin(${p.id}, 1)" title="Adicionar 1 un" class="w-7 h-7 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs flex items-center justify-center transition border border-emerald-500/30">+</button>
+                        <button type="button" onclick="ajustarEstoqueAdmin(${p.id}, 5)" title="Adicionar 5 un" class="px-2 h-7 rounded-lg bg-white/5 hover:bg-white/15 text-zinc-300 text-[10px] font-bold flex items-center justify-center transition border border-white/10">+5</button>
+                        <button type="button" onclick="deletarProdutoAdmin(${p.id}, '${p.nome.replace(/'/g, "\\'")}')" title="Excluir Produto" class="w-7 h-7 rounded-lg bg-red-500/10 hover:bg-red-500/25 text-red-400 font-bold text-xs flex items-center justify-center transition border border-red-500/30 ml-1">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function ajustarEstoqueAdmin(produtoId, delta) {
+    try {
+        const resp = await fetch('../api/produto.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                acao: 'ajustar_estoque',
+                produto_id: produtoId,
+                quantidade: delta
+            })
+        });
+
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast(`Estoque atualizado: ${res.novo_estoque} un`, 'sucesso');
+            carregarProdutosAdmin();
+        } else {
+            mostrarToast(res.error || 'Erro ao atualizar estoque.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro de comunicação com o servidor.', 'erro');
+    }
+}
+
+function abrirModalNovoProduto() {
+    const modal = document.getElementById('modal-novo-produto');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function fecharModalNovoProduto() {
+    const modal = document.getElementById('modal-novo-produto');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function salvarProdutoAdmin(event) {
+    event.preventDefault();
+    const nome = document.getElementById('novo-prod-nome').value.trim();
+    const categoria = document.getElementById('novo-prod-categoria').value;
+    const preco = parseFloat(document.getElementById('novo-prod-preco').value) || 0;
+    const estoque = parseInt(document.getElementById('novo-prod-estoque').value) || 0;
+    const destaque = parseInt(document.getElementById('novo-prod-destaque').value) || 0;
+    const descricao = document.getElementById('novo-prod-descricao').value.trim();
+    const imagem = document.getElementById('novo-prod-imagem').value.trim();
+
+    if (!nome || preco <= 0) {
+        mostrarToast('Preencha o nome e um preço válido.', 'aviso');
+        return;
+    }
+
+    try {
+        const resp = await fetch('../api/produto.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nome: nome,
+                categoria: categoria,
+                preco: preco,
+                estoque: estoque,
+                destaque: destaque,
+                descricao: descricao,
+                imagem: imagem
+            })
+        });
+
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast('Produto cadastrado com sucesso!', 'sucesso');
+            fecharModalNovoProduto();
+            event.target.reset();
+            carregarProdutosAdmin();
+        } else {
+            mostrarToast(res.error || 'Erro ao cadastrar produto.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro ao comunicar com o servidor.', 'erro');
+    }
+}
+
+async function deletarProdutoAdmin(produtoId, nome) {
+    if (!confirm(`Deseja realmente remover o produto "${nome}"?`)) return;
+
+    try {
+        const resp = await fetch('../api/produto.php', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: produtoId })
+        });
+
+        const res = await resp.json();
+        if (res.success) {
+            mostrarToast('Produto removido com sucesso!', 'sucesso');
+            carregarProdutosAdmin();
+        } else {
+            mostrarToast(res.error || 'Erro ao remover produto.', 'erro');
+        }
+    } catch (e) {
+        mostrarToast('Erro ao comunicar com o servidor.', 'erro');
+    }
 }

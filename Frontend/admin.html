@@ -49,6 +49,7 @@
         <button onclick="checkAdminAuth('tab-avaliacoes-admin'); closeMenu()">⭐ Avaliações</button>
         <button onclick="checkAdminAuth('tab-assinaturas-admin'); closeMenu()">💎 Assinaturas VIP</button>
         <button onclick="checkAdminAuth('tab-barbeiros-admin'); closeMenu()">💈 Barbeiros & Bio</button>
+        <button onclick="checkAdminAuth('tab-produtos-admin'); closeMenu()">🧴 Produtos & Estoque</button>
         <button onclick="checkAdminAuth('tab-config'); closeMenu()">Configurar</button>
         <a href="../views/admin/servicos.html" style="color:var(--secondary); text-decoration:none; padding:8px 12px; font-weight:bold; display:inline-flex; align-items:center;">📋 Serviços</a>
         <a href="../views/admin/caixa.html" style="color:var(--secondary); text-decoration:none; padding:8px 12px; font-weight:bold; display:inline-flex; align-items:center;">💼 Caixa & Comissões</a>
@@ -423,6 +424,119 @@
             <div class="p-5 rounded-3xl bg-[#18181F] border border-white/10 text-center text-zinc-500">
                 Carregando profissionais...
             </div>
+        </div>
+    </div>
+
+    <!-- ABA: PRODUTOS & GESTÃO DE ESTOQUE (MINI-LOJA VIP) -->
+    <div id="tab-produtos-admin" class="tab-content">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2"><span>🧴</span> Produtos & Gestão de Estoque VIP</h2>
+                <p class="text-sm text-zinc-400">Controle o catálogo de pomadas, óleos, balms e monitore as quantidades em tempo real.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="abrirModalNovoProduto()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs hover:brightness-110 shadow-lg shadow-amber-500/20 flex items-center gap-1.5">
+                    <span>➕</span> <span>Novo Produto</span>
+                </button>
+                <button type="button" onclick="carregarProdutosAdmin()" class="px-3 py-2.5 rounded-xl bg-white/5 text-zinc-300 hover:text-white border border-white/10 text-xs transition">
+                    🔄
+                </button>
+            </div>
+        </div>
+
+        <!-- Cards de Métricas Analíticas -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="p-4 rounded-2xl bg-[#18181F] border border-white/10">
+                <span class="text-xs text-zinc-400 font-semibold uppercase">Total de Produtos Ativos</span>
+                <div class="text-2xl font-bold text-white mt-1" id="stat-prod-total">-</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#18181F] border border-white/10">
+                <span class="text-xs text-zinc-400 font-semibold uppercase">Unidades Físicas em Estoque</span>
+                <div class="text-2xl font-bold text-amber-400 mt-1" id="stat-prod-unidades">-</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-[#18181F] border border-white/10">
+                <span class="text-xs text-zinc-400 font-semibold uppercase">Valor Total em Estoque</span>
+                <div class="text-2xl font-bold text-emerald-400 mt-1" id="stat-prod-valor">-</div>
+            </div>
+        </div>
+
+        <!-- Tabela de Produtos -->
+        <div class="bg-[#18181F] border border-white/10 rounded-3xl p-5 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-zinc-300">
+                    <thead class="text-[11px] uppercase tracking-wider text-zinc-500 bg-white/[0.02] border-b border-white/5">
+                        <tr>
+                            <th class="py-3 px-3">Item</th>
+                            <th class="py-3 px-3">Categoria</th>
+                            <th class="py-3 px-3">Preço</th>
+                            <th class="py-3 px-3">Estoque</th>
+                            <th class="py-3 px-3">Destaque</th>
+                            <th class="py-3 px-3 text-right">Ajuste Rápido / Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-produtos-admin-body" class="divide-y divide-white/5">
+                        <tr><td colspan="6" class="p-4 text-center text-zinc-500">Carregando produtos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CADASTRO NOVO PRODUTO -->
+    <div id="modal-novo-produto" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181F] border border-amber-500/30 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2"><span>🧴</span> Cadastrar Novo Produto</h3>
+                <button type="button" onclick="fecharModalNovoProduto()" class="text-zinc-400 hover:text-white text-lg">✕</button>
+            </div>
+            <form onsubmit="salvarProdutoAdmin(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1">Nome do Produto *</label>
+                    <input type="text" id="novo-prod-nome" required class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:border-amber-400 outline-none" placeholder="Ex: Pomada Modeladora Efeito Seco">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Categoria *</label>
+                        <select id="novo-prod-categoria" required class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:border-amber-400 outline-none">
+                            <option value="Cabelo">Cabelo</option>
+                            <option value="Barba">Barba</option>
+                            <option value="Cuidados">Cuidados</option>
+                            <option value="Tratamento">Tratamento</option>
+                            <option value="Acessórios">Acessórios</option>
+                            <option value="Geral">Geral</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Preço (R$) *</label>
+                        <input type="number" step="0.01" min="0" id="novo-prod-preco" required class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:border-amber-400 outline-none" placeholder="45.00">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Estoque Inicial *</label>
+                        <input type="number" min="0" id="novo-prod-estoque" value="10" required class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:border-amber-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Destaque na Loja?</label>
+                        <select id="novo-prod-destaque" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:border-amber-400 outline-none">
+                            <option value="0">Não</option>
+                            <option value="1">Sim (Badge Dourado)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1">Descrição do Produto</label>
+                    <textarea id="novo-prod-descricao" rows="2" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:border-amber-400 outline-none" placeholder="Benefícios, modo de uso ou fixação..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1">URL da Foto / Imagem</label>
+                    <input type="url" id="novo-prod-imagem" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:border-amber-400 outline-none" placeholder="https://exemplo.com/foto.jpg">
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="fecharModalNovoProduto()" class="px-4 py-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white text-xs font-semibold">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs hover:brightness-110 shadow-lg shadow-amber-500/20">Cadastrar Produto</button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -13,7 +13,7 @@ class Database {
     private ?PDO $conn = null;
 
     // Credenciais de conexão
-    private string $host = "localhost";
+    private string $host = "127.0.0.1";
     private string $db_name = "barbearia_vip";
     private string $username = "root";
     private string $password = "";
@@ -307,6 +307,37 @@ class Database {
                 $this->conn->exec("
                     INSERT INTO `assinantes_vip` (`cliente_nome`, `cliente_telefone`, `cliente_email`, `plano_id`, `status`, `data_inicio`, `data_renovacao`)
                     VALUES ('Marcos Assinante VIP', '(11) 99999-7777', 'marcos.vip@email.com', {$stPlanoGold}, 'ativo', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY));
+                ");
+            }
+
+            // Garante tabela produtos da Mini-Loja VIP
+            $this->conn->exec("
+                CREATE TABLE IF NOT EXISTS `produtos` (
+                    `id` INT AUTO_INCREMENT PRIMARY KEY,
+                    `nome` VARCHAR(150) NOT NULL,
+                    `slug` VARCHAR(100) UNIQUE,
+                    `categoria` VARCHAR(50) NOT NULL DEFAULT 'Geral',
+                    `preco` DECIMAL(10,2) NOT NULL,
+                    `estoque` INT NOT NULL DEFAULT 0,
+                    `descricao` TEXT,
+                    `imagem` VARCHAR(255) DEFAULT NULL,
+                    `ativo` TINYINT(1) NOT NULL DEFAULT 1,
+                    `destaque` TINYINT(1) NOT NULL DEFAULT 0,
+                    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+
+            // Popula produtos padrão da barbearia se vazio
+            $stProd = $this->conn->query("SELECT COUNT(*) FROM `produtos`");
+            if ((int)$stProd->fetchColumn() === 0) {
+                $this->conn->exec("
+                    INSERT INTO `produtos` (`nome`, `slug`, `categoria`, `preco`, `estoque`, `descricao`, `imagem`, `ativo`, `destaque`) VALUES
+                    ('Pomada Matte Efeito Seco (150g)', 'pomada-matte', 'Cabelo', 45.00, 20, 'Fixação extra-forte e acabamento natural sem brilho. Ideal para topetes, fades e penteados modernos.', 'https://images.unsplash.com/photo-1598452963314-b09f397a5c48?w=500&auto=format&fit=crop&q=80', 1, 1),
+                    ('Óleo Nobre para Barba & Bigode (30ml)', 'oleo-barba', 'Barba', 38.00, 15, 'Hidratação profunda com óleos essenciais de argan e jojoba. Devolve maciez aos fios e aroma amadeirado VIP.', 'https://images.unsplash.com/photo-1621607512214-68297480165e?w=500&auto=format&fit=crop&q=80', 1, 1),
+                    ('Balm Multifuncional de Barba (120g)', 'balm-barba', 'Barba', 35.00, 18, 'Alinha os fios rebeldes, elimina o frizz e refresca a pele no pós-barba sem engordurar.', 'https://images.unsplash.com/photo-1608248597359-25f00e93b169?w=500&auto=format&fit=crop&q=80', 1, 0),
+                    ('Shampoo 3 em 1 Cabelo, Barba & Corpo (250ml)', 'shampoo-3em1', 'Cuidados', 42.00, 12, 'Fórmula com mentol e carvão ativado. Limpeza profunda revigorante para o dia a dia do homem moderno.', 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500&auto=format&fit=crop&q=80', 1, 1),
+                    ('Tônico Fortalecedor Fator de Crescimento (60ml)', 'tonico-capilar', 'Tratamento', 59.90, 10, 'Fórmula biotina concentrada. Auxilia no preenchimento de falhas na barba e fortalecimento capilar.', 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&auto=format&fit=crop&q=80', 1, 0),
+                    ('Pente Curvo de Madeira Nobre Anti-Frizz', 'pente-madeira', 'Acessórios', 25.00, 25, 'Artesanal em madeira maciça. Desembaraça sem quebrar os fios e distribui uniformemente o óleo na barba.', 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=80', 1, 0);
                 ");
             }
 
