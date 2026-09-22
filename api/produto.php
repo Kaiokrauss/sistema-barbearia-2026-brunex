@@ -200,3 +200,4 @@ if ($method === 'DELETE') {
     }
     exit;
 }
+

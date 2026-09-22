@@ -8,6 +8,7 @@
 class Database {
     // 1. Guarda a instância única da classe
     private static ?Database $instance = null;
+    private static bool $schemaVerificado = false;
 
     // 2. Conexão PDO ativa
     private ?PDO $conn = null;
@@ -77,7 +78,18 @@ class Database {
      * Assegura a criação das tabelas e população inicial se o banco estiver vazio.
      */
     private function assegurarTabelasExistentes(): void {
-        if (!$this->conn) return;
+        if (!$this->conn || self::$schemaVerificado) return;
+
+        try {
+            // Checagem ultra-rápida: se a tabela de produtos já existe, a estrutura do banco já está pronta
+            $stCheck = $this->conn->query("SHOW TABLES LIKE 'produtos'");
+            if ($stCheck && $stCheck->rowCount() > 0) {
+                self::$schemaVerificado = true;
+                return;
+            }
+        } catch (Throwable $e) {
+            // Prossegue com criação completa se falhar
+        }
 
         try {
             // 1. Tabela usuarios
@@ -331,7 +343,7 @@ class Database {
             $stProd = $this->conn->query("SELECT COUNT(*) FROM `produtos`");
             if ((int)$stProd->fetchColumn() === 0) {
                 $this->conn->exec("
-                    INSERT INTO `produtos` (`nome`, `slug`, `categoria`, `preco`, `estoque`, `descricao`, `imagem`, `ativo`, `destaque`) VALUES
+                    INSERT IGNORE INTO `produtos` (`nome`, `slug`, `categoria`, `preco`, `estoque`, `descricao`, `imagem`, `ativo`, `destaque`) VALUES
                     ('Pomada Matte Efeito Seco (150g)', 'pomada-matte', 'Cabelo', 45.00, 20, 'Fixação extra-forte e acabamento natural sem brilho. Ideal para topetes, fades e penteados modernos.', 'https://images.unsplash.com/photo-1598452963314-b09f397a5c48?w=500&auto=format&fit=crop&q=80', 1, 1),
                     ('Óleo Nobre para Barba & Bigode (30ml)', 'oleo-barba', 'Barba', 38.00, 15, 'Hidratação profunda com óleos essenciais de argan e jojoba. Devolve maciez aos fios e aroma amadeirado VIP.', 'https://images.unsplash.com/photo-1621607512214-68297480165e?w=500&auto=format&fit=crop&q=80', 1, 1),
                     ('Balm Multifuncional de Barba (120g)', 'balm-barba', 'Barba', 35.00, 18, 'Alinha os fios rebeldes, elimina o frizz e refresca a pele no pós-barba sem engordurar.', 'https://images.unsplash.com/photo-1608248597359-25f00e93b169?w=500&auto=format&fit=crop&q=80', 1, 0),
@@ -341,6 +353,7 @@ class Database {
                 ");
             }
 
+            self::$schemaVerificado = true;
         } catch (PDOException $e) {
             error_log("Aviso ao assegurar tabelas do banco: " . $e->getMessage());
         }

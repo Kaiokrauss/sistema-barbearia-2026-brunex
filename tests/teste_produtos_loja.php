@@ -181,3 +181,4 @@ if ($testesFalhados === 0) {
     echo "  >>> ATENÇÃO: Houve $testesFalhados falhas nos testes. <<<\n";
 }
 echo "============================================================\n";
+
