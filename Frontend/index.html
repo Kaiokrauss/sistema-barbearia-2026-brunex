@@ -360,6 +360,9 @@
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                <button type="button" onclick="abrirModalControleIa()" id="btn-topo-controle-ia" class="text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Ligar ou Desligar os Recursos de Inteligência Artificial">
+                    <span>🤖</span> <span id="topo-ia-status-texto">Ligar/Desligar IAs</span>
+                </button>
                 <button type="button" onclick="toggleSom()" id="btn-toggle-som" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-amber-400 border border-white/10 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5" title="Ativar/Desativar som dos cliques e confirmações">
                     <span id="som-icone">🔊</span> <span id="som-texto" class="hidden sm:inline">Som VIP</span>
                 </button>
@@ -1203,7 +1206,7 @@
                 <h3 class="text-xl font-bold text-white">Visagista IA Temporariamente Desativado</h3>
                 <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">Este módulo de consultoria facial e análise de cortes com Inteligência Artificial foi pausado pelo administrador. Você pode reativá-lo com apenas 1 clique.</p>
                 <button type="button" onclick="toggleStatusIa('visagista')" class="px-6 py-3 rounded-xl gold-btn text-xs font-bold shadow-lg transition">
-                    ✨ Reativar Visagista IA Agora
+                    🟢 Ligar Visagista IA Agora
                 </button>
             </div>
 
@@ -1440,7 +1443,7 @@
                 <h3 class="text-xl font-bold text-white">IA de Marketing Temporariamente Desativada</h3>
                 <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">As ferramentas de disparo de WhatsApp e geração de copies com Inteligência Artificial foram pausadas pelo administrador. Você pode reativá-las a qualquer momento.</p>
                 <button type="button" onclick="toggleStatusIa('marketing')" class="px-6 py-3 rounded-xl gold-btn text-xs font-bold shadow-lg transition">
-                    ✨ Reativar IA de Marketing Agora
+                    🟢 Ligar IA de Marketing Agora
                 </button>
             </div>
 
@@ -1598,6 +1601,10 @@
         </div>
         <p class="text-xs text-zinc-400 mb-5">Acesse rapidamente as ferramentas administrativas e configurações:</p>
         <div class="space-y-2.5">
+            <button type="button" onclick="abrirModalControleIa(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 to-purple-500/20 hover:from-amber-500/30 hover:to-purple-500/30 border border-amber-500/50 text-sm font-bold text-amber-300 transition text-left shadow-lg">
+                <span class="flex items-center gap-2.5"><span>🤖</span> <strong>Ligar / Desligar as IAs</strong></span>
+                <span id="drawer-ia-status-texto" class="px-2 py-0.5 rounded-md bg-amber-400 text-black font-extrabold text-[10px]">Configurar</span>
+            </button>
             <button type="button" onclick="abrirModalInstalarIos(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-blue-400/40 text-sm font-semibold text-blue-200 transition text-left shadow-lg">
                 <span class="flex items-center gap-2.5"><span>📱</span> <strong>Instalar App no iPhone (iOS)</strong></span>
                 <span class="px-2 py-0.5 rounded-md bg-blue-500/30 text-[11px] font-bold text-blue-300">Grátis</span>
@@ -1852,6 +1859,59 @@
             <a id="modal-disparo-link-zap" href="#" target="_blank" onclick="fecharModalDisparoIa()" class="px-5 py-2.5 rounded-xl gold-btn text-xs font-bold transition flex items-center gap-2 shadow-lg">
                 <span>📲</span> Abrir no WhatsApp
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONTROLE RÁPIDO: LIGAR / DESLIGAR IAS -->
+<div id="modal-controle-ia" onclick="fecharModalControleIa()" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="w-full max-w-md bg-[#14141c] border border-amber-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🤖</span>
+                <div>
+                    <h3 class="text-base font-bold text-white">Ligar / Desligar as IAs</h3>
+                    <p class="text-xs text-zinc-400">Ative ou pause os recursos de inteligência artificial</p>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalControleIa()" class="text-zinc-400 hover:text-white text-xl p-1 leading-none">✕</button>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Visagista IA -->
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🧠</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-white">Visagista IA</h4>
+                        <span id="modal-status-visagista-txt" class="text-xs text-emerald-400 font-bold">🟢 Ligada</span>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleStatusIa('visagista')" id="modal-btn-toggle-visagista" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                    🔴 Desligar IA
+                </button>
+            </div>
+
+            <!-- IA de Marketing & Radar -->
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🎯</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-white">IA de Marketing & Radar</h4>
+                        <span id="modal-status-marketing-txt" class="text-xs text-emerald-400 font-bold">🟢 Ligada</span>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleStatusIa('marketing')" id="modal-btn-toggle-marketing" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                    🔴 Desligar IA
+                </button>
+            </div>
+        </div>
+
+        <div class="pt-2 border-t border-white/10 flex items-center justify-between">
+            <span class="text-[11px] text-zinc-400">Preferências salvas no navegador</span>
+            <button type="button" onclick="fecharModalControleIa()" class="px-5 py-2.5 rounded-xl gold-btn text-xs font-bold transition">
+                Concluído
+            </button>
         </div>
     </div>
 </div>
@@ -4284,7 +4344,7 @@
         aplicarStatusIas();
 
         const nome = tipo === 'visagista' ? 'Visagista Virtual com IA' : 'IA de Marketing & Retenção';
-        const st = IA_STATUS[tipo] ? 'ATIVADO' : 'DESATIVADO';
+        const st = IA_STATUS[tipo] ? 'LIGADA' : 'DESLIGADA';
         mostrarToast(`✨ ${nome} foi ${st}!`, IA_STATUS[tipo] ? 'sucesso' : 'aviso');
 
         if (tipo === 'marketing' && IA_STATUS.marketing) {
@@ -4303,25 +4363,31 @@
         const drawerBadgeVis = document.getElementById('drawer-badge-ia-visagista');
         const dashTxtVis = document.getElementById('dash-status-visagista-txt');
         const dashBtnVis = document.getElementById('dash-btn-toggle-visagista');
+        const modalTxtVis = document.getElementById('modal-status-visagista-txt');
+        const modalBtnVis = document.getElementById('modal-btn-toggle-visagista');
 
         if (visAtivo) {
             if (bannerVisDes) bannerVisDes.classList.add('hidden');
             if (conteudoVis) conteudoVis.classList.remove('hidden');
-            if (lblVis) { lblVis.textContent = '🟢 Ativado'; lblVis.className = 'text-xs text-emerald-400 font-bold'; }
-            if (btnVis) { btnVis.textContent = 'Desativar'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
+            if (lblVis) { lblVis.textContent = '🟢 Ligada'; lblVis.className = 'text-xs text-emerald-400 font-bold'; }
+            if (btnVis) { btnVis.textContent = '🔴 Desligar IA'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
             if (navBadgeVis) { navBadgeVis.textContent = 'ON'; navBadgeVis.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1'; }
             if (drawerBadgeVis) { drawerBadgeVis.textContent = 'ON'; drawerBadgeVis.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
-            if (dashTxtVis) { dashTxtVis.textContent = '🟢 Módulo Ativado'; dashTxtVis.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
-            if (dashBtnVis) { dashBtnVis.textContent = 'Desativar'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+            if (dashTxtVis) { dashTxtVis.textContent = '🟢 Ligada'; dashTxtVis.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
+            if (dashBtnVis) { dashBtnVis.textContent = '🔴 Desligar IA'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+            if (modalTxtVis) { modalTxtVis.textContent = '🟢 Ligada'; modalTxtVis.className = 'text-xs text-emerald-400 font-bold'; }
+            if (modalBtnVis) { modalBtnVis.innerHTML = '<span>🔴</span> Desligar IA'; modalBtnVis.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex items-center gap-1.5 shadow-md'; }
         } else {
             if (bannerVisDes) bannerVisDes.classList.remove('hidden');
             if (conteudoVis) conteudoVis.classList.add('hidden');
-            if (lblVis) { lblVis.textContent = '⚪ Desativado'; lblVis.className = 'text-xs text-zinc-400 font-bold'; }
-            if (btnVis) { btnVis.textContent = 'Ativar'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
+            if (lblVis) { lblVis.textContent = '⚪ Desligada'; lblVis.className = 'text-xs text-zinc-400 font-bold'; }
+            if (btnVis) { btnVis.textContent = '🟢 Ligar IA'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
             if (navBadgeVis) { navBadgeVis.textContent = 'OFF'; navBadgeVis.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-bold ml-1'; }
             if (drawerBadgeVis) { drawerBadgeVis.textContent = 'OFF'; drawerBadgeVis.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
-            if (dashTxtVis) { dashTxtVis.textContent = '⚪ Módulo Desativado'; dashTxtVis.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
-            if (dashBtnVis) { dashBtnVis.textContent = 'Ativar'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
+            if (dashTxtVis) { dashTxtVis.textContent = '⚪ Desligada'; dashTxtVis.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
+            if (dashBtnVis) { dashBtnVis.textContent = '🟢 Ligar IA'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
+            if (modalTxtVis) { modalTxtVis.textContent = '⚪ Desligada'; modalTxtVis.className = 'text-xs text-zinc-400 font-bold'; }
+            if (modalBtnVis) { modalBtnVis.innerHTML = '<span>🟢</span> Ligar IA'; modalBtnVis.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md'; }
         }
 
         // 2. IA de Marketing
@@ -4334,25 +4400,51 @@
         const drawerBadgeMkt = document.getElementById('drawer-badge-ia-marketing');
         const dashTxtMkt = document.getElementById('dash-status-marketing-txt');
         const dashBtnMkt = document.getElementById('dash-btn-toggle-marketing');
+        const modalTxtMkt = document.getElementById('modal-status-marketing-txt');
+        const modalBtnMkt = document.getElementById('modal-btn-toggle-marketing');
 
         if (mktAtivo) {
             if (bannerMktDes) bannerMktDes.classList.add('hidden');
             if (conteudoMkt) conteudoMkt.classList.remove('hidden');
-            if (lblMkt) { lblMkt.textContent = '🟢 Ativada'; lblMkt.className = 'text-xs text-emerald-400 font-bold'; }
-            if (btnMkt) { btnMkt.textContent = 'Desativar'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
+            if (lblMkt) { lblMkt.textContent = '🟢 Ligada'; lblMkt.className = 'text-xs text-emerald-400 font-bold'; }
+            if (btnMkt) { btnMkt.textContent = '🔴 Desligar IA'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
             if (navBadgeMkt) { navBadgeMkt.textContent = 'ON'; navBadgeMkt.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1'; }
             if (drawerBadgeMkt) { drawerBadgeMkt.textContent = 'ON'; drawerBadgeMkt.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
-            if (dashTxtMkt) { dashTxtMkt.textContent = '🟢 Módulo Ativado'; dashTxtMkt.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
-            if (dashBtnMkt) { dashBtnMkt.textContent = 'Desativar'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+            if (dashTxtMkt) { dashTxtMkt.textContent = '🟢 Ligada'; dashTxtMkt.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
+            if (dashBtnMkt) { dashBtnMkt.textContent = '🔴 Desligar IA'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+            if (modalTxtMkt) { modalTxtMkt.textContent = '🟢 Ligada'; modalTxtMkt.className = 'text-xs text-emerald-400 font-bold'; }
+            if (modalBtnMkt) { modalBtnMkt.innerHTML = '<span>🔴</span> Desligar IA'; modalBtnMkt.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex items-center gap-1.5 shadow-md'; }
         } else {
             if (bannerMktDes) bannerMktDes.classList.remove('hidden');
             if (conteudoMkt) conteudoMkt.classList.add('hidden');
-            if (lblMkt) { lblMkt.textContent = '⚪ Desativada'; lblMkt.className = 'text-xs text-zinc-400 font-bold'; }
-            if (btnMkt) { btnMkt.textContent = 'Ativar'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
+            if (lblMkt) { lblMkt.textContent = '⚪ Desligada'; lblMkt.className = 'text-xs text-zinc-400 font-bold'; }
+            if (btnMkt) { btnMkt.textContent = '🟢 Ligar IA'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
             if (navBadgeMkt) { navBadgeMkt.textContent = 'OFF'; navBadgeMkt.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-bold ml-1'; }
             if (drawerBadgeMkt) { drawerBadgeMkt.textContent = 'OFF'; drawerBadgeMkt.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
-            if (dashTxtMkt) { dashTxtMkt.textContent = '⚪ Módulo Desativado'; dashTxtMkt.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
-            if (dashBtnMkt) { dashBtnMkt.textContent = 'Ativar'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
+            if (dashTxtMkt) { dashTxtMkt.textContent = '⚪ Desligada'; dashTxtMkt.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
+            if (dashBtnMkt) { dashBtnMkt.textContent = '🟢 Ligar IA'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
+            if (modalTxtMkt) { modalTxtMkt.textContent = '⚪ Desligada'; modalTxtMkt.className = 'text-xs text-zinc-400 font-bold'; }
+            if (modalBtnMkt) { modalBtnMkt.innerHTML = '<span>🟢</span> Ligar IA'; modalBtnMkt.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md'; }
+        }
+
+        // 3. Status Geral (Botão Topo e Gaveta Mobile)
+        const totalLigadas = (visAtivo ? 1 : 0) + (mktAtivo ? 1 : 0);
+        const topoTxt = document.getElementById('topo-ia-status-texto');
+        const drawerTxt = document.getElementById('drawer-ia-status-texto');
+        const btnTopo = document.getElementById('btn-topo-controle-ia');
+
+        if (totalLigadas === 2) {
+            if (topoTxt) topoTxt.textContent = 'IAs Ligadas (2/2)';
+            if (drawerTxt) { drawerTxt.textContent = '2 Ligadas (ON)'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
+            if (btnTopo) btnTopo.className = 'text-xs font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
+        } else if (totalLigadas === 1) {
+            if (topoTxt) topoTxt.textContent = '1 IA Ligada';
+            if (drawerTxt) { drawerTxt.textContent = '1 Ligada'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-extrabold text-[10px]'; }
+            if (btnTopo) btnTopo.className = 'text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
+        } else {
+            if (topoTxt) topoTxt.textContent = 'IAs Desligadas (OFF)';
+            if (drawerTxt) { drawerTxt.textContent = 'Desligadas (OFF)'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
+            if (btnTopo) btnTopo.className = 'text-xs font-bold text-zinc-400 bg-zinc-800/60 hover:bg-zinc-800 border border-zinc-700/50 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
         }
     }
 
@@ -4723,6 +4815,18 @@
 
     function fecharModalDisparoIa() {
         const modal = document.getElementById('modal-disparo-ia');
+        if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function abrirModalControleIa() {
+        if (window.soundVIP) soundVIP.playSoftClick();
+        const modal = document.getElementById('modal-controle-ia');
+        if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function fecharModalControleIa() {
+        if (window.soundVIP) soundVIP.playSoftClick();
+        const modal = document.getElementById('modal-controle-ia');
         if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
     }
 
