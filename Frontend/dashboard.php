@@ -194,8 +194,11 @@ $tituloPainel = $isMasterAdmin ? '👑 Painel do Administrador' : ($isBarbeiro ?
                             🏠 Ir para Página Inicial da Barbearia
                         </a>
                         <?php if ($isAdmin): ?>
+                            <a href="admin.html" class="block w-full text-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 py-3 text-xs font-semibold text-white transition">
+                                📈 Abrir Painel com Gráficos Dedicado (admin.html)
+                            </a>
                             <a href="index.html#tab-dashboard" class="block w-full text-center rounded-xl gold-btn py-3 text-xs font-bold transition">
-                                📊 Acessar Painel VIP Unificado (index.html)
+                                💰 Visualizar Faturamento e Clientes
                             </a>
                         <?php else: ?>
                             <a href="index.html#tab-agendar" class="block w-full text-center rounded-xl gold-btn py-3 text-xs font-bold transition">

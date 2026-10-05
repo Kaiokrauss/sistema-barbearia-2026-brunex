@@ -3,7 +3,7 @@
  * Estratégia Network First: sempre busca as novidades mais recentes do servidor.
  * Se estiver sem internet ou offline, usa a versão salva no cache.
  */
-const CACHE_NAME = 'barbearia-vip-v6';
+const CACHE_NAME = 'barbearia-vip-v7';
 const ASSETS_TO_CACHE = [
   './index.html',
   './style.css',

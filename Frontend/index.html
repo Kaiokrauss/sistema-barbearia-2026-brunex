@@ -100,6 +100,12 @@
             background: rgba(36, 36, 48, 0.95);
         }
 
+        .dark-input option, select.dark-input option, select option {
+            background-color: #181820 !important;
+            color: #ffffff !important;
+            padding: 10px 14px;
+        }
+
         /* Chips de Horários */
         .time-chip {
             padding: 0.7rem 0.85rem;
@@ -392,17 +398,19 @@
                 <span class="nav-icon">🧴</span> <span>Loja VIP</span>
             </button>
             <button onclick="changeTab('tab-visagista')" id="btn-tab-visagista" class="nav-btn nav-btn-visagista text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">🧠</span> <span>Visagista IA</span>
+                <span class="nav-icon">🧠</span> <span>Visagista IA</span> <span id="nav-badge-ia-visagista" class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1">ON</span>
             </button>
             <button onclick="changeTab('tab-ia-marketing')" id="btn-tab-ia-marketing" class="nav-btn nav-btn-ia-marketing text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">🎯</span> <span>IA Marketing</span>
+                <span class="nav-icon">🎯</span> <span>IA Marketing</span> <span id="nav-badge-ia-marketing" class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1">ON</span>
             </button>
             <button type="button" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
                 <span class="nav-icon">📱</span> <span>App iOS</span>
             </button>
+            <a href="../api/backup.php?download=1" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
+                <span class="nav-icon">💾</span> <span>Backup SQL</span>
+            </a>
         </div>
     </nav>
-
 </div>
 
 <!-- HERO BANNER LUXUOSO -->
@@ -679,7 +687,7 @@
                 <div>
                     <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Relatório & Performance Executiva</span>
                     <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1 flex items-center gap-3 flex-wrap">
-                        <span>Painel de Gestão & Resumo VIP</span>
+                        <span>Painel Administrativo VIP</span>
                         <span id="badge-faturamento-bruto-topo" class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 shadow-sm">
                             💰 Bruto: R$ 0,00
                         </span>
@@ -690,11 +698,10 @@
                     <button onclick="limparCanceladosBanco()" class="bg-red-900/30 hover:bg-red-800/60 text-red-300 border border-red-700/50 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Exclui definitivamente todos os agendamentos cancelados do banco">
                         <span>🗑️</span> Limpar Cancelados
                     </button>
-                    <a href="../api/backup.php?download=1" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Baixar Backup do Banco (.sql)">
+                    <a href="../api/backup.php?download=1" class="bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Baixar cópia de segurança completa do banco MySQL">
                         <span>💾</span> Backup SQL
                     </a>
                 </div>
-
             </div>
 
             <!-- CARDS DE MÉTRICAS (5 COLUNAS NO DESKTOP / GRID INTELIGENTE NO MOBILE) -->
@@ -863,6 +870,53 @@
                         <span class="text-zinc-400">Cancelado: <strong id="resumo-tabela-cancelado" class="text-red-400 font-mono font-bold">R$ 0,00</strong></span>
                     </div>
                     <div class="text-[11px] text-zinc-500 italic">Atualizado em tempo real</div>
+                </div>
+            </div>
+
+            <!-- CENTRO DE CONTROLE DAS INTELIGÊNCIAS ARTIFICIAIS (ATIVAR / DESATIVAR) -->
+            <div class="mt-8 rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#181824] via-[#14141c] to-[#0f0f15] border border-amber-500/30 shadow-2xl">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-white/10">
+                    <div>
+                        <span class="text-[10px] uppercase tracking-widest text-amber-400 font-bold flex items-center gap-1.5">
+                            <span>✨</span> Gerenciamento de Recursos
+                        </span>
+                        <h3 class="text-base sm:text-lg font-display font-bold text-white mt-0.5">Centro de Controle das Inteligências Artificiais</h3>
+                        <p class="text-xs text-zinc-400 mt-0.5">Ative ou desative as IAs do sistema em tempo real de acordo com a sua preferência.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Visagista IA Control -->
+                    <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center text-xl flex-shrink-0">
+                                🧠
+                            </div>
+                            <div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white">Visagista Virtual com IA</h4>
+                                <span id="dash-status-visagista-txt" class="text-xs text-emerald-400 font-semibold block mt-0.5">🟢 Módulo Ativado</span>
+                                <span class="text-[10px] text-zinc-400">Consultoria facial para clientes</span>
+                            </div>
+                        </div>
+                        <button type="button" onclick="toggleStatusIa('visagista')" id="dash-btn-toggle-visagista" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0">
+                            Desativar
+                        </button>
+                    </div>
+                    <!-- IA de Marketing Control -->
+                    <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-300 flex items-center justify-center text-xl flex-shrink-0">
+                                🎯
+                            </div>
+                            <div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white">IA de Marketing & Radar</h4>
+                                <span id="dash-status-marketing-txt" class="text-xs text-emerald-400 font-semibold block mt-0.5">🟢 Módulo Ativado</span>
+                                <span class="text-[10px] text-zinc-400">Recuperação de clientes e copies</span>
+                            </div>
+                        </div>
+                        <button type="button" onclick="toggleStatusIa('marketing')" id="dash-btn-toggle-marketing" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0">
+                            Desativar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1121,6 +1175,7 @@
             <div class="absolute -right-20 -top-20 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -left-20 -bottom-20 w-56 h-56 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
+            <!-- CABEÇALHO COM TOGGLE DE ATIVAÇÃO -->
             <div class="pb-6 border-b border-white/10 mb-8 relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-purple-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5">
@@ -1129,272 +1184,359 @@
                     <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">Visagista Virtual com IA</h2>
                     <p class="text-xs sm:text-sm text-zinc-400 mt-1">Descubra o corte de cabelo e o desenho de barba matematicamente perfeitos para valorizar seus traços.</p>
                 </div>
-                <div class="flex items-center gap-2 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0">
-                    <span class="text-xl">📐</span>
-                    <div class="text-left">
-                        <span class="text-[10px] uppercase font-bold text-zinc-500 block">Metodologia</span>
-                        <strong class="text-xs text-amber-300">Harmonia Facial & Visagismo</strong>
+                <div class="flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0">
+                    <div class="text-right">
+                        <span class="text-[9px] uppercase font-bold text-zinc-400 block">Status do Módulo</span>
+                        <strong id="status-visagista-label" class="text-xs text-emerald-400">🟢 Ativado</strong>
                     </div>
-                </div>
-            </div>
-
-            <!-- FORMULÁRIO DO DIAGNÓSTICO -->
-            <form id="form-visagista-ia" onsubmit="analisarVisagismoIA(event)" class="relative z-10 space-y-8">
-                <!-- 1. FORMATO DO ROSTO -->
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                            <span>1.</span> Qual é o Formato do seu Rosto?
-                        </label>
-                        <span class="text-[11px] text-zinc-500">Selecione o mais próximo</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_rosto" value="quadrado" checked class="peer hidden">
-                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
-                                <span class="text-3xl">🔲</span>
-                                <strong class="text-xs font-bold text-white">Quadrado</strong>
-                                <span class="text-[10px] text-zinc-400 leading-tight">Maxilar reto, linhas angulares e fortes</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_rosto" value="redondo" class="peer hidden">
-                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
-                                <span class="text-3xl">⭕</span>
-                                <strong class="text-xs font-bold text-white">Redondo</strong>
-                                <span class="text-[10px] text-zinc-400 leading-tight">Traços suaves, bochechas preenchidas</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_rosto" value="oval" class="peer hidden">
-                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
-                                <span class="text-3xl">🥚</span>
-                                <strong class="text-xs font-bold text-white">Oval</strong>
-                                <span class="text-[10px] text-zinc-400 leading-tight">Equilibrado, testa e queixo proporcionais</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_rosto" value="diamante" class="peer hidden">
-                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
-                                <span class="text-3xl">💎</span>
-                                <strong class="text-xs font-bold text-white">Diamante</strong>
-                                <span class="text-[10px] text-zinc-400 leading-tight">Maçãs largas com queixo afilado</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- 2. TIPO DE CABELO -->
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                            <span>2.</span> Qual é a Curvatura do seu Cabelo?
-                        </label>
-                        <span class="text-[11px] text-zinc-500">Textura natural</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_cabelo" value="liso" checked class="peer hidden">
-                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
-                                <span class="text-2xl">〰️</span>
-                                <strong class="text-xs font-bold text-white">Liso</strong>
-                                <span class="text-[10px] text-zinc-400">Fios retos e alinhados</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_cabelo" value="ondulado" class="peer hidden">
-                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
-                                <span class="text-2xl">🌊</span>
-                                <strong class="text-xs font-bold text-white">Ondulado</strong>
-                                <span class="text-[10px] text-zinc-400">Movimento natural</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_cabelo" value="cacheado" class="peer hidden">
-                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
-                                <span class="text-2xl">🌀</span>
-                                <strong class="text-xs font-bold text-white">Cacheado</strong>
-                                <span class="text-[10px] text-zinc-400">Cachos definidos</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="ia_cabelo" value="crespo" class="peer hidden">
-                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
-                                <span class="text-2xl">⚡</span>
-                                <strong class="text-xs font-bold text-white">Crespo</strong>
-                                <span class="text-[10px] text-zinc-400">Volume e textura</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- 3. BARBA E VIBE -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
-                            3. Preferência de Barba
-                        </label>
-                        <select id="ia_barba" class="dark-input text-xs font-semibold text-zinc-200">
-                            <option value="barba_curta">✂️ Barba Curta / Alinhada no Degradê</option>
-                            <option value="barba_cheia">🧔 Barba Cheia / Lenhador Volumosa</option>
-                            <option value="cavanhaque">📐 Cavanhaque Estilizado</option>
-                            <option value="sem_barba">🪒 Sem Barba (Rosto Limpo na Navalha)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
-                            4. Estilo Desejado (Vibe)
-                        </label>
-                        <select id="ia_vibe" class="dark-input text-xs font-semibold text-zinc-200">
-                            <option value="moderno">🔥 Moderno & Urbano (Tendência em Alta)</option>
-                            <option value="classico">👑 Clássico & Elegante (Presença Executiva)</option>
-                            <option value="ousado">⚡ Ousado & Marcante (Linhas e Contraste)</option>
-                            <option value="pratico">⏱️ Prático (Fácil de cuidar no dia a dia)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- BOTÃO DE ANÁLISE -->
-                <div class="pt-2">
-                    <button type="submit" id="btn-analisar-visagismo" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-sm transition shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2.5">
-                        <span class="text-lg">✨</span>
-                        <span id="btn-visagismo-texto">ANALISAR COM INTELIGÊNCIA ARTIFICIAL</span>
+                    <button type="button" onclick="toggleStatusIa('visagista')" id="btn-toggle-visagista" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition">
+                        Desativar
                     </button>
                 </div>
-            </form>
+            </div>
 
-            <!-- RESULTADO DO DIAGNÓSTICO DE VISAGISMO -->
-            <div id="box-resultado-visagismo" class="hidden mt-10 p-6 sm:p-8 rounded-3xl bg-black/40 border border-amber-500/40 shadow-2xl relative z-10 animate-fadeIn">
+            <!-- BANNER DE MÓDULO DESATIVADO -->
+            <div id="visagista-desativado-banner" class="hidden text-center py-12 px-6 rounded-3xl bg-zinc-900/60 border border-zinc-700/50 space-y-4 my-4">
+                <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                    ⏸️
+                </div>
+                <h3 class="text-xl font-bold text-white">Visagista IA Temporariamente Desativado</h3>
+                <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">Este módulo de consultoria facial e análise de cortes com Inteligência Artificial foi pausado pelo administrador. Você pode reativá-lo com apenas 1 clique.</p>
+                <button type="button" onclick="toggleStatusIa('visagista')" class="px-6 py-3 rounded-xl gold-btn text-xs font-bold shadow-lg transition">
+                    ✨ Reativar Visagista IA Agora
+                </button>
+            </div>
+
+            <!-- CONTEÚDO ATIVO DO VISAGISTA -->
+            <div id="visagista-conteudo-ativo" class="space-y-8">
+                <!-- OPÇÃO 1: CÂMERA OU ENVIO DE FOTO -->
+                <div class="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-transparent border border-amber-500/30 relative overflow-hidden">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                                <span>📸</span> Opção Inteligente por Foto / Câmera
+                            </span>
+                            <h4 class="text-sm sm:text-base font-bold text-white mt-1">Quer que a IA identifique o formato do seu rosto automaticamente?</h4>
+                            <p class="text-xs text-zinc-400 mt-0.5">Envie uma selfie ou foto frontal para cálculo instantâneo das proporções da mandíbula e testa.</p>
+                        </div>
+                        <label class="cursor-pointer flex-shrink-0">
+                            <input type="file" id="input-foto-visagista" accept="image/*" class="hidden" onchange="analisarFotoVisagista(this)">
+                            <span class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:brightness-110 text-black font-bold text-xs shadow-lg inline-flex items-center gap-2 transition">
+                                <span>📷</span> Tirar Selfie ou Enviar Foto
+                            </span>
+                        </label>
+                    </div>
+                    <div id="preview-foto-container" class="hidden mt-4 flex items-center gap-4 pt-3 border-t border-white/10">
+                        <img id="preview-foto-img" src="" alt="Sua foto" class="w-16 h-16 rounded-xl object-cover border border-amber-400/50 shadow-md">
+                        <div>
+                            <span id="preview-foto-status" class="text-xs text-amber-300 font-bold block">Foto carregada!</span>
+                            <span class="text-[11px] text-zinc-400">A IA está processando seus traços faciais...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORMULÁRIO DO DIAGNÓSTICO (OPÇÃO 2: SELEÇÃO MANUAL) -->
+                <form id="form-visagista-ia" onsubmit="analisarVisagismoIA(event)" class="relative z-10 space-y-8">
+                    <!-- 1. FORMATO DO ROSTO -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                                <span>1.</span> Qual é o Formato do seu Rosto?
+                            </label>
+                            <span class="text-[11px] text-zinc-500">Selecione ou deixe a foto detectar</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_rosto" value="quadrado" checked class="peer hidden">
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                    <span class="text-3xl">🔲</span>
+                                    <strong class="text-xs font-bold text-white">Quadrado</strong>
+                                    <span class="text-[10px] text-zinc-400 leading-tight">Maxilar reto, linhas angulares e fortes</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_rosto" value="redondo" class="peer hidden">
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                    <span class="text-3xl">⭕</span>
+                                    <strong class="text-xs font-bold text-white">Redondo</strong>
+                                    <span class="text-[10px] text-zinc-400 leading-tight">Traços suaves, bochechas preenchidas</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_rosto" value="oval" class="peer hidden">
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                    <span class="text-3xl">🥚</span>
+                                    <strong class="text-xs font-bold text-white">Oval</strong>
+                                    <span class="text-[10px] text-zinc-400 leading-tight">Equilibrado, testa e queixo proporcionais</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_rosto" value="diamante" class="peer hidden">
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                    <span class="text-3xl">💎</span>
+                                    <strong class="text-xs font-bold text-white">Diamante</strong>
+                                    <span class="text-[10px] text-zinc-400 leading-tight">Maçãs largas com queixo afilado</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 2. TIPO DE CABELO -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                                <span>2.</span> Qual é a Curvatura do seu Cabelo?
+                            </label>
+                            <span class="text-[11px] text-zinc-500">Textura natural</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_cabelo" value="liso" checked class="peer hidden">
+                                <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                    <span class="text-2xl">〰️</span>
+                                    <strong class="text-xs font-bold text-white">Liso</strong>
+                                    <span class="text-[10px] text-zinc-400">Fios retos e alinhados</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_cabelo" value="ondulado" class="peer hidden">
+                                <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                    <span class="text-2xl">🌊</span>
+                                    <strong class="text-xs font-bold text-white">Ondulado</strong>
+                                    <span class="text-[10px] text-zinc-400">Movimento natural</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_cabelo" value="cacheado" class="peer hidden">
+                                <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                    <span class="text-2xl">🌀</span>
+                                    <strong class="text-xs font-bold text-white">Cacheado</strong>
+                                    <span class="text-[10px] text-zinc-400">Cachos definidos</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="ia_cabelo" value="crespo" class="peer hidden">
+                                <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                    <span class="text-2xl">⚡</span>
+                                    <strong class="text-xs font-bold text-white">Crespo</strong>
+                                    <span class="text-[10px] text-zinc-400">Volume e textura</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 3. BARBA E VIBE -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
+                                3. Preferência de Barba
+                            </label>
+                            <select id="ia_barba" class="dark-input text-xs font-semibold text-zinc-200">
+                                <option value="barba_curta">✂️ Barba Curta / Alinhada no Degradê</option>
+                                <option value="barba_cheia">🧔 Barba Cheia / Lenhador Volumosa</option>
+                                <option value="cavanhaque">📐 Cavanhaque Estilizado</option>
+                                <option value="sem_barba">🪒 Sem Barba (Rosto Limpo na Navalha)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
+                                4. Estilo Desejado (Vibe)
+                            </label>
+                            <select id="ia_vibe" class="dark-input text-xs font-semibold text-zinc-200">
+                                <option value="moderno">🔥 Moderno & Urbano (Tendência em Alta)</option>
+                                <option value="classico">👑 Clássico & Elegante (Presença Executiva)</option>
+                                <option value="ousado">⚡ Ousado & Marcante (Linhas e Contraste)</option>
+                                <option value="pratico">⏱️ Prático (Fácil de cuidar no dia a dia)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- BOTÃO DE ANÁLISE -->
+                    <div class="pt-2">
+                        <button type="submit" id="btn-analisar-visagismo" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-sm transition shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2.5">
+                            <span class="text-lg">✨</span>
+                            <span id="btn-visagismo-texto">ANALISAR COM INTELIGÊNCIA ARTIFICIAL</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- RESULTADO DO DIAGNÓSTICO DE VISAGISMO -->
+                <div id="box-resultado-visagismo" class="hidden p-6 sm:p-8 rounded-3xl bg-black/40 border border-amber-500/40 shadow-2xl relative z-10 animate-fadeIn">
+                </div>
+
+                <!-- VITRINE DE ESTILOS EM ALTA (Para a tela nunca ficar vazia!) -->
+                <div id="visagista-estilos-populares" class="pt-6 border-t border-white/10">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+                            <span>🔥</span> Estilos em Alta para este Mês (Inspirações)
+                        </h4>
+                        <span class="text-[11px] text-amber-400 font-medium">Toque para Diagnosticar</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="rounded-2xl p-4 bg-white/[0.03] border border-white/10 hover:border-amber-400/50 transition cursor-pointer group" onclick="selecionarEstiloPredefinido('quadrado', 'liso')">
+                            <div class="rounded-xl overflow-hidden aspect-[4/3] mb-3 relative">
+                                <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&auto=format&fit=crop&q=80" alt="Fade Americano" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                <span class="absolute top-2 right-2 bg-black/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/30">99% Match</span>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Rosto Quadrado / Liso</span>
+                            <h5 class="text-sm font-bold text-white mt-0.5">Fade Americano + Pompadour</h5>
+                            <p class="text-[11px] text-zinc-400 mt-1">Degradê médio estruturado que destaca a imponência da mandíbula.</p>
+                        </div>
+                        <div class="rounded-2xl p-4 bg-white/[0.03] border border-white/10 hover:border-amber-400/50 transition cursor-pointer group" onclick="selecionarEstiloPredefinido('redondo', 'liso')">
+                            <div class="rounded-xl overflow-hidden aspect-[4/3] mb-3 relative">
+                                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&auto=format&fit=crop&q=80" alt="High Fade com Quiff" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                <span class="absolute top-2 right-2 bg-black/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/30">97% Match</span>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Rosto Redondo / Liso</span>
+                            <h5 class="text-sm font-bold text-white mt-0.5">High Fade + Quiff Texturizado</h5>
+                            <p class="text-[11px] text-zinc-400 mt-1">Volume vertical que alonga a fisionomia e traz harmonia.</p>
+                        </div>
+                        <div class="rounded-2xl p-4 bg-white/[0.03] border border-white/10 hover:border-amber-400/50 transition cursor-pointer group" onclick="selecionarEstiloPredefinido('quadrado', 'ondulado')">
+                            <div class="rounded-xl overflow-hidden aspect-[4/3] mb-3 relative">
+                                <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&auto=format&fit=crop&q=80" alt="Textured Crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                <span class="absolute top-2 right-2 bg-black/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/30">98% Match</span>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Rosto Diamante / Ondulado</span>
+                            <h5 class="text-sm font-bold text-white mt-0.5">French Crop + Fade Navalhado</h5>
+                            <p class="text-[11px] text-zinc-400 mt-1">Fios texturizados frontais modernos e práticos com pomada matte.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    <!-- TELA 10: IA & MARKETING TURBO (Radar de Inativos & Gerador de Copys) -->
+    </div>
+
+    <!-- TELA 10: IA DE MARKETING & RADAR DE RETENÇÃO (Funcionalidade Turbo) -->
     <div id="tab-ia-marketing" class="tab-content">
         <div class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-amber-500/30">
             <div class="absolute -right-20 -top-20 w-56 h-56 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -left-20 -bottom-20 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
+            <!-- CABEÇALHO COM TOGGLE DE ATIVAÇÃO -->
             <div class="pb-6 border-b border-white/10 mb-8 relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500/20 to-amber-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5">
-                        <span>⚡</span> Retenção com Inteligência Artificial
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500/20 to-amber-500/20 text-purple-300 border border-purple-500/30 inline-flex items-center gap-1.5">
+                        <span>🎯</span> Motor de Crescimento & Retenção 2026
                     </span>
-                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">IA de Retenção & Marketing Turbo</h2>
-                    <p class="text-xs sm:text-sm text-zinc-400 mt-1">Identifique clientes sumidos da barbearia e reconquiste com copys persuasivas prontas para o WhatsApp em 1 clique.</p>
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">IA de Marketing & Radar de Retenção</h2>
+                    <p class="text-xs sm:text-sm text-zinc-400 mt-1">Identifique clientes sumidos, recupere receita em risco via WhatsApp e crie campanhas publicitárias em segundos.</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="carregarIaMarketing()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 flex items-center gap-2 transition">
-                        <span>🔄</span> <span>Atualizar Radar</span>
+                <div class="flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0">
+                    <div class="text-right">
+                        <span class="text-[9px] uppercase font-bold text-zinc-400 block">Status do Módulo</span>
+                        <strong id="status-marketing-label" class="text-xs text-emerald-400">🟢 Ativada</strong>
+                    </div>
+                    <button type="button" onclick="toggleStatusIa('marketing')" id="btn-toggle-marketing" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition">
+                        Desativar
                     </button>
                 </div>
             </div>
 
-            <!-- Cards de Indicadores IA -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 relative z-10">
-                <div class="p-5 rounded-2xl bg-black/40 border border-white/10 shadow-lg flex items-center justify-between">
-                    <div>
-                        <span class="text-xs uppercase font-semibold text-zinc-400">Clientes Inativos</span>
-                        <h3 class="text-3xl font-extrabold text-white mt-1" id="metric-ia-inativos">0</h3>
-                        <span class="text-[11px] text-amber-400">Sem retorno há +20 dias</span>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl">
-                        ⏳
-                    </div>
+            <!-- BANNER DE MÓDULO DESATIVADO -->
+            <div id="marketing-desativado-banner" class="hidden text-center py-12 px-6 rounded-3xl bg-zinc-900/60 border border-zinc-700/50 space-y-4 my-4">
+                <div class="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                    ⏸️
                 </div>
-
-                <div class="p-5 rounded-2xl bg-black/40 border border-white/10 shadow-lg flex items-center justify-between">
-                    <div>
-                        <span class="text-xs uppercase font-semibold text-zinc-400">Faturamento a Recuperar</span>
-                        <h3 class="text-3xl font-extrabold text-emerald-400 mt-1" id="metric-ia-faturamento">R$ 0,00</h3>
-                        <span class="text-[11px] text-zinc-400">Potencial de reconquista</span>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl">
-                        💰
-                    </div>
-                </div>
-
-                <div class="p-5 rounded-2xl bg-black/40 border border-white/10 shadow-lg flex items-center justify-between">
-                    <div>
-                        <span class="text-xs uppercase font-semibold text-zinc-400">Gatilho de Retorno</span>
-                        <h3 class="text-2xl font-extrabold text-amber-300 mt-1">VOLTAVIP15</h3>
-                        <span class="text-[11px] text-zinc-400">Cupom de 15% OFF ativo</span>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-2xl">
-                        🎯
-                    </div>
-                </div>
+                <h3 class="text-xl font-bold text-white">IA de Marketing Temporariamente Desativada</h3>
+                <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">As ferramentas de disparo de WhatsApp e geração de copies com Inteligência Artificial foram pausadas pelo administrador. Você pode reativá-las a qualquer momento.</p>
+                <button type="button" onclick="toggleStatusIa('marketing')" class="px-6 py-3 rounded-xl gold-btn text-xs font-bold shadow-lg transition">
+                    ✨ Reativar IA de Marketing Agora
+                </button>
             </div>
 
-            <!-- SEÇÃO 1: RADAR DE CLIENTES INATIVOS -->
-            <div class="p-6 rounded-2xl bg-black/30 border border-white/10 shadow-xl mb-8 relative z-10">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10 mb-4">
-                    <div>
-                        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                            <span>📡</span> Radar de Clientes Sumidos
-                        </h3>
-                        <p class="text-xs text-zinc-400 mt-0.5">Dispare mensagens personalizadas geradas pela IA diretamente no WhatsApp do cliente.</p>
+            <!-- CONTEÚDO ATIVO DA IA DE MARKETING -->
+            <div id="marketing-conteudo-ativo" class="space-y-8">
+                <!-- SELETOR DE SUB-ABAS -->
+                <div class="flex gap-2 p-1.5 bg-black/40 rounded-2xl border border-white/10 w-fit">
+                    <button type="button" onclick="mudarSubAbaMarketing('radar')" id="sub-btn-marketing-radar" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-black shadow-md transition">
+                        📡 Radar de Clientes Inativos
+                    </button>
+                    <button type="button" onclick="mudarSubAbaMarketing('campanhas')" id="sub-btn-marketing-campanhas" class="px-4 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white transition">
+                        📢 Gerador de Copies & Posts
+                    </button>
+                </div>
+
+                <!-- SUB-PAINEL 1: RADAR DE CLIENTES INATIVOS -->
+                <div id="sub-painel-marketing-radar" class="space-y-6">
+                    <!-- CARDS DE METRICAS DO RADAR -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-1">Clientes Sem Retornar</span>
+                            <h3 id="ia-mkt-total-inativos" class="text-2xl sm:text-3xl font-display font-bold text-white">0</h3>
+                            <span class="text-[11px] text-zinc-400 mt-1 block">Aguardando mensagem VIP</span>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-red-500/10 border border-red-500/30">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-red-400 block mb-1">Faturamento em Risco</span>
+                            <h3 id="ia-mkt-faturamento-risco" class="text-2xl sm:text-3xl font-display font-bold text-red-300">R$ 0,00</h3>
+                            <span class="text-[11px] text-zinc-400 mt-1 block">Receita de clientes inativos</span>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-1">Cupom de Resgate</span>
+                            <h3 class="text-xl sm:text-2xl font-mono font-bold text-emerald-300">VOLTAVIP15</h3>
+                            <span class="text-[11px] text-emerald-400/80 mt-1 block">15% OFF configurado na mensagem</span>
+                        </div>
                     </div>
-                    <!-- Filtros de Dias -->
-                    <div class="flex items-center gap-1.5 bg-black/50 p-1.5 rounded-2xl border border-white/5">
-                        <button type="button" onclick="filtrarDiasInativos(20, this)" class="btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-400 text-black transition">
-                            +20 Dias
+
+                    <!-- FILTROS DE DIAS -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-zinc-300">Filtrar Inatividade:</span>
+                            <button type="button" onclick="filtrarDiasInativos(30)" id="btn-filtro-dias-30" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-black transition">30+ dias</button>
+                            <button type="button" onclick="filtrarDiasInativos(45)" id="btn-filtro-dias-45" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-zinc-400 hover:text-white transition">45+ dias</button>
+                            <button type="button" onclick="filtrarDiasInativos(60)" id="btn-filtro-dias-60" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-zinc-400 hover:text-white transition">60+ dias</button>
+                        </div>
+                        <button type="button" onclick="carregarIaMarketing()" class="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold">
+                            <span>🔄</span> Atualizar Radar
                         </button>
-                        <button type="button" onclick="filtrarDiasInativos(30, this)" class="btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
-                            +30 Dias
-                        </button>
-                        <button type="button" onclick="filtrarDiasInativos(45, this)" class="btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
-                            +45 Dias (Crítico)
-                        </button>
+                    </div>
+
+                    <!-- LISTA DE CLIENTES DO RADAR -->
+                    <div class="rounded-2xl border border-white/10 overflow-hidden bg-black/40">
+                        <div class="overflow-x-auto table-mobile-scroll">
+                            <table class="w-full text-left text-sm min-w-[560px]">
+                                <thead class="bg-white/[0.04] text-zinc-400 border-b border-white/10">
+                                    <tr>
+                                        <th class="p-4 font-semibold text-xs uppercase tracking-wider">Cliente</th>
+                                        <th class="p-4 font-semibold text-xs uppercase tracking-wider">Última Visita</th>
+                                        <th class="p-4 font-semibold text-xs uppercase tracking-wider">Dias Ausente</th>
+                                        <th class="p-4 font-semibold text-xs uppercase tracking-wider">Risco</th>
+                                        <th class="p-4 font-semibold text-xs uppercase tracking-wider text-right">Ação Turbo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-inativos-body" class="divide-y divide-white/5 text-zinc-300">
+                                    <tr><td colspan="5" class="p-6 text-center text-zinc-500">Escaneando banco de clientes com IA...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tabela de Inativos -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-white/10 text-zinc-400 uppercase tracking-wider text-[10px]">
-                                <th class="py-3 px-3">Cliente</th>
-                                <th class="py-3 px-3">Telefone</th>
-                                <th class="py-3 px-3">Último Serviço</th>
-                                <th class="py-3 px-3">Barbeiro</th>
-                                <th class="py-3 px-3">Dias Ausente</th>
-                                <th class="py-3 px-3 text-right">Ação Inteligente</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-ia-inativos-body" class="divide-y divide-white/5 text-zinc-200">
-                            <tr>
-                                <td colspan="6" class="p-6 text-center text-zinc-500">Varrendo histórico de clientes...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- SEÇÃO 2: GERADOR DE CAMPANHAS DE MARKETING COM IA -->
-            <div class="p-6 rounded-2xl bg-black/30 border border-white/10 shadow-xl relative z-10">
-                <div class="pb-4 border-b border-white/10 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                            <span>📢</span> Gerador de Campanhas com IA (Copys Prontas)
-                        </h3>
-                        <p class="text-xs text-zinc-400 mt-0.5">Textos profissionais com gatilhos de urgência para Status do WhatsApp, Grupos ou Instagram.</p>
+                <!-- SUB-PAINEL 2: GERADOR DE CAMPANHAS E COPIES -->
+                <div id="sub-painel-marketing-campanhas" class="hidden space-y-6">
+                    <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-amber-400 block">Copywriting de Alta Conversão</span>
+                            <h4 class="text-base font-bold text-white mt-0.5">Selecione o Objetivo da Campanha</h4>
+                            <p class="text-xs text-zinc-400 mt-0.5">A IA gera 3 textos persuasivos com gatilhos mentais para você postar ou disparar.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="gerarCampanhasIa('meio_de_semana')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white/5 hover:bg-amber-500 hover:text-black text-zinc-300 transition border border-white/10">
+                                📅 Quarta/Quinta VIP
+                            </button>
+                            <button type="button" onclick="gerarCampanhasIa('fim_de_semana')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white/5 hover:bg-amber-500 hover:text-black text-zinc-300 transition border border-white/10">
+                                🔥 Fim de Semana
+                            </button>
+                            <button type="button" onclick="gerarCampanhasIa('clube_vip')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white/5 hover:bg-amber-500 hover:text-black text-zinc-300 transition border border-white/10">
+                                👑 Clube VIP
+                            </button>
+                            <button type="button" onclick="gerarCampanhasIa('produtos')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white/5 hover:bg-amber-500 hover:text-black text-zinc-300 transition border border-white/10">
+                                🧴 Loja & Pomadas
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <select id="select-ia-campanha-objetivo" class="px-3 py-2 rounded-xl bg-black/60 border border-white/10 text-white text-xs font-semibold outline-none focus:border-amber-400 flex-1 sm:flex-none">
-                            <option value="fim_de_semana">🔥 Sextou & Fim de Semana (Agenda Lotada)</option>
-                            <option value="meio_de_semana">🚀 Meio de Semana (Terça & Quarta)</option>
-                            <option value="clube_vip">💎 Clube VIP / Barber Pass (Recorrente)</option>
-                            <option value="produtos_loja">🧴 Venda de Pomadas & Óleos VIP</option>
-                        </select>
-                        <button type="button" onclick="gerarCampanhasIa()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs hover:brightness-110 shadow-lg shadow-amber-500/20 flex items-center gap-1.5 whitespace-nowrap">
-                            <span>✨</span> <span>Gerar Copys</span>
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Grid de 3 Variações -->
-                <div id="grid-ia-campanhas-admin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="p-5 rounded-2xl bg-black/40 border border-white/5 text-center text-zinc-500 text-xs col-span-full">
-                        Selecione o objetivo acima e clique em "Gerar Copys" para criar anúncios prontos com IA.
+                    <div id="cards-campanhas-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-8 text-center text-zinc-500 col-span-3">Selecione um objetivo acima para gerar as copies com Inteligência Artificial.</div>
                     </div>
                 </div>
             </div>
@@ -1404,20 +1546,19 @@
 </main>
 
 
-
 <footer class="bg-[#0A0A0C] border-t border-white/10 p-8 text-center text-xs text-zinc-500 mt-12">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
         <p class="font-display font-medium text-zinc-400">Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance.</p>
-        <div class="flex justify-center gap-4">
+        <div class="flex justify-center gap-4 flex-wrap">
             <a href="index.html" class="hover:text-amber-400 transition">Início</a>
             <a href="javascript:void(0)" onclick="changeTab('tab-horarios')" class="hover:text-amber-400 transition">Horários</a>
-            <a href="javascript:void(0)" onclick="changeTab('tab-loja')" class="hover:text-amber-400 transition">Loja VIP</a>
             <a href="javascript:void(0)" onclick="changeTab('tab-visagista')" class="hover:text-amber-400 transition">Visagista IA</a>
             <a href="javascript:void(0)" onclick="changeTab('tab-ia-marketing')" class="hover:text-amber-400 transition">IA Marketing</a>
+            <a href="javascript:void(0)" onclick="changeTab('tab-loja')" class="hover:text-amber-400 transition">Loja VIP</a>
+            <a href="../api/backup.php?download=1" class="text-emerald-400 hover:text-emerald-300 transition">Backup SQL</a>
         </div>
     </div>
 </footer>
-
 
 <!-- BARRA DE NAVEGAÇÃO INFERIOR EXCLUSIVA PARA CELULARES (ESTILO APP VIP) -->
 <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0E0E12]/95 backdrop-blur-2xl border-t border-amber-500/20 px-2 py-1.5 shadow-[0_-10px_30px_rgba(0,0,0,0.85)] pb-[max(0.5rem,env(safe-area-inset-bottom))]">
@@ -1462,11 +1603,14 @@
                 <span class="px-2 py-0.5 rounded-md bg-blue-500/30 text-[11px] font-bold text-blue-300">Grátis</span>
             </button>
             <button type="button" onclick="changeTab('tab-visagista'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/10">
-                <span class="flex items-center gap-2.5"><span>🧠</span> <strong>Visagista IA (Consultor de Estilo)</strong></span>
-                <span class="px-2 py-0.5 rounded-md bg-amber-400 text-black font-extrabold text-[10px]">IA</span>
+                <span class="flex items-center gap-2.5"><span>🧠</span> <strong>Visagista IA (Consultor Facial)</strong></span>
+                <span id="drawer-badge-ia-visagista" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
+            </button>
+            <button type="button" onclick="changeTab('tab-ia-marketing'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-sm font-semibold text-purple-300 transition text-left shadow-lg shadow-purple-500/10">
+                <span class="flex items-center gap-2.5"><span>🎯</span> <strong>IA Marketing & Radar de Retenção</strong></span>
+                <span id="drawer-badge-ia-marketing" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
             </button>
             <button type="button" onclick="changeTab('tab-clube-vip'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
-
                 <span class="flex items-center gap-2.5"><span>💎</span> Clube VIP / Barber Pass</span>
                 <span class="text-amber-400">→</span>
             </button>
@@ -1482,15 +1626,10 @@
                 <span class="flex items-center gap-2.5"><span>⭐</span> Avaliações & Depoimentos</span>
                 <span class="text-amber-400">→</span>
             </button>
-            <button type="button" onclick="changeTab('tab-ia-marketing'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
-                <span class="flex items-center gap-2.5"><span>🎯</span> <strong>IA Marketing & Radar de Retenção</strong></span>
-                <span class="text-amber-400">→</span>
-            </button>
             <a href="../api/backup.php?download=1" class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-sm font-semibold text-emerald-300 transition">
                 <span class="flex items-center gap-2.5"><span>💾</span> Baixar Backup do Banco (.sql)</span>
                 <span class="text-emerald-400">↓</span>
             </a>
-
             <button type="button" onclick="toggleSom(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-zinc-300 transition">
                 <span class="flex items-center gap-2.5"><span id="mobile-drawer-som-icone">🔊</span> Efeitos Sonoros VIP</span>
                 <span id="mobile-drawer-som-status" class="text-xs text-amber-400 font-bold">Ativado</span>
@@ -1687,38 +1826,37 @@
     </div>
 </div>
 
-<!-- MODAL DE DISPARO DE MENSAGEM IA NO WHATSAPP -->
-<div id="modal-disparo-ia" onclick="fecharModalDisparoIa()" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div onclick="event.stopPropagation()" class="bg-[#14141A] border border-amber-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
-        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+<!-- MODAL DE DISPARO DE MENSAGEM COM IA PARA WHATSAPP -->
+<div id="modal-disparo-ia" onclick="fecharModalDisparoIa()" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="w-full max-w-lg bg-[#14141c] border border-amber-500/40 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
             <div class="flex items-center gap-3">
-                <span class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-xl">📲</span>
+                <span class="text-2xl">⚡</span>
                 <div>
-                    <h4 class="text-base font-bold text-white" id="modal-ia-cliente-titulo">Reconquistar Cliente com IA</h4>
-                    <span class="text-xs text-zinc-400" id="modal-ia-cliente-sub">WhatsApp Pronto para Envio</span>
+                    <h3 class="text-base font-bold text-white">Disparo Persuasivo com IA</h3>
+                    <span class="text-xs text-amber-400" id="modal-disparo-cliente-nome">Cliente</span>
                 </div>
             </div>
-            <button type="button" onclick="fecharModalDisparoIa()" class="text-zinc-400 hover:text-white text-xl leading-none">✕</button>
+            <button type="button" onclick="fecharModalDisparoIa()" class="text-zinc-400 hover:text-white text-xl p-1 leading-none">✕</button>
         </div>
 
-        <div class="mb-4">
-            <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Mensagem Personalizada Gerada:</label>
-            <textarea id="modal-ia-mensagem-texto" rows="8" class="w-full p-3.5 rounded-2xl bg-black/50 border border-white/10 text-white text-xs leading-relaxed focus:border-amber-400 outline-none select-all font-mono"></textarea>
+        <div class="space-y-2">
+            <label class="text-xs font-bold text-zinc-300 block">Mensagem Personalizada Gerada:</label>
+            <textarea id="modal-disparo-texto" rows="5" class="dark-input text-xs leading-relaxed font-sans text-zinc-200 resize-none"></textarea>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2">
-            <button type="button" onclick="copiarMensagemIaModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5">
-                <span>📋</span> <span>Copiar Texto</span>
+        <div class="flex items-center justify-between gap-3 pt-2">
+            <button type="button" onclick="copiarMensagemIaModal()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs border border-white/10 transition flex items-center gap-1.5">
+                <span>📋</span> Copiar Texto
             </button>
-            <a id="modal-ia-btn-whats" href="#" target="_blank" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-extrabold text-xs transition shadow-lg flex items-center justify-center gap-2">
-                <span>📲</span> <span>Disparar no WhatsApp</span>
+            <a id="modal-disparo-link-zap" href="#" target="_blank" onclick="fecharModalDisparoIa()" class="px-5 py-2.5 rounded-xl gold-btn text-xs font-bold transition flex items-center gap-2 shadow-lg">
+                <span>📲</span> Abrir no WhatsApp
             </a>
         </div>
     </div>
 </div>
 
 <script>
-
     const basePath = window.location.pathname.replace(/\/Frontend\/[^\/]*$/, '');
     const API_SERVICOS = `${basePath}/api/servico.php`;
     const API_AGENDAMENTOS = `${basePath}/api/agendamento.php`;
@@ -2059,11 +2197,13 @@
         if (tabId === 'tab-clube-vip') carregarPlanosNaAba();
         if (tabId === 'tab-loja') carregarProdutosLoja();
         if (tabId === 'tab-visagista') {
-            // Scroll suave caso necessário
+            aplicarStatusIas();
         }
-        if (tabId === 'tab-ia-marketing') carregarIaMarketing();
+        if (tabId === 'tab-ia-marketing') {
+            aplicarStatusIas();
+            if (IA_STATUS.marketing) carregarIaMarketing();
+        }
     }
-
 
 
     // Controle do Drawer/Modal 'Mais Opções' para celulares
@@ -4131,8 +4271,128 @@
         });
     }
 
+    // --- GESTÃO E CONTROLE DE STATUS DAS INTELIGÊNCIAS ARTIFICIAIS (ATIVAR / DESATIVAR) ---
+    const IA_STATUS = {
+        visagista: localStorage.getItem('barber_ia_visagista') !== 'false',
+        marketing: localStorage.getItem('barber_ia_marketing') !== 'false'
+    };
+
+    function toggleStatusIa(tipo) {
+        soundVIP.playSoftClick();
+        IA_STATUS[tipo] = !IA_STATUS[tipo];
+        localStorage.setItem('barber_ia_' + tipo, IA_STATUS[tipo] ? 'true' : 'false');
+        aplicarStatusIas();
+
+        const nome = tipo === 'visagista' ? 'Visagista Virtual com IA' : 'IA de Marketing & Retenção';
+        const st = IA_STATUS[tipo] ? 'ATIVADO' : 'DESATIVADO';
+        mostrarToast(`✨ ${nome} foi ${st}!`, IA_STATUS[tipo] ? 'sucesso' : 'aviso');
+
+        if (tipo === 'marketing' && IA_STATUS.marketing) {
+            carregarIaMarketing();
+        }
+    }
+
+    function aplicarStatusIas() {
+        // 1. Visagista IA
+        const visAtivo = IA_STATUS.visagista;
+        const bannerVisDes = document.getElementById('visagista-desativado-banner');
+        const conteudoVis = document.getElementById('visagista-conteudo-ativo');
+        const lblVis = document.getElementById('status-visagista-label');
+        const btnVis = document.getElementById('btn-toggle-visagista');
+        const navBadgeVis = document.getElementById('nav-badge-ia-visagista');
+        const drawerBadgeVis = document.getElementById('drawer-badge-ia-visagista');
+        const dashTxtVis = document.getElementById('dash-status-visagista-txt');
+        const dashBtnVis = document.getElementById('dash-btn-toggle-visagista');
+
+        if (visAtivo) {
+            if (bannerVisDes) bannerVisDes.classList.add('hidden');
+            if (conteudoVis) conteudoVis.classList.remove('hidden');
+            if (lblVis) { lblVis.textContent = '🟢 Ativado'; lblVis.className = 'text-xs text-emerald-400 font-bold'; }
+            if (btnVis) { btnVis.textContent = 'Desativar'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
+            if (navBadgeVis) { navBadgeVis.textContent = 'ON'; navBadgeVis.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1'; }
+            if (drawerBadgeVis) { drawerBadgeVis.textContent = 'ON'; drawerBadgeVis.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
+            if (dashTxtVis) { dashTxtVis.textContent = '🟢 Módulo Ativado'; dashTxtVis.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
+            if (dashBtnVis) { dashBtnVis.textContent = 'Desativar'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+        } else {
+            if (bannerVisDes) bannerVisDes.classList.remove('hidden');
+            if (conteudoVis) conteudoVis.classList.add('hidden');
+            if (lblVis) { lblVis.textContent = '⚪ Desativado'; lblVis.className = 'text-xs text-zinc-400 font-bold'; }
+            if (btnVis) { btnVis.textContent = 'Ativar'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
+            if (navBadgeVis) { navBadgeVis.textContent = 'OFF'; navBadgeVis.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-bold ml-1'; }
+            if (drawerBadgeVis) { drawerBadgeVis.textContent = 'OFF'; drawerBadgeVis.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
+            if (dashTxtVis) { dashTxtVis.textContent = '⚪ Módulo Desativado'; dashTxtVis.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
+            if (dashBtnVis) { dashBtnVis.textContent = 'Ativar'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
+        }
+
+        // 2. IA de Marketing
+        const mktAtivo = IA_STATUS.marketing;
+        const bannerMktDes = document.getElementById('marketing-desativado-banner');
+        const conteudoMkt = document.getElementById('marketing-conteudo-ativo');
+        const lblMkt = document.getElementById('status-marketing-label');
+        const btnMkt = document.getElementById('btn-toggle-marketing');
+        const navBadgeMkt = document.getElementById('nav-badge-ia-marketing');
+        const drawerBadgeMkt = document.getElementById('drawer-badge-ia-marketing');
+        const dashTxtMkt = document.getElementById('dash-status-marketing-txt');
+        const dashBtnMkt = document.getElementById('dash-btn-toggle-marketing');
+
+        if (mktAtivo) {
+            if (bannerMktDes) bannerMktDes.classList.add('hidden');
+            if (conteudoMkt) conteudoMkt.classList.remove('hidden');
+            if (lblMkt) { lblMkt.textContent = '🟢 Ativada'; lblMkt.className = 'text-xs text-emerald-400 font-bold'; }
+            if (btnMkt) { btnMkt.textContent = 'Desativar'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
+            if (navBadgeMkt) { navBadgeMkt.textContent = 'ON'; navBadgeMkt.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1'; }
+            if (drawerBadgeMkt) { drawerBadgeMkt.textContent = 'ON'; drawerBadgeMkt.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
+            if (dashTxtMkt) { dashTxtMkt.textContent = '🟢 Módulo Ativado'; dashTxtMkt.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
+            if (dashBtnMkt) { dashBtnMkt.textContent = 'Desativar'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+        } else {
+            if (bannerMktDes) bannerMktDes.classList.remove('hidden');
+            if (conteudoMkt) conteudoMkt.classList.add('hidden');
+            if (lblMkt) { lblMkt.textContent = '⚪ Desativada'; lblMkt.className = 'text-xs text-zinc-400 font-bold'; }
+            if (btnMkt) { btnMkt.textContent = 'Ativar'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
+            if (navBadgeMkt) { navBadgeMkt.textContent = 'OFF'; navBadgeMkt.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-bold ml-1'; }
+            if (drawerBadgeMkt) { drawerBadgeMkt.textContent = 'OFF'; drawerBadgeMkt.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
+            if (dashTxtMkt) { dashTxtMkt.textContent = '⚪ Módulo Desativado'; dashTxtMkt.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
+            if (dashBtnMkt) { dashBtnMkt.textContent = 'Ativar'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
+        }
+    }
+
     // --- INTELIGÊNCIA ARTIFICIAL: VISAGISTA VIRTUAL ---
-    async function analisarVisagismoIA(event) {
+    let fotoVisagistaBase64 = null;
+
+    function analisarFotoVisagista(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            fotoVisagistaBase64 = e.target.result;
+            const container = document.getElementById('preview-foto-container');
+            const img = document.getElementById('preview-foto-img');
+            const status = document.getElementById('preview-foto-status');
+            if (container) container.classList.remove('hidden');
+            if (img) img.src = fotoVisagistaBase64;
+            if (status) status.innerHTML = '✨ Foto carregada com sucesso! Analisando com Inteligência Artificial...';
+
+            soundVIP.playChicSuccess();
+            mostrarToast('📸 Foto enviada! A IA está calculando sua harmonia facial...', 'sucesso');
+            analisarVisagismoIA(null, true);
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    function selecionarEstiloPredefinido(rosto, cabelo) {
+        const rRosto = document.querySelector(`input[name="ia_rosto"][value="${rosto}"]`);
+        if (rRosto) rRosto.checked = true;
+        const rCabelo = document.querySelector(`input[name="ia_cabelo"][value="${cabelo}"]`);
+        if (rCabelo) rCabelo.checked = true;
+
+        analisarVisagismoIA();
+        const box = document.getElementById('box-resultado-visagismo');
+        if (box) box.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function analisarVisagismoIA(event, isFoto = false) {
         if (event) event.preventDefault();
         soundVIP.playSoftClick();
 
@@ -4145,33 +4405,46 @@
         const btnTxt = document.getElementById('btn-visagismo-texto');
         const boxResultado = document.getElementById('box-resultado-visagismo');
 
-        btn.disabled = true;
-        btnTxt.textContent = 'PROCESSANDO COM INTELIGÊNCIA ARTIFICIAL...';
-        boxResultado.classList.remove('hidden');
-        boxResultado.innerHTML = `
-            <div class="py-12 text-center text-amber-300 space-y-3">
-                <div class="inline-block animate-spin text-3xl">✨</div>
-                <h4 class="text-base font-bold text-white">Analisando Proporções Faciais & Visagismo</h4>
-                <p class="text-xs text-zinc-400">Calculando linhas de força, densidade capilar e harmonia da mandíbula...</p>
-            </div>
-        `;
+        if (btn) btn.disabled = true;
+        if (btnTxt) btnTxt.textContent = isFoto ? 'ESCANEANDO ROSTO & PROPORÇÕES...' : 'PROCESSANDO COM INTELIGÊNCIA ARTIFICIAL...';
+        if (boxResultado) {
+            boxResultado.classList.remove('hidden');
+            boxResultado.innerHTML = `
+                <div class="py-12 text-center text-amber-300 space-y-3">
+                    <div class="inline-block animate-spin text-3xl">✨</div>
+                    <h4 class="text-base font-bold text-white">${isFoto ? 'Escaneando Imagem & Geometria Facial' : 'Analisando Proporções Faciais & Visagismo'}</h4>
+                    <p class="text-xs text-zinc-400">Calculando linhas de força, densidade capilar e harmonia da mandíbula...</p>
+                </div>
+            `;
+        }
 
         try {
+            const payload = {
+                acao: 'visagismo',
+                formato_rosto: formatoRosto,
+                tipo_cabelo: tipoCabelo,
+                estilo_barba: estiloBarba,
+                estilo_vibe: estiloVibe
+            };
+            if (fotoVisagistaBase64) {
+                payload.imagem_base64 = fotoVisagistaBase64;
+            }
+
             const resp = await fetch(API_IA, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    acao: 'visagismo',
-                    formato_rosto: formatoRosto,
-                    tipo_cabelo: tipoCabelo,
-                    estilo_barba: estiloBarba,
-                    estilo_vibe: estiloVibe
-                })
+                body: JSON.stringify(payload)
             });
 
             const res = await resp.json();
             if (res.success && res.corte_sugerido) {
                 soundVIP.playChicSuccess();
+                // Sincronizar radio do rosto se a IA detectou outro
+                if (res.perfil && res.perfil.formato_rosto) {
+                    const rRadio = document.querySelector(`input[name="ia_rosto"][value="${res.perfil.formato_rosto}"]`);
+                    if (rRadio) rRadio.checked = true;
+                }
+
                 const c = res.corte_sugerido;
                 const b = res.barbeiro_recomendado || {};
                 const p = res.produto_recomendado || {};
@@ -4260,15 +4533,14 @@
         } catch (e) {
             boxResultado.innerHTML = `<div class="p-6 text-center text-red-400 text-sm">Erro ao conectar com a IA: ${e.message}</div>`;
         } finally {
-            btn.disabled = false;
-            btnTxt.textContent = 'ANALISAR COM INTELIGÊNCIA ARTIFICIAL';
+            if (btn) btn.disabled = false;
+            if (btnTxt) btnTxt.textContent = 'ANALISAR COM INTELIGÊNCIA ARTIFICIAL';
         }
     }
 
     function aplicarCorteVisagismoNoAgendamento(servicoNome, barbeiroId, produtoId, barbeiroNome) {
         soundVIP.playChicSuccess();
 
-        // 1. Seleciona o serviço
         const servicoSelect = document.getElementById('cliente-servico');
         if (servicoSelect) {
             let encontrado = false;
@@ -4284,118 +4556,142 @@
             }
         }
 
-        // 2. Seleciona o barbeiro
         if (barbeiroId) {
             selecionarBarbeiroChip(barbeiroId, barbeiroNome);
         }
 
-        // 3. Seleciona o produto no upsell caso exista
         if (produtoId) {
             const upsellSelect = document.getElementById('cliente-produto-upsell');
             if (upsellSelect) upsellSelect.value = produtoId;
         }
 
-        // 4. Muda de aba para o agendamento
         changeTab('tab-agendar');
 
-        // 5. Scroll suave até o formulário
         const formEl = document.getElementById('cliente-servico');
         if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
 
         mostrarToast(`🎯 <strong>${servicoNome}</strong> e barbeiro pré-selecionados pela IA! Escolha o dia e horário.`, 'sucesso');
     }
 
-    // --- INTELIGÊNCIA ARTIFICIAL: RADAR DE INATIVOS & MARKETING TURBO ---
-    let diasFiltroIaAtual = 20;
+    // --- INTELIGÊNCIA ARTIFICIAL: IA DE MARKETING & RADAR DE RETENÇÃO ---
+    let diasInativosAtual = 30;
+    let clientesInativosCache = [];
 
-    async function carregarIaMarketing(dias = null) {
-        if (dias !== null) diasFiltroIaAtual = dias;
-        const tbody = document.getElementById('tabela-ia-inativos-body');
-        const metricInativos = document.getElementById('metric-ia-inativos');
-        const metricFaturamento = document.getElementById('metric-ia-faturamento');
-        if (!tbody) return;
+    function mudarSubAbaMarketing(aba) {
+        soundVIP.playSoftClick();
+        const pRadar = document.getElementById('sub-painel-marketing-radar');
+        const pCamp = document.getElementById('sub-painel-marketing-campanhas');
+        const btnRadar = document.getElementById('sub-btn-marketing-radar');
+        const btnCamp = document.getElementById('sub-btn-marketing-campanhas');
 
-        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-zinc-400 animate-pulse">Varrendo clientes no MySQL com Inteligência Artificial...</td></tr>';
-
-        try {
-            const resp = await fetch(`${API_IA}?acao=clientes_inativos&dias=${diasFiltroIaAtual}`);
-            const res = await resp.json();
-
-            if (res.success) {
-                if (metricInativos) metricInativos.textContent = res.total_inativos || 0;
-                if (metricFaturamento) {
-                    metricFaturamento.textContent = `R$ ${Number(res.faturamento_em_risco || 0).toFixed(2).replace('.', ',')}`;
-                }
-
-                if (!res.clientes || res.clientes.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-zinc-500">🎉 Nenhum cliente inativo há mais de ${diasFiltroIaAtual} dias! Sua retenção está excelente.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = res.clientes.map(c => {
-                    const diasSemRetorno = c.dias_sem_retorno || 0;
-                    const riscoBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${c.badge_class || 'bg-amber-500/20 text-amber-300 border-amber-500/30'}">${c.risco || 'ALERTA'}</span>`;
-                    const nomeEsc = (c.cliente_nome || 'Cliente').replace(/'/g, "\\'");
-                    const servicoEsc = (c.ultimo_servico || 'Corte').replace(/'/g, "\\'");
-                    const barbeiroEsc = (c.ultimo_barbeiro || 'Equipe').replace(/'/g, "\\'");
-
-                    return `
-                        <tr class="hover:bg-white/[0.02] transition">
-                            <td class="py-3.5 px-3">
-                                <strong class="text-white block text-sm">${c.cliente_nome}</strong>
-                                ${riscoBadge}
-                            </td>
-                            <td class="py-3.5 px-3 text-zinc-300">
-                                ${c.cliente_telefone}
-                            </td>
-                            <td class="py-3.5 px-3 text-zinc-300">
-                                ${c.ultimo_servico || 'Corte'}
-                                <span class="block text-[11px] text-zinc-500">${c.ultimo_agendamento || ''}</span>
-                            </td>
-                            <td class="py-3.5 px-3 text-zinc-400">
-                                ${c.ultimo_barbeiro || 'Sem preferência'}
-                            </td>
-                            <td class="py-3.5 px-3">
-                                <span class="text-amber-400 font-bold">${diasSemRetorno} dias</span>
-                            </td>
-                            <td class="py-3.5 px-3 text-right">
-                                <button type="button" onclick="abrirModalDisparoIa('${nomeEsc}', '${c.cliente_telefone}', ${diasSemRetorno}, '${servicoEsc}', '${barbeiroEsc}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-[11px] transition shadow-md flex items-center gap-1.5 ml-auto">
-                                    <span>⚡</span> <span>Gerar Mensagem IA</span>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } else {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-400">${res.erro || 'Erro ao carregar dados.'}</td></tr>`;
-            }
-        } catch (e) {
-            tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-red-400">Erro de conexão com o servidor.</td></tr>';
+        if (aba === 'radar') {
+            if (pRadar) pRadar.classList.remove('hidden');
+            if (pCamp) pCamp.classList.add('hidden');
+            if (btnRadar) { btnRadar.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-black shadow-md transition'; }
+            if (btnCamp) { btnCamp.className = 'px-4 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white transition'; }
+            carregarIaMarketing();
+        } else {
+            if (pRadar) pRadar.classList.add('hidden');
+            if (pCamp) pCamp.classList.remove('hidden');
+            if (btnRadar) { btnRadar.className = 'px-4 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white transition'; }
+            if (btnCamp) { btnCamp.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-black shadow-md transition'; }
+            gerarCampanhasIa('meio_de_semana');
         }
     }
 
-    function filtrarDiasInativos(dias, btn) {
-        document.querySelectorAll('.btn-filtro-ia').forEach(b => {
-            b.className = 'btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition';
+    function filtrarDiasInativos(dias) {
+        soundVIP.playSoftClick();
+        diasInativosAtual = dias;
+        [30, 45, 60].forEach(d => {
+            const b = document.getElementById(`btn-filtro-dias-${d}`);
+            if (b) {
+                if (d === dias) {
+                    b.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-black transition';
+                } else {
+                    b.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 text-zinc-400 hover:text-white transition';
+                }
+            }
         });
-        if (btn) btn.className = 'btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-400 text-black transition';
-        carregarIaMarketing(dias);
+        carregarIaMarketing();
     }
 
-    async function abrirModalDisparoIa(nome, telefone, dias, ultimoServico, barbeiro) {
+    async function carregarIaMarketing() {
+        if (!IA_STATUS.marketing) return;
+        const tbody = document.getElementById('tabela-inativos-body');
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-zinc-500">Escaneando clientes inativos há ${diasInativosAtual}+ dias com IA...</td></tr>`;
+
+        try {
+            const resp = await fetch(`${API_IA}?acao=clientes_inativos&dias=${diasInativosAtual}`);
+            const data = await resp.json();
+
+            if (data.success) {
+                clientesInativosCache = data.clientes || [];
+                const totalInativos = document.getElementById('ia-mkt-total-inativos');
+                const faturamentoRisco = document.getElementById('ia-mkt-faturamento-risco');
+                if (totalInativos) totalInativos.textContent = data.total_inativos || 0;
+                if (faturamentoRisco) faturamentoRisco.textContent = data.faturamento_em_risco_formatado || 'R$ 0,00';
+
+                if (!data.clientes || data.clientes.length === 0) {
+                    if (tbody) tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-zinc-400">
+                                <span class="text-2xl block mb-2">🎉</span>
+                                Excelente notícia! Não encontramos nenhum cliente ausente há mais de ${diasInativosAtual} dias no histórico.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                if (tbody) {
+                    tbody.innerHTML = data.clientes.map(c => {
+                        const riscoCor = c.dias_sem_agendar >= 60 ? 'bg-red-500/20 text-red-300 border-red-500/30' : (c.dias_sem_agendar >= 45 ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-blue-500/20 text-blue-300 border-blue-500/30');
+                        const riscoLabel = c.dias_sem_agendar >= 60 ? 'Crítico (60d+)' : (c.dias_sem_agendar >= 45 ? 'Alto (45d+)' : 'Moderado');
+                        const clienteJson = JSON.stringify(c).replace(/"/g, '&quot;');
+
+                        return `
+                            <tr class="hover:bg-white/[0.02] transition">
+                                <td class="p-4">
+                                    <strong class="text-white block font-semibold">${c.cliente_nome}</strong>
+                                    <span class="text-[11px] text-zinc-400">${c.cliente_telefone || 'Sem WhatsApp'}</span>
+                                </td>
+                                <td class="p-4 text-xs text-zinc-300">${c.ultima_visita_formatada || '-'}</td>
+                                <td class="p-4 text-xs font-mono font-bold text-amber-300">${c.dias_sem_agendar} dias</td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${riscoCor}">
+                                        ${riscoLabel}
+                                    </span>
+                                </td>
+                                <td class="p-4 text-right">
+                                    <button type="button" onclick="abrirModalDisparoIa(${clienteJson})" class="px-3.5 py-1.5 rounded-xl text-xs font-bold gold-btn transition flex items-center gap-1.5 ml-auto shadow-md">
+                                        <span>⚡</span> Disparar WhatsApp
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } else {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-400">Erro ao consultar clientes: ${data.erro || 'Falha no servidor'}</td></tr>`;
+            }
+        } catch (e) {
+            if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-400">Falha na conexão com a IA: ${e.message}</td></tr>`;
+        }
+    }
+
+    async function abrirModalDisparoIa(cliente) {
         soundVIP.playSoftClick();
         const modal = document.getElementById('modal-disparo-ia');
-        const textarea = document.getElementById('modal-ia-mensagem-texto');
-        const btnWhats = document.getElementById('modal-ia-btn-whats');
-        const titulo = document.getElementById('modal-ia-cliente-titulo');
-        const sub = document.getElementById('modal-ia-cliente-sub');
-        if (!modal) return;
+        const nomeEl = document.getElementById('modal-disparo-cliente-nome');
+        const textoEl = document.getElementById('modal-disparo-texto');
+        const linkZap = document.getElementById('modal-disparo-link-zap');
 
-        if (titulo) titulo.textContent = `Reconquistar ${nome.split(' ')[0]}`;
-        if (sub) sub.textContent = `${telefone} • ${dias} dias ausente`;
-        if (textarea) textarea.value = 'Gerando mensagem persuasiva com IA...';
+        if (nomeEl) nomeEl.textContent = cliente.cliente_nome + (cliente.cliente_telefone ? ` (${cliente.cliente_telefone})` : '');
+        if (textoEl) textoEl.value = 'Gerando mensagem personalizada com Inteligência Artificial...';
 
-        modal.classList.remove('hidden');
+        if (modal) {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
 
         try {
             const resp = await fetch(API_IA, {
@@ -4403,58 +4699,51 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     acao: 'gerar_mensagem_recuperacao',
-                    cliente_nome: nome,
-                    cliente_telefone: telefone,
-                    dias_sem_retorno: dias,
-                    ultimo_servico: ultimoServico,
-                    barbeiro_nome: barbeiro,
+                    cliente_nome: cliente.cliente_nome,
+                    cliente_telefone: cliente.cliente_telefone,
+                    dias_sem_agendar: cliente.dias_sem_agendar,
                     cupom: 'VOLTAVIP15'
                 })
             });
-
-            const res = await resp.json();
-            if (res.success && res.mensagem) {
-                textarea.value = res.mensagem;
-                if (btnWhats) {
-                    btnWhats.href = res.whatsapp_link;
-                }
+            const data = await resp.json();
+            if (data.success && data.copy) {
+                if (textoEl) textoEl.value = data.copy.mensagem;
+                if (linkZap) linkZap.href = data.copy.link_whatsapp;
             } else {
-                textarea.value = `Fala ${nome.split(' ')[0]}! Tudo bem? Passando para avisar que já faz ${dias} dias do seu último corte na Barbearia VIP. Que tal garantir aquele talento para o fim de semana com o cupom VOLTAVIP15?`;
-                const cleanTel = (telefone || '').replace(/\D/g, '');
-                if (btnWhats) btnWhats.href = `https://wa.me/55${cleanTel}?text=${encodeURIComponent(textarea.value)}`;
+                if (textoEl) textoEl.value = `Fala ${cliente.cliente_nome.split(' ')[0]}! Tudo bom meu amigo? Notamos que já faz ${cliente.dias_sem_agendar} dias desde o seu último corte aqui na Barbearia VIP Borcelle. Liberamos um cupom exclusivo de 15% OFF (VOLTAVIP15) pra você renovar o visual esta semana! Bora agendar?`;
+                const zapTel = (cliente.cliente_telefone || '').replace(/\D/g, '');
+                if (linkZap) linkZap.href = `https://api.whatsapp.com/send?phone=55${zapTel}&text=${encodeURIComponent(textoEl.value)}`;
             }
         } catch (e) {
-            textarea.value = `Fala ${nome.split(' ')[0]}! Tudo bem? Sentimos sua falta na Barbearia VIP. Aproveite 15% OFF com o cupom VOLTAVIP15 ao agendar esta semana!`;
+            if (textoEl) textoEl.value = `Fala ${cliente.cliente_nome}! Notamos sua ausência aqui na Barbearia VIP. Use o cupom VOLTAVIP15 para 15% OFF no seu próximo horário!`;
+            const zapTel = (cliente.cliente_telefone || '').replace(/\D/g, '');
+            if (linkZap) linkZap.href = `https://api.whatsapp.com/send?phone=55${zapTel}&text=${encodeURIComponent(textoEl.value)}`;
         }
     }
 
     function fecharModalDisparoIa() {
-        soundVIP.playSoftClick();
         const modal = document.getElementById('modal-disparo-ia');
-        if (modal) modal.classList.add('hidden');
+        if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
     }
 
     function copiarMensagemIaModal() {
-        soundVIP.playSoftClick();
-        const textarea = document.getElementById('modal-ia-mensagem-texto');
-        if (!textarea) return;
-        textarea.select();
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(textarea.value);
-        } else {
-            document.execCommand('copy');
-        }
-        mostrarToast('Mensagem copiada para a área de transferência!', 'sucesso');
+        const txt = document.getElementById('modal-disparo-texto');
+        if (!txt) return;
+        navigator.clipboard.writeText(txt.value).then(() => {
+            soundVIP.playChicSuccess();
+            mostrarToast('📋 Mensagem da IA copiada com sucesso!', 'sucesso');
+        }).catch(() => {
+            mostrarToast('Não foi possível copiar automaticamente.', 'aviso');
+        });
     }
 
-    async function gerarCampanhasIa() {
+    async function gerarCampanhasIa(objetivo) {
+        if (!IA_STATUS.marketing) return;
         soundVIP.playSoftClick();
-        const select = document.getElementById('select-ia-campanha-objetivo');
-        const container = document.getElementById('grid-ia-campanhas-admin');
-        if (!select || !container) return;
-
-        const objetivo = select.value;
-        container.innerHTML = '<div class="p-8 text-center text-amber-300 text-xs col-span-full animate-pulse">Criando 3 copys persuasivas com Inteligência Artificial...</div>';
+        const container = document.getElementById('cards-campanhas-container');
+        if (container) {
+            container.innerHTML = `<div class="p-8 text-center text-amber-300 col-span-3"><span class="animate-spin inline-block text-2xl mr-2">✨</span> Criando copies persuasivas de marketing com IA...</div>`;
+        }
 
         try {
             const resp = await fetch(API_IA, {
@@ -4466,65 +4755,50 @@
                     tom: 'vip'
                 })
             });
-
-            const res = await resp.json();
-            if (res.success && res.campanhas) {
-                soundVIP.playChicSuccess();
-                container.innerHTML = res.campanhas.map((c, i) => {
-                    const encodedWhats = encodeURIComponent(c.texto);
-                    return `
-                        <div class="p-5 rounded-2xl bg-black/40 border border-white/10 hover:border-amber-500/40 transition flex flex-col justify-between shadow-xl">
+            const data = await resp.json();
+            if (data.success && data.campanhas) {
+                if (container) {
+                    container.innerHTML = data.campanhas.map((camp, idx) => `
+                        <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/40 transition flex flex-col justify-between group">
                             <div>
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                        ${c.foco || 'Marketing'}
-                                    </span>
-                                    <span class="text-xs text-zinc-500">Opção ${i + 1}</span>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-amber-400">Opção ${idx + 1} • ${camp.canal || 'WhatsApp / Stories'}</span>
+                                    <span class="text-xs">🔥</span>
                                 </div>
-                                <h4 class="text-xs font-bold text-white mb-2">${c.titulo}</h4>
-                                <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-zinc-300 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto mb-4 select-all font-mono">
-                                    ${c.texto}
-                                </div>
+                                <h5 class="text-sm font-bold text-white mb-2 leading-snug">${camp.titulo}</h5>
+                                <p class="text-xs text-zinc-300 whitespace-pre-line bg-black/40 p-3.5 rounded-xl border border-white/5 font-sans leading-relaxed">${camp.texto}</p>
                             </div>
-                            <div class="flex items-center gap-2 pt-2 border-t border-white/10">
-                                <button type="button" onclick="copiarTextoCampanhaCard(this)" data-texto="${encodeURIComponent(c.texto)}" class="flex-1 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5">
-                                    <span>📋</span> <span>Copiar</span>
+                            <div class="pt-4 mt-2">
+                                <button type="button" onclick="copiarTextoCampanhaCard(this)" class="w-full py-2.5 px-3 rounded-xl bg-white/5 hover:bg-amber-500 hover:text-black text-white text-xs font-bold transition flex items-center justify-center gap-1.5 border border-white/10 group-hover:border-amber-400/40">
+                                    <span>📋</span> <span>Copiar Esta Copy</span>
                                 </button>
-                                <a href="https://wa.me/?text=${encodedWhats}" target="_blank" class="py-2 px-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-[11px] transition flex items-center justify-center gap-1 shadow-md">
-                                    <span>📲</span> <span>Disparar</span>
-                                </a>
                             </div>
                         </div>
-                    `;
-                }).join('');
+                    `).join('');
+                }
             } else {
-                container.innerHTML = '<div class="p-6 text-center text-red-400 text-xs col-span-full">Erro ao gerar campanhas com IA.</div>';
+                if (container) container.innerHTML = `<div class="p-6 text-center text-red-400 col-span-3">Não foi possível gerar campanhas.</div>`;
             }
         } catch (e) {
-            container.innerHTML = '<div class="p-6 text-center text-red-400 text-xs col-span-full">Erro de comunicação com o servidor.</div>';
+            if (container) container.innerHTML = `<div class="p-6 text-center text-red-400 col-span-3">Erro: ${e.message}</div>`;
         }
     }
 
     function copiarTextoCampanhaCard(btn) {
-        soundVIP.playSoftClick();
-        const raw = btn.getAttribute('data-texto');
-        if (!raw) return;
-        const texto = decodeURIComponent(raw);
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(texto);
-        } else {
-            const ta = document.createElement('textarea');
-            ta.value = texto;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-        }
-        mostrarToast('Copy copiada para a área de transferência!', 'sucesso');
+        const card = btn.closest('.group');
+        const p = card ? card.querySelector('p') : null;
+        if (!p) return;
+        navigator.clipboard.writeText(p.innerText).then(() => {
+            soundVIP.playChicSuccess();
+            mostrarToast('📋 Texto da campanha copiado! Cole no WhatsApp ou Instagram.', 'sucesso');
+        });
     }
 
     checarDispositivoIos();
-
+    document.addEventListener('DOMContentLoaded', () => {
+        aplicarStatusIas();
+    });
+    aplicarStatusIas();
 
 </script>
 </body>
