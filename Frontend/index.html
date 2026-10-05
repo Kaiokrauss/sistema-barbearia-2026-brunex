@@ -889,35 +889,35 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Visagista IA Control -->
-                    <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3">
+                    <div id="dash-card-ia-visagista" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3">
                             <div class="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center justify-center text-xl flex-shrink-0">
                                 🧠
                             </div>
                             <div>
                                 <h4 class="text-xs sm:text-sm font-bold text-white">Visagista Virtual com IA</h4>
-                                <span id="dash-status-visagista-txt" class="text-xs text-emerald-400 font-semibold block mt-0.5">🟢 Módulo Ativado</span>
+                                <span id="dash-status-visagista-txt" class="text-xs text-emerald-400 font-semibold block mt-0.5">🟢 Ligada</span>
                                 <span class="text-[10px] text-zinc-400">Consultoria facial para clientes</span>
                             </div>
                         </div>
                         <button type="button" onclick="toggleStatusIa('visagista')" id="dash-btn-toggle-visagista" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0">
-                            Desativar
+                            🔴 Desligar IA
                         </button>
                     </div>
                     <!-- IA de Marketing Control -->
-                    <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3">
+                    <div id="dash-card-ia-marketing" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3">
                             <div class="w-11 h-11 rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-300 flex items-center justify-center text-xl flex-shrink-0">
                                 🎯
                             </div>
                             <div>
                                 <h4 class="text-xs sm:text-sm font-bold text-white">IA de Marketing & Radar</h4>
-                                <span id="dash-status-marketing-txt" class="text-xs text-emerald-400 font-semibold block mt-0.5">🟢 Módulo Ativado</span>
+                                <span id="dash-status-marketing-txt" class="text-xs text-emerald-400 font-semibold block mt-0.5">🟢 Ligada</span>
                                 <span class="text-[10px] text-zinc-400">Recuperação de clientes e copies</span>
                             </div>
                         </div>
                         <button type="button" onclick="toggleStatusIa('marketing')" id="dash-btn-toggle-marketing" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0">
-                            Desativar
+                            🔴 Desligar IA
                         </button>
                     </div>
                 </div>
@@ -1187,24 +1187,24 @@
                     <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">Visagista Virtual com IA</h2>
                     <p class="text-xs sm:text-sm text-zinc-400 mt-1">Descubra o corte de cabelo e o desenho de barba matematicamente perfeitos para valorizar seus traços.</p>
                 </div>
-                <div class="flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0">
+                <div id="status-visagista-box" class="flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0 transition-colors">
                     <div class="text-right">
                         <span class="text-[9px] uppercase font-bold text-zinc-400 block">Status do Módulo</span>
-                        <strong id="status-visagista-label" class="text-xs text-emerald-400">🟢 Ativado</strong>
+                        <strong id="status-visagista-label" class="text-xs text-emerald-400 font-bold">🟢 Ligada</strong>
                     </div>
                     <button type="button" onclick="toggleStatusIa('visagista')" id="btn-toggle-visagista" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition">
-                        Desativar
+                        🔴 Desligar IA
                     </button>
                 </div>
             </div>
 
             <!-- BANNER DE MÓDULO DESATIVADO -->
-            <div id="visagista-desativado-banner" class="hidden text-center py-12 px-6 rounded-3xl bg-zinc-900/60 border border-zinc-700/50 space-y-4 my-4">
-                <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
-                    ⏸️
+            <div id="visagista-desativado-banner" class="hidden text-center py-12 px-6 rounded-3xl bg-red-950/20 border border-red-500/40 space-y-4 my-4 shadow-lg shadow-red-500/10">
+                <div class="w-16 h-16 rounded-2xl bg-red-500/15 border border-red-500/40 text-red-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                    🔴
                 </div>
-                <h3 class="text-xl font-bold text-white">Visagista IA Temporariamente Desativado</h3>
-                <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">Este módulo de consultoria facial e análise de cortes com Inteligência Artificial foi pausado pelo administrador. Você pode reativá-lo com apenas 1 clique.</p>
+                <h3 class="text-xl font-bold text-red-200">Visagista IA Desligado</h3>
+                <p class="text-xs sm:text-sm text-red-300/80 max-w-md mx-auto leading-relaxed">Este módulo de consultoria facial e análise de cortes com Inteligência Artificial está atualmente desligado. Você pode ligá-lo a qualquer momento.</p>
                 <button type="button" onclick="toggleStatusIa('visagista')" class="px-6 py-3 rounded-xl gold-btn text-xs font-bold shadow-lg transition">
                     🟢 Ligar Visagista IA Agora
                 </button>
@@ -1424,24 +1424,24 @@
                     <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">IA de Marketing & Radar de Retenção</h2>
                     <p class="text-xs sm:text-sm text-zinc-400 mt-1">Identifique clientes sumidos, recupere receita em risco via WhatsApp e crie campanhas publicitárias em segundos.</p>
                 </div>
-                <div class="flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0">
+                <div id="status-marketing-box" class="flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0 transition-colors">
                     <div class="text-right">
                         <span class="text-[9px] uppercase font-bold text-zinc-400 block">Status do Módulo</span>
-                        <strong id="status-marketing-label" class="text-xs text-emerald-400">🟢 Ativada</strong>
+                        <strong id="status-marketing-label" class="text-xs text-emerald-400 font-bold">🟢 Ligada</strong>
                     </div>
                     <button type="button" onclick="toggleStatusIa('marketing')" id="btn-toggle-marketing" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition">
-                        Desativar
+                        🔴 Desligar IA
                     </button>
                 </div>
             </div>
 
             <!-- BANNER DE MÓDULO DESATIVADO -->
-            <div id="marketing-desativado-banner" class="hidden text-center py-12 px-6 rounded-3xl bg-zinc-900/60 border border-zinc-700/50 space-y-4 my-4">
-                <div class="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
-                    ⏸️
+            <div id="marketing-desativado-banner" class="hidden text-center py-12 px-6 rounded-3xl bg-red-950/20 border border-red-500/40 space-y-4 my-4 shadow-lg shadow-red-500/10">
+                <div class="w-16 h-16 rounded-2xl bg-red-500/15 border border-red-500/40 text-red-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                    🔴
                 </div>
-                <h3 class="text-xl font-bold text-white">IA de Marketing Temporariamente Desativada</h3>
-                <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">As ferramentas de disparo de WhatsApp e geração de copies com Inteligência Artificial foram pausadas pelo administrador. Você pode reativá-las a qualquer momento.</p>
+                <h3 class="text-xl font-bold text-red-200">IA de Marketing Desligada</h3>
+                <p class="text-xs sm:text-sm text-red-300/80 max-w-md mx-auto leading-relaxed">As ferramentas de disparo de WhatsApp e geração de copies com Inteligência Artificial estão atualmente desligadas. Você pode ligá-las a qualquer momento.</p>
                 <button type="button" onclick="toggleStatusIa('marketing')" class="px-6 py-3 rounded-xl gold-btn text-xs font-bold shadow-lg transition">
                     🟢 Ligar IA de Marketing Agora
                 </button>
@@ -1609,11 +1609,11 @@
                 <span class="flex items-center gap-2.5"><span>📱</span> <strong>Instalar App no iPhone (iOS)</strong></span>
                 <span class="px-2 py-0.5 rounded-md bg-blue-500/30 text-[11px] font-bold text-blue-300">Grátis</span>
             </button>
-            <button type="button" onclick="changeTab('tab-visagista'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/10">
+            <button type="button" onclick="changeTab('tab-visagista'); toggleMobileMenuMais();" id="drawer-btn-ia-visagista" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/10">
                 <span class="flex items-center gap-2.5"><span>🧠</span> <strong>Visagista IA (Consultor Facial)</strong></span>
                 <span id="drawer-badge-ia-visagista" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
             </button>
-            <button type="button" onclick="changeTab('tab-ia-marketing'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-sm font-semibold text-purple-300 transition text-left shadow-lg shadow-purple-500/10">
+            <button type="button" onclick="changeTab('tab-ia-marketing'); toggleMobileMenuMais();" id="drawer-btn-ia-marketing" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-sm font-semibold text-purple-300 transition text-left shadow-lg shadow-purple-500/10">
                 <span class="flex items-center gap-2.5"><span>🎯</span> <strong>IA Marketing & Radar de Retenção</strong></span>
                 <span id="drawer-badge-ia-marketing" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
             </button>
@@ -1879,7 +1879,7 @@
 
         <div class="space-y-4">
             <!-- Visagista IA -->
-            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3">
+            <div id="modal-card-ia-visagista" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3 transition-colors">
                 <div class="flex items-center gap-3">
                     <span class="text-2xl">🧠</span>
                     <div>
@@ -1893,7 +1893,7 @@
             </div>
 
             <!-- IA de Marketing & Radar -->
-            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3">
+            <div id="modal-card-ia-marketing" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3 transition-colors">
                 <div class="flex items-center gap-3">
                     <span class="text-2xl">🎯</span>
                     <div>
@@ -4357,36 +4357,48 @@
         const visAtivo = IA_STATUS.visagista;
         const bannerVisDes = document.getElementById('visagista-desativado-banner');
         const conteudoVis = document.getElementById('visagista-conteudo-ativo');
+        const boxVis = document.getElementById('status-visagista-box');
         const lblVis = document.getElementById('status-visagista-label');
         const btnVis = document.getElementById('btn-toggle-visagista');
         const navBadgeVis = document.getElementById('nav-badge-ia-visagista');
         const drawerBadgeVis = document.getElementById('drawer-badge-ia-visagista');
+        const drawerBtnVis = document.getElementById('drawer-btn-ia-visagista');
+        const dashCardVis = document.getElementById('dash-card-ia-visagista');
         const dashTxtVis = document.getElementById('dash-status-visagista-txt');
         const dashBtnVis = document.getElementById('dash-btn-toggle-visagista');
+        const modalCardVis = document.getElementById('modal-card-ia-visagista');
         const modalTxtVis = document.getElementById('modal-status-visagista-txt');
         const modalBtnVis = document.getElementById('modal-btn-toggle-visagista');
 
         if (visAtivo) {
             if (bannerVisDes) bannerVisDes.classList.add('hidden');
             if (conteudoVis) conteudoVis.classList.remove('hidden');
+            if (boxVis) boxVis.className = 'flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0 transition-colors';
             if (lblVis) { lblVis.textContent = '🟢 Ligada'; lblVis.className = 'text-xs text-emerald-400 font-bold'; }
-            if (btnVis) { btnVis.textContent = '🔴 Desligar IA'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
+            if (btnVis) { btnVis.innerHTML = '<span>🔴</span> Desligar IA'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition flex items-center gap-1'; }
             if (navBadgeVis) { navBadgeVis.textContent = 'ON'; navBadgeVis.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1'; }
             if (drawerBadgeVis) { drawerBadgeVis.textContent = 'ON'; drawerBadgeVis.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
+            if (drawerBtnVis) drawerBtnVis.className = 'w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/10';
+            if (dashCardVis) dashCardVis.className = 'p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3';
             if (dashTxtVis) { dashTxtVis.textContent = '🟢 Ligada'; dashTxtVis.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
-            if (dashBtnVis) { dashBtnVis.textContent = '🔴 Desligar IA'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+            if (dashBtnVis) { dashBtnVis.innerHTML = '<span>🔴</span> Desligar IA'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0 flex items-center gap-1'; }
+            if (modalCardVis) modalCardVis.className = 'p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3 transition-colors';
             if (modalTxtVis) { modalTxtVis.textContent = '🟢 Ligada'; modalTxtVis.className = 'text-xs text-emerald-400 font-bold'; }
             if (modalBtnVis) { modalBtnVis.innerHTML = '<span>🔴</span> Desligar IA'; modalBtnVis.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex items-center gap-1.5 shadow-md'; }
         } else {
             if (bannerVisDes) bannerVisDes.classList.remove('hidden');
             if (conteudoVis) conteudoVis.classList.add('hidden');
-            if (lblVis) { lblVis.textContent = '⚪ Desligada'; lblVis.className = 'text-xs text-zinc-400 font-bold'; }
-            if (btnVis) { btnVis.textContent = '🟢 Ligar IA'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
-            if (navBadgeVis) { navBadgeVis.textContent = 'OFF'; navBadgeVis.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-bold ml-1'; }
-            if (drawerBadgeVis) { drawerBadgeVis.textContent = 'OFF'; drawerBadgeVis.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
-            if (dashTxtVis) { dashTxtVis.textContent = '⚪ Desligada'; dashTxtVis.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
-            if (dashBtnVis) { dashBtnVis.textContent = '🟢 Ligar IA'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
-            if (modalTxtVis) { modalTxtVis.textContent = '⚪ Desligada'; modalTxtVis.className = 'text-xs text-zinc-400 font-bold'; }
+            if (boxVis) boxVis.className = 'flex items-center gap-3 bg-red-950/30 px-4 py-2.5 rounded-2xl border border-red-500/40 flex-shrink-0 transition-colors shadow-sm shadow-red-500/10';
+            if (lblVis) { lblVis.textContent = '🔴 Desligada'; lblVis.className = 'text-xs text-red-400 font-bold'; }
+            if (btnVis) { btnVis.innerHTML = '<span>🟢</span> Ligar IA'; btnVis.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-1'; }
+            if (navBadgeVis) { navBadgeVis.textContent = '🔴 OFF'; navBadgeVis.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/40 font-bold ml-1'; }
+            if (drawerBadgeVis) { drawerBadgeVis.textContent = '🔴 OFF'; drawerBadgeVis.className = 'px-2 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/40 font-extrabold text-[10px]'; }
+            if (drawerBtnVis) drawerBtnVis.className = 'w-full flex items-center justify-between p-3.5 rounded-2xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/40 text-sm font-semibold text-red-300 transition text-left shadow-lg shadow-red-500/10';
+            if (dashCardVis) dashCardVis.className = 'p-4 rounded-2xl bg-red-500/[0.06] border border-red-500/40 hover:border-red-500/60 transition flex items-center justify-between gap-3 shadow-md shadow-red-500/10';
+            if (dashTxtVis) { dashTxtVis.textContent = '🔴 Desligada'; dashTxtVis.className = 'text-xs text-red-400 font-semibold block mt-0.5'; }
+            if (dashBtnVis) { dashBtnVis.innerHTML = '<span>🟢</span> Ligar IA'; dashBtnVis.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0 flex items-center gap-1'; }
+            if (modalCardVis) modalCardVis.className = 'p-4 rounded-2xl bg-red-500/[0.08] border border-red-500/40 flex items-center justify-between gap-3 shadow-md shadow-red-500/10 transition-colors';
+            if (modalTxtVis) { modalTxtVis.textContent = '🔴 Desligada'; modalTxtVis.className = 'text-xs text-red-400 font-bold'; }
             if (modalBtnVis) { modalBtnVis.innerHTML = '<span>🟢</span> Ligar IA'; modalBtnVis.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md'; }
         }
 
@@ -4394,36 +4406,48 @@
         const mktAtivo = IA_STATUS.marketing;
         const bannerMktDes = document.getElementById('marketing-desativado-banner');
         const conteudoMkt = document.getElementById('marketing-conteudo-ativo');
+        const boxMkt = document.getElementById('status-marketing-box');
         const lblMkt = document.getElementById('status-marketing-label');
         const btnMkt = document.getElementById('btn-toggle-marketing');
         const navBadgeMkt = document.getElementById('nav-badge-ia-marketing');
         const drawerBadgeMkt = document.getElementById('drawer-badge-ia-marketing');
+        const drawerBtnMkt = document.getElementById('drawer-btn-ia-marketing');
+        const dashCardMkt = document.getElementById('dash-card-ia-marketing');
         const dashTxtMkt = document.getElementById('dash-status-marketing-txt');
         const dashBtnMkt = document.getElementById('dash-btn-toggle-marketing');
+        const modalCardMkt = document.getElementById('modal-card-ia-marketing');
         const modalTxtMkt = document.getElementById('modal-status-marketing-txt');
         const modalBtnMkt = document.getElementById('modal-btn-toggle-marketing');
 
         if (mktAtivo) {
             if (bannerMktDes) bannerMktDes.classList.add('hidden');
             if (conteudoMkt) conteudoMkt.classList.remove('hidden');
+            if (boxMkt) boxMkt.className = 'flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0 transition-colors';
             if (lblMkt) { lblMkt.textContent = '🟢 Ligada'; lblMkt.className = 'text-xs text-emerald-400 font-bold'; }
-            if (btnMkt) { btnMkt.textContent = '🔴 Desligar IA'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition'; }
+            if (btnMkt) { btnMkt.innerHTML = '<span>🔴</span> Desligar IA'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition flex items-center gap-1'; }
             if (navBadgeMkt) { navBadgeMkt.textContent = 'ON'; navBadgeMkt.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1'; }
             if (drawerBadgeMkt) { drawerBadgeMkt.textContent = 'ON'; drawerBadgeMkt.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
+            if (drawerBtnMkt) drawerBtnMkt.className = 'w-full flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-sm font-semibold text-purple-300 transition text-left shadow-lg shadow-purple-500/10';
+            if (dashCardMkt) dashCardMkt.className = 'p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3';
             if (dashTxtMkt) { dashTxtMkt.textContent = '🟢 Ligada'; dashTxtMkt.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
-            if (dashBtnMkt) { dashBtnMkt.textContent = '🔴 Desligar IA'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0'; }
+            if (dashBtnMkt) { dashBtnMkt.innerHTML = '<span>🔴</span> Desligar IA'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0 flex items-center gap-1'; }
+            if (modalCardMkt) modalCardMkt.className = 'p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3 transition-colors';
             if (modalTxtMkt) { modalTxtMkt.textContent = '🟢 Ligada'; modalTxtMkt.className = 'text-xs text-emerald-400 font-bold'; }
             if (modalBtnMkt) { modalBtnMkt.innerHTML = '<span>🔴</span> Desligar IA'; modalBtnMkt.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex items-center gap-1.5 shadow-md'; }
         } else {
             if (bannerMktDes) bannerMktDes.classList.remove('hidden');
             if (conteudoMkt) conteudoMkt.classList.add('hidden');
-            if (lblMkt) { lblMkt.textContent = '⚪ Desligada'; lblMkt.className = 'text-xs text-zinc-400 font-bold'; }
-            if (btnMkt) { btnMkt.textContent = '🟢 Ligar IA'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition'; }
-            if (navBadgeMkt) { navBadgeMkt.textContent = 'OFF'; navBadgeMkt.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-bold ml-1'; }
-            if (drawerBadgeMkt) { drawerBadgeMkt.textContent = 'OFF'; drawerBadgeMkt.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
-            if (dashTxtMkt) { dashTxtMkt.textContent = '⚪ Desligada'; dashTxtMkt.className = 'text-xs text-zinc-400 font-semibold block mt-0.5'; }
-            if (dashBtnMkt) { dashBtnMkt.textContent = '🟢 Ligar IA'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0'; }
-            if (modalTxtMkt) { modalTxtMkt.textContent = '⚪ Desligada'; modalTxtMkt.className = 'text-xs text-zinc-400 font-bold'; }
+            if (boxMkt) boxMkt.className = 'flex items-center gap-3 bg-red-950/30 px-4 py-2.5 rounded-2xl border border-red-500/40 flex-shrink-0 transition-colors shadow-sm shadow-red-500/10';
+            if (lblMkt) { lblMkt.textContent = '🔴 Desligada'; lblMkt.className = 'text-xs text-red-400 font-bold'; }
+            if (btnMkt) { btnMkt.innerHTML = '<span>🟢</span> Ligar IA'; btnMkt.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-1'; }
+            if (navBadgeMkt) { navBadgeMkt.textContent = '🔴 OFF'; navBadgeMkt.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/40 font-bold ml-1'; }
+            if (drawerBadgeMkt) { drawerBadgeMkt.textContent = '🔴 OFF'; drawerBadgeMkt.className = 'px-2 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/40 font-extrabold text-[10px]'; }
+            if (drawerBtnMkt) drawerBtnMkt.className = 'w-full flex items-center justify-between p-3.5 rounded-2xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/40 text-sm font-semibold text-red-300 transition text-left shadow-lg shadow-red-500/10';
+            if (dashCardMkt) dashCardMkt.className = 'p-4 rounded-2xl bg-red-500/[0.06] border border-red-500/40 hover:border-red-500/60 transition flex items-center justify-between gap-3 shadow-md shadow-red-500/10';
+            if (dashTxtMkt) { dashTxtMkt.textContent = '🔴 Desligada'; dashTxtMkt.className = 'text-xs text-red-400 font-semibold block mt-0.5'; }
+            if (dashBtnMkt) { dashBtnMkt.innerHTML = '<span>🟢</span> Ligar IA'; dashBtnMkt.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0 flex items-center gap-1'; }
+            if (modalCardMkt) modalCardMkt.className = 'p-4 rounded-2xl bg-red-500/[0.08] border border-red-500/40 flex items-center justify-between gap-3 shadow-md shadow-red-500/10 transition-colors';
+            if (modalTxtMkt) { modalTxtMkt.textContent = '🔴 Desligada'; modalTxtMkt.className = 'text-xs text-red-400 font-bold'; }
             if (modalBtnMkt) { modalBtnMkt.innerHTML = '<span>🟢</span> Ligar IA'; modalBtnMkt.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md'; }
         }
 
@@ -4438,13 +4462,13 @@
             if (drawerTxt) { drawerTxt.textContent = '2 Ligadas (ON)'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
             if (btnTopo) btnTopo.className = 'text-xs font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
         } else if (totalLigadas === 1) {
-            if (topoTxt) topoTxt.textContent = '1 IA Ligada';
-            if (drawerTxt) { drawerTxt.textContent = '1 Ligada'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-extrabold text-[10px]'; }
+            if (topoTxt) topoTxt.textContent = '1 IA Desligada';
+            if (drawerTxt) { drawerTxt.textContent = '1 Desligada'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30 font-extrabold text-[10px]'; }
             if (btnTopo) btnTopo.className = 'text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
         } else {
-            if (topoTxt) topoTxt.textContent = 'IAs Desligadas (OFF)';
-            if (drawerTxt) { drawerTxt.textContent = 'Desligadas (OFF)'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 font-extrabold text-[10px]'; }
-            if (btnTopo) btnTopo.className = 'text-xs font-bold text-zinc-400 bg-zinc-800/60 hover:bg-zinc-800 border border-zinc-700/50 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
+            if (topoTxt) topoTxt.textContent = '🔴 IAs Desligadas (OFF)';
+            if (drawerTxt) { drawerTxt.textContent = '🔴 Desligadas (OFF)'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-red-500/25 text-red-400 border border-red-500/50 font-extrabold text-[10px]'; }
+            if (btnTopo) btnTopo.className = 'text-xs font-bold text-red-300 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-lg shadow-red-500/20 animate-pulse';
         }
     }
 
