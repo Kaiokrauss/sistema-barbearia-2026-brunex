@@ -394,25 +394,15 @@
             <button onclick="changeTab('tab-visagista')" id="btn-tab-visagista" class="nav-btn nav-btn-visagista text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">🧠</span> <span>Visagista IA</span>
             </button>
+            <button onclick="changeTab('tab-ia-marketing')" id="btn-tab-ia-marketing" class="nav-btn nav-btn-ia-marketing text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">🎯</span> <span>IA Marketing</span>
+            </button>
             <button type="button" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
-
                 <span class="nav-icon">📱</span> <span>App iOS</span>
             </button>
-            <span class="text-zinc-700 px-1 select-none">|</span>
-            <a href="../views/admin/servicos.html" class="nav-btn nav-btn-servicos text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">📋</span> <span>Serviços</span>
-            </a>
-            <a href="../views/admin/caixa.html" class="nav-btn nav-btn-caixa text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">💼</span> <span>Caixa & Comissões</span>
-            </a>
-            <a href="../views/admin/agendamentos.html" class="nav-btn nav-btn-export text-zinc-400 hover:text-amber-400 text-xs px-3 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">📥</span> <span>Exportações</span>
-            </a>
-            <a href="../api/backup.php?download=1" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
-                <span class="nav-icon">💾</span> <span>Backup</span>
-            </a>
         </div>
     </nav>
+
 </div>
 
 <!-- HERO BANNER LUXUOSO -->
@@ -689,7 +679,7 @@
                 <div>
                     <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Relatório & Performance Executiva</span>
                     <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1 flex items-center gap-3 flex-wrap">
-                        <span>Painel Administrativo VIP</span>
+                        <span>Painel de Gestão & Resumo VIP</span>
                         <span id="badge-faturamento-bruto-topo" class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 shadow-sm">
                             💰 Bruto: R$ 0,00
                         </span>
@@ -700,10 +690,11 @@
                     <button onclick="limparCanceladosBanco()" class="bg-red-900/30 hover:bg-red-800/60 text-red-300 border border-red-700/50 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Exclui definitivamente todos os agendamentos cancelados do banco">
                         <span>🗑️</span> Limpar Cancelados
                     </button>
-                    <a href="../views/admin/agendamentos.html" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5">
-                        Exportar Relatórios →
+                    <a href="../api/backup.php?download=1" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-3.5 py-2.5 rounded-xl font-medium transition flex items-center gap-1.5" title="Baixar Backup do Banco (.sql)">
+                        <span>💾</span> Backup SQL
                     </a>
                 </div>
+
             </div>
 
             <!-- CARDS DE MÉTRICAS (5 COLUNAS NO DESKTOP / GRID INTELIGENTE NO MOBILE) -->
@@ -1276,9 +1267,142 @@
             <div id="box-resultado-visagismo" class="hidden mt-10 p-6 sm:p-8 rounded-3xl bg-black/40 border border-amber-500/40 shadow-2xl relative z-10 animate-fadeIn">
             </div>
         </div>
+    <!-- TELA 10: IA & MARKETING TURBO (Radar de Inativos & Gerador de Copys) -->
+    <div id="tab-ia-marketing" class="tab-content">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-amber-500/30">
+            <div class="absolute -right-20 -top-20 w-56 h-56 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="pb-6 border-b border-white/10 mb-8 relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500/20 to-amber-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5">
+                        <span>⚡</span> Retenção com Inteligência Artificial
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">IA de Retenção & Marketing Turbo</h2>
+                    <p class="text-xs sm:text-sm text-zinc-400 mt-1">Identifique clientes sumidos da barbearia e reconquiste com copys persuasivas prontas para o WhatsApp em 1 clique.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="carregarIaMarketing()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 flex items-center gap-2 transition">
+                        <span>🔄</span> <span>Atualizar Radar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cards de Indicadores IA -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 relative z-10">
+                <div class="p-5 rounded-2xl bg-black/40 border border-white/10 shadow-lg flex items-center justify-between">
+                    <div>
+                        <span class="text-xs uppercase font-semibold text-zinc-400">Clientes Inativos</span>
+                        <h3 class="text-3xl font-extrabold text-white mt-1" id="metric-ia-inativos">0</h3>
+                        <span class="text-[11px] text-amber-400">Sem retorno há +20 dias</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl">
+                        ⏳
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-black/40 border border-white/10 shadow-lg flex items-center justify-between">
+                    <div>
+                        <span class="text-xs uppercase font-semibold text-zinc-400">Faturamento a Recuperar</span>
+                        <h3 class="text-3xl font-extrabold text-emerald-400 mt-1" id="metric-ia-faturamento">R$ 0,00</h3>
+                        <span class="text-[11px] text-zinc-400">Potencial de reconquista</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl">
+                        💰
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-black/40 border border-white/10 shadow-lg flex items-center justify-between">
+                    <div>
+                        <span class="text-xs uppercase font-semibold text-zinc-400">Gatilho de Retorno</span>
+                        <h3 class="text-2xl font-extrabold text-amber-300 mt-1">VOLTAVIP15</h3>
+                        <span class="text-[11px] text-zinc-400">Cupom de 15% OFF ativo</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-2xl">
+                        🎯
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 1: RADAR DE CLIENTES INATIVOS -->
+            <div class="p-6 rounded-2xl bg-black/30 border border-white/10 shadow-xl mb-8 relative z-10">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10 mb-4">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                            <span>📡</span> Radar de Clientes Sumidos
+                        </h3>
+                        <p class="text-xs text-zinc-400 mt-0.5">Dispare mensagens personalizadas geradas pela IA diretamente no WhatsApp do cliente.</p>
+                    </div>
+                    <!-- Filtros de Dias -->
+                    <div class="flex items-center gap-1.5 bg-black/50 p-1.5 rounded-2xl border border-white/5">
+                        <button type="button" onclick="filtrarDiasInativos(20, this)" class="btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-400 text-black transition">
+                            +20 Dias
+                        </button>
+                        <button type="button" onclick="filtrarDiasInativos(30, this)" class="btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
+                            +30 Dias
+                        </button>
+                        <button type="button" onclick="filtrarDiasInativos(45, this)" class="btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
+                            +45 Dias (Crítico)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabela de Inativos -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-white/10 text-zinc-400 uppercase tracking-wider text-[10px]">
+                                <th class="py-3 px-3">Cliente</th>
+                                <th class="py-3 px-3">Telefone</th>
+                                <th class="py-3 px-3">Último Serviço</th>
+                                <th class="py-3 px-3">Barbeiro</th>
+                                <th class="py-3 px-3">Dias Ausente</th>
+                                <th class="py-3 px-3 text-right">Ação Inteligente</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-ia-inativos-body" class="divide-y divide-white/5 text-zinc-200">
+                            <tr>
+                                <td colspan="6" class="p-6 text-center text-zinc-500">Varrendo histórico de clientes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: GERADOR DE CAMPANHAS DE MARKETING COM IA -->
+            <div class="p-6 rounded-2xl bg-black/30 border border-white/10 shadow-xl relative z-10">
+                <div class="pb-4 border-b border-white/10 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                            <span>📢</span> Gerador de Campanhas com IA (Copys Prontas)
+                        </h3>
+                        <p class="text-xs text-zinc-400 mt-0.5">Textos profissionais com gatilhos de urgência para Status do WhatsApp, Grupos ou Instagram.</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <select id="select-ia-campanha-objetivo" class="px-3 py-2 rounded-xl bg-black/60 border border-white/10 text-white text-xs font-semibold outline-none focus:border-amber-400 flex-1 sm:flex-none">
+                            <option value="fim_de_semana">🔥 Sextou & Fim de Semana (Agenda Lotada)</option>
+                            <option value="meio_de_semana">🚀 Meio de Semana (Terça & Quarta)</option>
+                            <option value="clube_vip">💎 Clube VIP / Barber Pass (Recorrente)</option>
+                            <option value="produtos_loja">🧴 Venda de Pomadas & Óleos VIP</option>
+                        </select>
+                        <button type="button" onclick="gerarCampanhasIa()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-bold text-xs hover:brightness-110 shadow-lg shadow-amber-500/20 flex items-center gap-1.5 whitespace-nowrap">
+                            <span>✨</span> <span>Gerar Copys</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid de 3 Variações -->
+                <div id="grid-ia-campanhas-admin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-5 rounded-2xl bg-black/40 border border-white/5 text-center text-zinc-500 text-xs col-span-full">
+                        Selecione o objetivo acima e clique em "Gerar Copys" para criar anúncios prontos com IA.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 </main>
+
 
 
 <footer class="bg-[#0A0A0C] border-t border-white/10 p-8 text-center text-xs text-zinc-500 mt-12">
@@ -1286,12 +1410,14 @@
         <p class="font-display font-medium text-zinc-400">Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance.</p>
         <div class="flex justify-center gap-4">
             <a href="index.html" class="hover:text-amber-400 transition">Início</a>
-            <a href="javascript:void(0)" onclick="changeTab('tab-horarios')" class="hover:text-amber-400 transition">Gerenciar Horários</a>
-            <a href="../views/admin/servicos.html" class="hover:text-amber-400 transition">Serviços</a>
-            <a href="../views/admin/agendamentos.html" class="hover:text-amber-400 transition">Exportações</a>
+            <a href="javascript:void(0)" onclick="changeTab('tab-horarios')" class="hover:text-amber-400 transition">Horários</a>
+            <a href="javascript:void(0)" onclick="changeTab('tab-loja')" class="hover:text-amber-400 transition">Loja VIP</a>
+            <a href="javascript:void(0)" onclick="changeTab('tab-visagista')" class="hover:text-amber-400 transition">Visagista IA</a>
+            <a href="javascript:void(0)" onclick="changeTab('tab-ia-marketing')" class="hover:text-amber-400 transition">IA Marketing</a>
         </div>
     </div>
 </footer>
+
 
 <!-- BARRA DE NAVEGAÇÃO INFERIOR EXCLUSIVA PARA CELULARES (ESTILO APP VIP) -->
 <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0E0E12]/95 backdrop-blur-2xl border-t border-amber-500/20 px-2 py-1.5 shadow-[0_-10px_30px_rgba(0,0,0,0.85)] pb-[max(0.5rem,env(safe-area-inset-bottom))]">
@@ -1356,26 +1482,15 @@
                 <span class="flex items-center gap-2.5"><span>⭐</span> Avaliações & Depoimentos</span>
                 <span class="text-amber-400">→</span>
             </button>
-            <a href="../views/admin/servicos.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
-                <span class="flex items-center gap-2.5"><span>📋</span> Gerenciar Serviços</span>
+            <button type="button" onclick="changeTab('tab-ia-marketing'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
+                <span class="flex items-center gap-2.5"><span>🎯</span> <strong>IA Marketing & Radar de Retenção</strong></span>
                 <span class="text-amber-400">→</span>
-            </a>
-            <a href="../views/admin/caixa.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
-                <span class="flex items-center gap-2.5"><span>💼</span> Fechamento de Caixa & Comissões</span>
-                <span class="text-amber-400">→</span>
-            </a>
-            <a href="../views/admin/agendamentos.html" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition">
-                <span class="flex items-center gap-2.5"><span>📥</span> Exportações (CSV/XML/JSON)</span>
-                <span class="text-amber-400">→</span>
-            </a>
+            </button>
             <a href="../api/backup.php?download=1" class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-sm font-semibold text-emerald-300 transition">
                 <span class="flex items-center gap-2.5"><span>💾</span> Baixar Backup do Banco (.sql)</span>
                 <span class="text-emerald-400">↓</span>
             </a>
-            <a href="dashboard.php" class="flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-amber-500/20 text-sm font-semibold text-amber-300 transition">
-                <span class="flex items-center gap-2.5"><span>👑</span> Painel do Usuário / Admin</span>
-                <span class="text-amber-400">→</span>
-            </a>
+
             <button type="button" onclick="toggleSom(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-zinc-300 transition">
                 <span class="flex items-center gap-2.5"><span id="mobile-drawer-som-icone">🔊</span> Efeitos Sonoros VIP</span>
                 <span id="mobile-drawer-som-status" class="text-xs text-amber-400 font-bold">Ativado</span>
@@ -1572,7 +1687,38 @@
     </div>
 </div>
 
+<!-- MODAL DE DISPARO DE MENSAGEM IA NO WHATSAPP -->
+<div id="modal-disparo-ia" onclick="fecharModalDisparoIa()" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-[#14141A] border border-amber-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+            <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-xl">📲</span>
+                <div>
+                    <h4 class="text-base font-bold text-white" id="modal-ia-cliente-titulo">Reconquistar Cliente com IA</h4>
+                    <span class="text-xs text-zinc-400" id="modal-ia-cliente-sub">WhatsApp Pronto para Envio</span>
+                </div>
+            </div>
+            <button type="button" onclick="fecharModalDisparoIa()" class="text-zinc-400 hover:text-white text-xl leading-none">✕</button>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-zinc-300 mb-1.5">Mensagem Personalizada Gerada:</label>
+            <textarea id="modal-ia-mensagem-texto" rows="8" class="w-full p-3.5 rounded-2xl bg-black/50 border border-white/10 text-white text-xs leading-relaxed focus:border-amber-400 outline-none select-all font-mono"></textarea>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2">
+            <button type="button" onclick="copiarMensagemIaModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5">
+                <span>📋</span> <span>Copiar Texto</span>
+            </button>
+            <a id="modal-ia-btn-whats" href="#" target="_blank" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-extrabold text-xs transition shadow-lg flex items-center justify-center gap-2">
+                <span>📲</span> <span>Disparar no WhatsApp</span>
+            </a>
+        </div>
+    </div>
+</div>
+
 <script>
+
     const basePath = window.location.pathname.replace(/\/Frontend\/[^\/]*$/, '');
     const API_SERVICOS = `${basePath}/api/servico.php`;
     const API_AGENDAMENTOS = `${basePath}/api/agendamento.php`;
@@ -1915,7 +2061,9 @@
         if (tabId === 'tab-visagista') {
             // Scroll suave caso necessário
         }
+        if (tabId === 'tab-ia-marketing') carregarIaMarketing();
     }
+
 
 
     // Controle do Drawer/Modal 'Mais Opções' para celulares
@@ -4157,7 +4305,226 @@
         mostrarToast(`🎯 <strong>${servicoNome}</strong> e barbeiro pré-selecionados pela IA! Escolha o dia e horário.`, 'sucesso');
     }
 
+    // --- INTELIGÊNCIA ARTIFICIAL: RADAR DE INATIVOS & MARKETING TURBO ---
+    let diasFiltroIaAtual = 20;
+
+    async function carregarIaMarketing(dias = null) {
+        if (dias !== null) diasFiltroIaAtual = dias;
+        const tbody = document.getElementById('tabela-ia-inativos-body');
+        const metricInativos = document.getElementById('metric-ia-inativos');
+        const metricFaturamento = document.getElementById('metric-ia-faturamento');
+        if (!tbody) return;
+
+        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-zinc-400 animate-pulse">Varrendo clientes no MySQL com Inteligência Artificial...</td></tr>';
+
+        try {
+            const resp = await fetch(`${API_IA}?acao=clientes_inativos&dias=${diasFiltroIaAtual}`);
+            const res = await resp.json();
+
+            if (res.success) {
+                if (metricInativos) metricInativos.textContent = res.total_inativos || 0;
+                if (metricFaturamento) {
+                    metricFaturamento.textContent = `R$ ${Number(res.faturamento_em_risco || 0).toFixed(2).replace('.', ',')}`;
+                }
+
+                if (!res.clientes || res.clientes.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-zinc-500">🎉 Nenhum cliente inativo há mais de ${diasFiltroIaAtual} dias! Sua retenção está excelente.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = res.clientes.map(c => {
+                    const diasSemRetorno = c.dias_sem_retorno || 0;
+                    const riscoBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${c.badge_class || 'bg-amber-500/20 text-amber-300 border-amber-500/30'}">${c.risco || 'ALERTA'}</span>`;
+                    const nomeEsc = (c.cliente_nome || 'Cliente').replace(/'/g, "\\'");
+                    const servicoEsc = (c.ultimo_servico || 'Corte').replace(/'/g, "\\'");
+                    const barbeiroEsc = (c.ultimo_barbeiro || 'Equipe').replace(/'/g, "\\'");
+
+                    return `
+                        <tr class="hover:bg-white/[0.02] transition">
+                            <td class="py-3.5 px-3">
+                                <strong class="text-white block text-sm">${c.cliente_nome}</strong>
+                                ${riscoBadge}
+                            </td>
+                            <td class="py-3.5 px-3 text-zinc-300">
+                                ${c.cliente_telefone}
+                            </td>
+                            <td class="py-3.5 px-3 text-zinc-300">
+                                ${c.ultimo_servico || 'Corte'}
+                                <span class="block text-[11px] text-zinc-500">${c.ultimo_agendamento || ''}</span>
+                            </td>
+                            <td class="py-3.5 px-3 text-zinc-400">
+                                ${c.ultimo_barbeiro || 'Sem preferência'}
+                            </td>
+                            <td class="py-3.5 px-3">
+                                <span class="text-amber-400 font-bold">${diasSemRetorno} dias</span>
+                            </td>
+                            <td class="py-3.5 px-3 text-right">
+                                <button type="button" onclick="abrirModalDisparoIa('${nomeEsc}', '${c.cliente_telefone}', ${diasSemRetorno}, '${servicoEsc}', '${barbeiroEsc}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-[11px] transition shadow-md flex items-center gap-1.5 ml-auto">
+                                    <span>⚡</span> <span>Gerar Mensagem IA</span>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-400">${res.erro || 'Erro ao carregar dados.'}</td></tr>`;
+            }
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-red-400">Erro de conexão com o servidor.</td></tr>';
+        }
+    }
+
+    function filtrarDiasInativos(dias, btn) {
+        document.querySelectorAll('.btn-filtro-ia').forEach(b => {
+            b.className = 'btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition';
+        });
+        if (btn) btn.className = 'btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-400 text-black transition';
+        carregarIaMarketing(dias);
+    }
+
+    async function abrirModalDisparoIa(nome, telefone, dias, ultimoServico, barbeiro) {
+        soundVIP.playSoftClick();
+        const modal = document.getElementById('modal-disparo-ia');
+        const textarea = document.getElementById('modal-ia-mensagem-texto');
+        const btnWhats = document.getElementById('modal-ia-btn-whats');
+        const titulo = document.getElementById('modal-ia-cliente-titulo');
+        const sub = document.getElementById('modal-ia-cliente-sub');
+        if (!modal) return;
+
+        if (titulo) titulo.textContent = `Reconquistar ${nome.split(' ')[0]}`;
+        if (sub) sub.textContent = `${telefone} • ${dias} dias ausente`;
+        if (textarea) textarea.value = 'Gerando mensagem persuasiva com IA...';
+
+        modal.classList.remove('hidden');
+
+        try {
+            const resp = await fetch(API_IA, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    acao: 'gerar_mensagem_recuperacao',
+                    cliente_nome: nome,
+                    cliente_telefone: telefone,
+                    dias_sem_retorno: dias,
+                    ultimo_servico: ultimoServico,
+                    barbeiro_nome: barbeiro,
+                    cupom: 'VOLTAVIP15'
+                })
+            });
+
+            const res = await resp.json();
+            if (res.success && res.mensagem) {
+                textarea.value = res.mensagem;
+                if (btnWhats) {
+                    btnWhats.href = res.whatsapp_link;
+                }
+            } else {
+                textarea.value = `Fala ${nome.split(' ')[0]}! Tudo bem? Passando para avisar que já faz ${dias} dias do seu último corte na Barbearia VIP. Que tal garantir aquele talento para o fim de semana com o cupom VOLTAVIP15?`;
+                const cleanTel = (telefone || '').replace(/\D/g, '');
+                if (btnWhats) btnWhats.href = `https://wa.me/55${cleanTel}?text=${encodeURIComponent(textarea.value)}`;
+            }
+        } catch (e) {
+            textarea.value = `Fala ${nome.split(' ')[0]}! Tudo bem? Sentimos sua falta na Barbearia VIP. Aproveite 15% OFF com o cupom VOLTAVIP15 ao agendar esta semana!`;
+        }
+    }
+
+    function fecharModalDisparoIa() {
+        soundVIP.playSoftClick();
+        const modal = document.getElementById('modal-disparo-ia');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    function copiarMensagemIaModal() {
+        soundVIP.playSoftClick();
+        const textarea = document.getElementById('modal-ia-mensagem-texto');
+        if (!textarea) return;
+        textarea.select();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textarea.value);
+        } else {
+            document.execCommand('copy');
+        }
+        mostrarToast('Mensagem copiada para a área de transferência!', 'sucesso');
+    }
+
+    async function gerarCampanhasIa() {
+        soundVIP.playSoftClick();
+        const select = document.getElementById('select-ia-campanha-objetivo');
+        const container = document.getElementById('grid-ia-campanhas-admin');
+        if (!select || !container) return;
+
+        const objetivo = select.value;
+        container.innerHTML = '<div class="p-8 text-center text-amber-300 text-xs col-span-full animate-pulse">Criando 3 copys persuasivas com Inteligência Artificial...</div>';
+
+        try {
+            const resp = await fetch(API_IA, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    acao: 'gerar_campanhas',
+                    objetivo: objetivo,
+                    tom: 'vip'
+                })
+            });
+
+            const res = await resp.json();
+            if (res.success && res.campanhas) {
+                soundVIP.playChicSuccess();
+                container.innerHTML = res.campanhas.map((c, i) => {
+                    const encodedWhats = encodeURIComponent(c.texto);
+                    return `
+                        <div class="p-5 rounded-2xl bg-black/40 border border-white/10 hover:border-amber-500/40 transition flex flex-col justify-between shadow-xl">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                        ${c.foco || 'Marketing'}
+                                    </span>
+                                    <span class="text-xs text-zinc-500">Opção ${i + 1}</span>
+                                </div>
+                                <h4 class="text-xs font-bold text-white mb-2">${c.titulo}</h4>
+                                <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-zinc-300 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto mb-4 select-all font-mono">
+                                    ${c.texto}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 pt-2 border-t border-white/10">
+                                <button type="button" onclick="copiarTextoCampanhaCard(this)" data-texto="${encodeURIComponent(c.texto)}" class="flex-1 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5">
+                                    <span>📋</span> <span>Copiar</span>
+                                </button>
+                                <a href="https://wa.me/?text=${encodedWhats}" target="_blank" class="py-2 px-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-[11px] transition flex items-center justify-center gap-1 shadow-md">
+                                    <span>📲</span> <span>Disparar</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = '<div class="p-6 text-center text-red-400 text-xs col-span-full">Erro ao gerar campanhas com IA.</div>';
+            }
+        } catch (e) {
+            container.innerHTML = '<div class="p-6 text-center text-red-400 text-xs col-span-full">Erro de comunicação com o servidor.</div>';
+        }
+    }
+
+    function copiarTextoCampanhaCard(btn) {
+        soundVIP.playSoftClick();
+        const raw = btn.getAttribute('data-texto');
+        if (!raw) return;
+        const texto = decodeURIComponent(raw);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto);
+        } else {
+            const ta = document.createElement('textarea');
+            ta.value = texto;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+        mostrarToast('Copy copiada para a área de transferência!', 'sucesso');
+    }
+
     checarDispositivoIos();
+
 
 </script>
 </body>
