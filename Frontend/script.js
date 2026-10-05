@@ -184,7 +184,9 @@ function showTab(tabId) {
     if (tabId === 'tab-assinaturas-admin') carregarAssinantesAdmin();
     if (tabId === 'tab-barbeiros-admin') carregarBarbeirosAdmin();
     if (tabId === 'tab-produtos-admin') carregarProdutosAdmin();
+    if (tabId === 'tab-ia-marketing') carregarIaMarketingAdmin();
 }
+
 
 function checkAdminAuth(targetTab) {
     currentAdminTab = targetTab;
@@ -1589,3 +1591,215 @@ async function deletarProdutoAdmin(produtoId, nome) {
         mostrarToast('Erro ao comunicar com o servidor.', 'erro');
     }
 }
+
+// --- INTELIGÊNCIA ARTIFICIAL: RADAR DE INATIVOS & MARKETING TURBO ---
+let diasFiltroIaAtual = 20;
+
+async function carregarIaMarketingAdmin(dias = null) {
+    if (dias !== null) diasFiltroIaAtual = dias;
+    const tbody = document.getElementById('tabela-ia-inativos-body');
+    const metricInativos = document.getElementById('metric-ia-inativos');
+    const metricFaturamento = document.getElementById('metric-ia-faturamento');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-zinc-400 animate-pulse">Varrendo agendamentos com Inteligência Artificial...</td></tr>';
+
+    try {
+        const resp = await fetch(`../api/ia.php?acao=clientes_inativos&dias=${diasFiltroIaAtual}`);
+        const res = await resp.json();
+
+        if (res.success) {
+            if (metricInativos) metricInativos.textContent = res.total_inativos || 0;
+            if (metricFaturamento) {
+                metricFaturamento.textContent = `R$ ${Number(res.faturamento_em_risco || 0).toFixed(2).replace('.', ',')}`;
+            }
+
+            if (!res.clientes || res.clientes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-zinc-500">🎉 Nenhum cliente inativo há mais de ${diasFiltroIaAtual} dias! Sua taxa de retenção está excelente.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = res.clientes.map(c => {
+                const diasSemRetorno = c.dias_sem_retorno || 0;
+                const riscoBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${c.badge_class || 'bg-amber-500/20 text-amber-300 border-amber-500/30'}">${c.risco || 'ALERTA'}</span>`;
+                const nomeEsc = (c.cliente_nome || 'Cliente').replace(/'/g, "\\'");
+                const servicoEsc = (c.ultimo_servico || 'Corte').replace(/'/g, "\\'");
+                const barbeiroEsc = (c.ultimo_barbeiro || 'Equipe').replace(/'/g, "\\'");
+
+                return `
+                    <tr class="hover:bg-white/[0.02] transition">
+                        <td class="py-3.5 px-3">
+                            <strong class="text-white block text-sm">${c.cliente_nome}</strong>
+                            ${riscoBadge}
+                        </td>
+                        <td class="py-3.5 px-3 text-zinc-300">
+                            ${c.cliente_telefone}
+                        </td>
+                        <td class="py-3.5 px-3 text-zinc-300">
+                            ${c.ultimo_servico || 'Corte'}
+                            <span class="block text-[11px] text-zinc-500">${c.ultimo_agendamento || ''}</span>
+                        </td>
+                        <td class="py-3.5 px-3 text-zinc-400">
+                            ${c.ultimo_barbeiro || 'Sem preferência'}
+                        </td>
+                        <td class="py-3.5 px-3">
+                            <span class="text-amber-400 font-bold">${diasSemRetorno} dias</span>
+                        </td>
+                        <td class="py-3.5 px-3 text-right">
+                            <button type="button" onclick="abrirModalDisparoIa('${nomeEsc}', '${c.cliente_telefone}', ${diasSemRetorno}, '${servicoEsc}', '${barbeiroEsc}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-[11px] transition shadow-md flex items-center gap-1.5 ml-auto">
+                                <span>⚡</span> <span>Gerar Mensagem IA</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-400">${res.erro || 'Erro ao carregar dados.'}</td></tr>`;
+        }
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-red-400">Erro de conexão com o servidor.</td></tr>';
+    }
+}
+
+function filtrarDiasInativos(dias, btn) {
+    document.querySelectorAll('.btn-filtro-ia').forEach(b => {
+        b.className = 'btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition';
+    });
+    if (btn) btn.className = 'btn-filtro-ia px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-400 text-black transition';
+    carregarIaMarketingAdmin(dias);
+}
+
+async function abrirModalDisparoIa(nome, telefone, dias, ultimoServico, barbeiro) {
+    const modal = document.getElementById('modal-disparo-ia');
+    const textarea = document.getElementById('modal-ia-mensagem-texto');
+    const btnWhats = document.getElementById('modal-ia-btn-whats');
+    const titulo = document.getElementById('modal-ia-cliente-titulo');
+    const sub = document.getElementById('modal-ia-cliente-sub');
+    if (!modal) return;
+
+    if (titulo) titulo.textContent = `Reconquistar ${nome.split(' ')[0]}`;
+    if (sub) sub.textContent = `${telefone} • ${dias} dias ausente`;
+    if (textarea) textarea.value = 'Gerando mensagem persuasiva com IA...';
+
+    modal.classList.remove('hidden');
+
+    try {
+        const resp = await fetch('../api/ia.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                acao: 'gerar_mensagem_recuperacao',
+                cliente_nome: nome,
+                cliente_telefone: telefone,
+                dias_sem_retorno: dias,
+                ultimo_servico: ultimoServico,
+                barbeiro_nome: barbeiro,
+                cupom: 'VOLTAVIP15'
+            })
+        });
+
+        const res = await resp.json();
+        if (res.success && res.mensagem) {
+            textarea.value = res.mensagem;
+            if (btnWhats) {
+                btnWhats.href = res.whatsapp_link;
+            }
+        } else {
+            textarea.value = `Fala ${nome.split(' ')[0]}! Tudo bem? Passando para avisar que já faz ${dias} dias do seu último corte na Barbearia VIP. Que tal garantir aquele talento para o fim de semana com o cupom VOLTAVIP15?`;
+            const cleanTel = (telefone || '').replace(/\D/g, '');
+            if (btnWhats) btnWhats.href = `https://wa.me/55${cleanTel}?text=${encodeURIComponent(textarea.value)}`;
+        }
+    } catch (e) {
+        textarea.value = `Fala ${nome.split(' ')[0]}! Tudo bem? Sentimos sua falta na Barbearia VIP. Aproveite 15% OFF com o cupom VOLTAVIP15 ao agendar esta semana!`;
+    }
+}
+
+function fecharModalDisparoIa() {
+    const modal = document.getElementById('modal-disparo-ia');
+    if (modal) modal.classList.add('hidden');
+}
+
+function copiarMensagemIaModal() {
+    const textarea = document.getElementById('modal-ia-mensagem-texto');
+    if (!textarea) return;
+    textarea.select();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textarea.value);
+    } else {
+        document.execCommand('copy');
+    }
+    mostrarToast('Mensagem copiada para a área de transferência!', 'sucesso');
+}
+
+async function gerarCampanhasAdminIa() {
+    const select = document.getElementById('select-ia-campanha-objetivo');
+    const container = document.getElementById('grid-ia-campanhas-admin');
+    if (!select || !container) return;
+
+    const objetivo = select.value;
+    container.innerHTML = '<div class="p-8 text-center text-amber-300 text-xs col-span-full animate-pulse">Criando 3 copys persuasivas com Inteligência Artificial...</div>';
+
+    try {
+        const resp = await fetch('../api/ia.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                acao: 'gerar_campanhas',
+                objetivo: objetivo,
+                tom: 'vip'
+            })
+        });
+
+        const res = await resp.json();
+        if (res.success && res.campanhas) {
+            container.innerHTML = res.campanhas.map((c, i) => {
+                const encodedWhats = encodeURIComponent(c.texto);
+                return `
+                    <div class="p-5 rounded-2xl bg-black/40 border border-white/10 hover:border-amber-500/40 transition flex flex-col justify-between shadow-xl">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                    ${c.foco || 'Marketing'}
+                                </span>
+                                <span class="text-xs text-zinc-500">Opção ${i + 1}</span>
+                            </div>
+                            <h4 class="text-xs font-bold text-white mb-2">${c.titulo}</h4>
+                            <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-zinc-300 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto mb-4 select-all font-mono">
+                                ${c.texto}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 pt-2 border-t border-white/10">
+                            <button type="button" onclick="copiarTextoCampanhaCard(this)" data-texto="${encodeURIComponent(c.texto)}" class="flex-1 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-[11px] transition flex items-center justify-center gap-1.5">
+                                <span>📋</span> <span>Copiar</span>
+                            </button>
+                            <a href="https://wa.me/?text=${encodedWhats}" target="_blank" class="py-2 px-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-[11px] transition flex items-center justify-center gap-1 shadow-md">
+                                <span>📲</span> <span>Disparar</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            container.innerHTML = '<div class="p-6 text-center text-red-400 text-xs col-span-full">Erro ao gerar campanhas com IA.</div>';
+        }
+    } catch (e) {
+        container.innerHTML = '<div class="p-6 text-center text-red-400 text-xs col-span-full">Erro de comunicação com o servidor.</div>';
+    }
+}
+
+function copiarTextoCampanhaCard(btn) {
+    const raw = btn.getAttribute('data-texto');
+    if (!raw) return;
+    const texto = decodeURIComponent(raw);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto);
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = texto;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    }
+    mostrarToast('Copy copiada para a área de transferência!', 'sucesso');
+}

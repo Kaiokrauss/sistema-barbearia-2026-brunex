@@ -391,7 +391,11 @@
             <button onclick="changeTab('tab-loja')" id="btn-tab-loja" class="nav-btn nav-btn-loja text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">🧴</span> <span>Loja VIP</span>
             </button>
+            <button onclick="changeTab('tab-visagista')" id="btn-tab-visagista" class="nav-btn nav-btn-visagista text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">🧠</span> <span>Visagista IA</span>
+            </button>
             <button type="button" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
+
                 <span class="nav-icon">📱</span> <span>App iOS</span>
             </button>
             <span class="text-zinc-700 px-1 select-none">|</span>
@@ -1120,7 +1124,162 @@
         </div>
     </div>
 
+    <!-- TELA 9: VISAGISTA VIRTUAL COM IA (Consultor de Estilo & Barba) -->
+    <div id="tab-visagista" class="tab-content">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-amber-500/30">
+            <div class="absolute -right-20 -top-20 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-56 h-56 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="pb-6 border-b border-white/10 mb-8 relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-purple-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5">
+                        <span>✨</span> Inteligência Artificial 2026
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mt-2">Visagista Virtual com IA</h2>
+                    <p class="text-xs sm:text-sm text-zinc-400 mt-1">Descubra o corte de cabelo e o desenho de barba matematicamente perfeitos para valorizar seus traços.</p>
+                </div>
+                <div class="flex items-center gap-2 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 flex-shrink-0">
+                    <span class="text-xl">📐</span>
+                    <div class="text-left">
+                        <span class="text-[10px] uppercase font-bold text-zinc-500 block">Metodologia</span>
+                        <strong class="text-xs text-amber-300">Harmonia Facial & Visagismo</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMULÁRIO DO DIAGNÓSTICO -->
+            <form id="form-visagista-ia" onsubmit="analisarVisagismoIA(event)" class="relative z-10 space-y-8">
+                <!-- 1. FORMATO DO ROSTO -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                            <span>1.</span> Qual é o Formato do seu Rosto?
+                        </label>
+                        <span class="text-[11px] text-zinc-500">Selecione o mais próximo</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_rosto" value="quadrado" checked class="peer hidden">
+                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                <span class="text-3xl">🔲</span>
+                                <strong class="text-xs font-bold text-white">Quadrado</strong>
+                                <span class="text-[10px] text-zinc-400 leading-tight">Maxilar reto, linhas angulares e fortes</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_rosto" value="redondo" class="peer hidden">
+                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                <span class="text-3xl">⭕</span>
+                                <strong class="text-xs font-bold text-white">Redondo</strong>
+                                <span class="text-[10px] text-zinc-400 leading-tight">Traços suaves, bochechas preenchidas</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_rosto" value="oval" class="peer hidden">
+                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                <span class="text-3xl">🥚</span>
+                                <strong class="text-xs font-bold text-white">Oval</strong>
+                                <span class="text-[10px] text-zinc-400 leading-tight">Equilibrado, testa e queixo proporcionais</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_rosto" value="diamante" class="peer hidden">
+                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
+                                <span class="text-3xl">💎</span>
+                                <strong class="text-xs font-bold text-white">Diamante</strong>
+                                <span class="text-[10px] text-zinc-400 leading-tight">Maçãs largas com queixo afilado</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 2. TIPO DE CABELO -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                            <span>2.</span> Qual é a Curvatura do seu Cabelo?
+                        </label>
+                        <span class="text-[11px] text-zinc-500">Textura natural</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_cabelo" value="liso" checked class="peer hidden">
+                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                <span class="text-2xl">〰️</span>
+                                <strong class="text-xs font-bold text-white">Liso</strong>
+                                <span class="text-[10px] text-zinc-400">Fios retos e alinhados</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_cabelo" value="ondulado" class="peer hidden">
+                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                <span class="text-2xl">🌊</span>
+                                <strong class="text-xs font-bold text-white">Ondulado</strong>
+                                <span class="text-[10px] text-zinc-400">Movimento natural</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_cabelo" value="cacheado" class="peer hidden">
+                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                <span class="text-2xl">🌀</span>
+                                <strong class="text-xs font-bold text-white">Cacheado</strong>
+                                <span class="text-[10px] text-zinc-400">Cachos definidos</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ia_cabelo" value="crespo" class="peer hidden">
+                            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
+                                <span class="text-2xl">⚡</span>
+                                <strong class="text-xs font-bold text-white">Crespo</strong>
+                                <span class="text-[10px] text-zinc-400">Volume e textura</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 3. BARBA E VIBE -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
+                            3. Preferência de Barba
+                        </label>
+                        <select id="ia_barba" class="dark-input text-xs font-semibold text-zinc-200">
+                            <option value="barba_curta">✂️ Barba Curta / Alinhada no Degradê</option>
+                            <option value="barba_cheia">🧔 Barba Cheia / Lenhador Volumosa</option>
+                            <option value="cavanhaque">📐 Cavanhaque Estilizado</option>
+                            <option value="sem_barba">🪒 Sem Barba (Rosto Limpo na Navalha)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
+                            4. Estilo Desejado (Vibe)
+                        </label>
+                        <select id="ia_vibe" class="dark-input text-xs font-semibold text-zinc-200">
+                            <option value="moderno">🔥 Moderno & Urbano (Tendência em Alta)</option>
+                            <option value="classico">👑 Clássico & Elegante (Presença Executiva)</option>
+                            <option value="ousado">⚡ Ousado & Marcante (Linhas e Contraste)</option>
+                            <option value="pratico">⏱️ Prático (Fácil de cuidar no dia a dia)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- BOTÃO DE ANÁLISE -->
+                <div class="pt-2">
+                    <button type="submit" id="btn-analisar-visagismo" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-sm transition shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2.5">
+                        <span class="text-lg">✨</span>
+                        <span id="btn-visagismo-texto">ANALISAR COM INTELIGÊNCIA ARTIFICIAL</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- RESULTADO DO DIAGNÓSTICO DE VISAGISMO -->
+            <div id="box-resultado-visagismo" class="hidden mt-10 p-6 sm:p-8 rounded-3xl bg-black/40 border border-amber-500/40 shadow-2xl relative z-10 animate-fadeIn">
+            </div>
+        </div>
+    </div>
+
 </main>
+
 
 <footer class="bg-[#0A0A0C] border-t border-white/10 p-8 text-center text-xs text-zinc-500 mt-12">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -1176,7 +1335,12 @@
                 <span class="flex items-center gap-2.5"><span>📱</span> <strong>Instalar App no iPhone (iOS)</strong></span>
                 <span class="px-2 py-0.5 rounded-md bg-blue-500/30 text-[11px] font-bold text-blue-300">Grátis</span>
             </button>
+            <button type="button" onclick="changeTab('tab-visagista'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/10">
+                <span class="flex items-center gap-2.5"><span>🧠</span> <strong>Visagista IA (Consultor de Estilo)</strong></span>
+                <span class="px-2 py-0.5 rounded-md bg-amber-400 text-black font-extrabold text-[10px]">IA</span>
+            </button>
             <button type="button" onclick="changeTab('tab-clube-vip'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
+
                 <span class="flex items-center gap-2.5"><span>💎</span> Clube VIP / Barber Pass</span>
                 <span class="text-amber-400">→</span>
             </button>
@@ -1417,6 +1581,8 @@
     const API_BARBEIROS = `${basePath}/api/barbeiro.php`;
     const API_ASSINATURA = `${basePath}/api/assinatura.php`;
     const API_PRODUTOS = `${basePath}/api/produto.php`;
+    const API_IA = `${basePath}/api/ia.php`;
+
 
     // Motor de Áudio Sintetizado Luxuoso (Web Audio API nativo - Sem arquivos externos)
     class ChicAudioService {
@@ -1746,7 +1912,11 @@
         if (tabId === 'tab-avaliacoes') carregarAvaliacoesNaAba();
         if (tabId === 'tab-clube-vip') carregarPlanosNaAba();
         if (tabId === 'tab-loja') carregarProdutosLoja();
+        if (tabId === 'tab-visagista') {
+            // Scroll suave caso necessário
+        }
     }
+
 
     // Controle do Drawer/Modal 'Mais Opções' para celulares
     function toggleMobileMenuMais() {
@@ -3813,7 +3983,182 @@
         });
     }
 
+    // --- INTELIGÊNCIA ARTIFICIAL: VISAGISTA VIRTUAL ---
+    async function analisarVisagismoIA(event) {
+        if (event) event.preventDefault();
+        soundVIP.playSoftClick();
+
+        const formatoRosto = document.querySelector('input[name="ia_rosto"]:checked')?.value || 'quadrado';
+        const tipoCabelo = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
+        const estiloBarba = document.getElementById('ia_barba')?.value || 'barba_curta';
+        const estiloVibe = document.getElementById('ia_vibe')?.value || 'moderno';
+
+        const btn = document.getElementById('btn-analisar-visagismo');
+        const btnTxt = document.getElementById('btn-visagismo-texto');
+        const boxResultado = document.getElementById('box-resultado-visagismo');
+
+        btn.disabled = true;
+        btnTxt.textContent = 'PROCESSANDO COM INTELIGÊNCIA ARTIFICIAL...';
+        boxResultado.classList.remove('hidden');
+        boxResultado.innerHTML = `
+            <div class="py-12 text-center text-amber-300 space-y-3">
+                <div class="inline-block animate-spin text-3xl">✨</div>
+                <h4 class="text-base font-bold text-white">Analisando Proporções Faciais & Visagismo</h4>
+                <p class="text-xs text-zinc-400">Calculando linhas de força, densidade capilar e harmonia da mandíbula...</p>
+            </div>
+        `;
+
+        try {
+            const resp = await fetch(API_IA, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    acao: 'visagismo',
+                    formato_rosto: formatoRosto,
+                    tipo_cabelo: tipoCabelo,
+                    estilo_barba: estiloBarba,
+                    estilo_vibe: estiloVibe
+                })
+            });
+
+            const res = await resp.json();
+            if (res.success && res.corte_sugerido) {
+                soundVIP.playChicSuccess();
+                const c = res.corte_sugerido;
+                const b = res.barbeiro_recomendado || {};
+                const p = res.produto_recomendado || {};
+                const barbaInfo = res.barba_sugerida || {};
+
+                boxResultado.innerHTML = `
+                    <div class="flex flex-col lg:flex-row gap-8 items-start">
+                        <!-- Imagem do Corte em Destaque -->
+                        <div class="w-full lg:w-72 flex-shrink-0">
+                            <div class="relative rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-2xl bg-black/60 aspect-[4/5]">
+                                <img src="${c.foto_referencia}" alt="${c.nome}" class="w-full h-full object-cover">
+                                <div class="absolute top-3 left-3 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-400/40 text-amber-300 font-extrabold text-xs shadow-lg flex items-center gap-1">
+                                    <span>🎯</span> <span>${c.match}% Match de Harmonia</span>
+                                </div>
+                                <div class="absolute bottom-3 inset-x-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-3 rounded-xl">
+                                    <span class="text-[10px] uppercase font-bold text-amber-400 block">${res.perfil.formato_rosto} + ${res.perfil.tipo_cabelo}</span>
+                                    <h4 class="text-sm font-bold text-white leading-tight">${c.nome}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explicação Técnica e Recomendações -->
+                        <div class="flex-1 space-y-5 text-left">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                        ✓ Diagnóstico Facial Aprovado
+                                    </span>
+                                    <span class="text-xs text-zinc-400">• Vibe: ${res.perfil.vibe}</span>
+                                </div>
+                                <h3 class="text-2xl font-display font-bold text-white">${c.nome}</h3>
+                                <p class="text-xs sm:text-sm text-zinc-300 mt-2 leading-relaxed bg-white/[0.03] p-4 rounded-2xl border border-white/5">
+                                    ${c.explicacao_visagismo}
+                                </p>
+                            </div>
+
+                            <!-- Barba & Finalização -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10">
+                                    <span class="text-amber-400 font-bold block mb-1">🧔 Estilo de Barba Recomendado:</span>
+                                    <strong class="text-white block mb-0.5">${barbaInfo.estilo || 'Alinhada'}</strong>
+                                    <span class="text-[11px] text-zinc-400 leading-tight block">${barbaInfo.explicacao || ''}</span>
+                                </div>
+                                <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10">
+                                    <span class="text-amber-400 font-bold block mb-1">💡 Dica de Estilização Diária:</span>
+                                    <span class="text-[11px] text-zinc-300 leading-tight block">${c.dica_finalizacao}</span>
+                                </div>
+                            </div>
+
+                            <!-- Barbeiro Especialista & Produto Sugerido -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                ${b.nome ? `
+                                <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-transparent border border-amber-500/30 flex items-center gap-3">
+                                    <img src="${b.avatar}" alt="${b.nome}" class="w-12 h-12 rounded-xl object-cover border border-amber-400/40 flex-shrink-0">
+                                    <div class="min-w-0">
+                                        <span class="text-[10px] uppercase font-bold text-amber-400 block">Barbeiro Especialista</span>
+                                        <h5 class="text-xs font-bold text-white truncate">${b.nome}</h5>
+                                        <span class="text-[11px] text-zinc-400 block truncate">${b.especialidade || 'Mestre Barbeiro'}</span>
+                                    </div>
+                                </div>` : ''}
+
+                                ${p.nome ? `
+                                <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center gap-3">
+                                    <img src="${p.imagem}" alt="${p.nome}" class="w-12 h-12 rounded-xl object-cover border border-white/10 flex-shrink-0">
+                                    <div class="min-w-0">
+                                        <span class="text-[10px] uppercase font-bold text-zinc-400 block">Finalizador Ideal</span>
+                                        <h5 class="text-xs font-bold text-white truncate">${p.nome}</h5>
+                                        <span class="text-[11px] text-amber-300 font-bold block">R$ ${Number(p.preco).toFixed(2).replace('.', ',')}</span>
+                                    </div>
+                                </div>` : ''}
+                            </div>
+
+                            <!-- Botão de Ação Direta no Agendamento -->
+                            <div class="pt-2">
+                                <button type="button" onclick="aplicarCorteVisagismoNoAgendamento('${c.servico_nome}', '${b.id || ''}', '${p.id || ''}', '${b.nome || ''}')" class="w-full py-3.5 px-6 rounded-2xl gold-btn text-xs sm:text-sm font-bold transition shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2">
+                                    <span>📅</span>
+                                    <span>AGENDAR ESTE CORTE RECOMENDADO (${c.servico_nome}${b.nome ? ' com ' + b.nome : ''})</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                boxResultado.innerHTML = `<div class="p-6 text-center text-red-400 text-sm">Não foi possível calcular o diagnóstico. Tente novamente.</div>`;
+            }
+        } catch (e) {
+            boxResultado.innerHTML = `<div class="p-6 text-center text-red-400 text-sm">Erro ao conectar com a IA: ${e.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btnTxt.textContent = 'ANALISAR COM INTELIGÊNCIA ARTIFICIAL';
+        }
+    }
+
+    function aplicarCorteVisagismoNoAgendamento(servicoNome, barbeiroId, produtoId, barbeiroNome) {
+        soundVIP.playChicSuccess();
+
+        // 1. Seleciona o serviço
+        const servicoSelect = document.getElementById('cliente-servico');
+        if (servicoSelect) {
+            let encontrado = false;
+            for (let opt of servicoSelect.options) {
+                if (opt.textContent.toLowerCase().includes(servicoNome.toLowerCase()) || opt.value === servicoNome) {
+                    servicoSelect.value = opt.value;
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado && servicoSelect.options.length > 1) {
+                servicoSelect.selectedIndex = 1;
+            }
+        }
+
+        // 2. Seleciona o barbeiro
+        if (barbeiroId) {
+            selecionarBarbeiroChip(barbeiroId, barbeiroNome);
+        }
+
+        // 3. Seleciona o produto no upsell caso exista
+        if (produtoId) {
+            const upsellSelect = document.getElementById('cliente-produto-upsell');
+            if (upsellSelect) upsellSelect.value = produtoId;
+        }
+
+        // 4. Muda de aba para o agendamento
+        changeTab('tab-agendar');
+
+        // 5. Scroll suave até o formulário
+        const formEl = document.getElementById('cliente-servico');
+        if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+
+        mostrarToast(`🎯 <strong>${servicoNome}</strong> e barbeiro pré-selecionados pela IA! Escolha o dia e horário.`, 'sucesso');
+    }
+
     checarDispositivoIos();
+
 </script>
 </body>
 </html>
