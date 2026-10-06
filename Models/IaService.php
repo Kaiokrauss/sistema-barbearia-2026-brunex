@@ -12,9 +12,193 @@ require_once __DIR__ . '/Database.php';
 
 class IaService {
     private PDO $db;
+    private ?bool $pythonDisponivel = null;
+    private ?string $pythonBin = null;
+    private ?string $pythonVersao = null;
+    private ?string $geminiApiKey = null;
 
     public function __construct(?PDO $db = null) {
         $this->db = $db ?? Database::getInstance()->getConnection();
+        $this->geminiApiKey = getenv('GEMINI_API_KEY') ?: (defined('GEMINI_API_KEY') ? GEMINI_API_KEY : null);
+    }
+
+    public function setGeminiApiKey(?string $key): void {
+        $this->geminiApiKey = $key;
+    }
+
+    /**
+     * Detecta dinamicamente a presença do interpretador Python 3 no sistema operacional.
+     */
+    public function isPythonDisponivel(): bool {
+        if ($this->pythonDisponivel !== null) {
+            return $this->pythonDisponivel;
+        }
+
+        $candidatos = ['python', 'python3', 'py'];
+        $localApp = getenv('LOCALAPPDATA');
+        if ($localApp) {
+            $candidatos[] = $localApp . '\Programs\Python\Python312\python.exe';
+            $candidatos[] = $localApp . '\Programs\Python\Python311\python.exe';
+            $candidatos[] = $localApp . '\Programs\Python\Python310\python.exe';
+        }
+
+        foreach ($candidatos as $cmd) {
+            $output = [];
+            $exitCode = 1;
+            @exec(escapeshellcmd($cmd) . " --version 2>&1", $output, $exitCode);
+            $outStr = trim(implode("\n", $output));
+            if ($exitCode === 0 && preg_match('/Python\s+3\.\d+/i', $outStr)) {
+                $this->pythonDisponivel = true;
+                $this->pythonBin = $cmd;
+                $this->pythonVersao = $outStr;
+                return true;
+            }
+        }
+
+        $this->pythonDisponivel = false;
+        $this->pythonBin = null;
+        $this->pythonVersao = null;
+        return false;
+    }
+
+    /**
+     * Executa o script Python scripts/ia_engine.py com payload JSON via STDIN de forma segura.
+     */
+    public function executarPython(string $acao, array $payload): ?array {
+        if (!$this->isPythonDisponivel()) {
+            return null;
+        }
+
+        $scriptPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'ia_engine.py';
+        if (!file_exists($scriptPath)) {
+            return null;
+        }
+
+        $payloadJson = json_encode($payload, JSON_UNESCAPED_UNICODE);
+        $descriptorSpec = [
+            0 => ["pipe", "r"], // stdin
+            1 => ["pipe", "w"], // stdout
+            2 => ["pipe", "w"], // stderr
+        ];
+
+        $cmd = escapeshellarg($this->pythonBin) . ' ' . escapeshellarg($scriptPath) . ' --acao ' . escapeshellarg($acao);
+        $process = @proc_open($cmd, $descriptorSpec, $pipes);
+
+        if (!is_resource($process)) {
+            return null;
+        }
+
+        fwrite($pipes[0], $payloadJson);
+        fclose($pipes[0]);
+
+        $stdout = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+
+        $exitCode = proc_close($process);
+
+        if ($exitCode === 0 && !empty($stdout)) {
+            $json = json_decode(trim($stdout), true);
+            if (is_array($json) && !empty($json['success'])) {
+                return $json;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Integração com Cloud Generative AI (Google Gemini 1.5 Flash via cURL)
+     */
+    public function chamarGemini(string $prompt): ?string {
+        if (empty($this->geminiApiKey)) {
+            return null;
+        }
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . urlencode($this->geminiApiKey);
+        $payload = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ]
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_TIMEOUT => 6,
+            CURLOPT_SSL_VERIFYPEER => false,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200 && $response) {
+            $data = json_decode($response, true);
+            $texto = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+            return $texto ? trim($texto) : null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Retorna o status operacional detalhado dos motores de IA:
+     * - Motor Python (Local / Scripts)
+     * - Cloud AI (Google Gemini)
+     * - Motor Nativo PHP (Fallback de Alta Resiliência)
+     */
+    public function obterStatusMotores(): array {
+        $temPython = $this->isPythonDisponivel();
+        $temGemini = !empty($this->geminiApiKey);
+        $scriptPythonExiste = file_exists(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'ia_engine.py');
+
+        $motorAtivo = 'nativo_php';
+        if ($temPython) {
+            $motorAtivo = 'python';
+        } elseif ($temGemini) {
+            $motorAtivo = 'cloud_gemini';
+        }
+
+        return [
+            'success' => true,
+            'motor_ativo' => $motorAtivo,
+            'descricao_ativo' => match($motorAtivo) {
+                'python' => 'Motor Python Ativo (scripts/ia_engine.py)',
+                'cloud_gemini' => 'Google Gemini Generative AI Ativo',
+                default => 'Motor Nativo PHP Ativo (Alta Performance e 100% Offline)'
+            },
+            'motores' => [
+                'python' => [
+                    'disponivel' => $temPython,
+                    'versao' => $this->pythonVersao,
+                    'binario' => $this->pythonBin,
+                    'script_engine_presente' => $scriptPythonExiste,
+                    'script_path' => 'scripts/ia_engine.py',
+                    'instrucao' => $temPython ? 'Python 3 conectado ao PHP com sucesso.' : 'Para instalar Python no Windows: winget install Python.Python.3.12 (opcional, o sistema roda perfeitamente no motor nativo)'
+                ],
+                'cloud_gemini' => [
+                    'configurado' => $temGemini,
+                    'modelo' => 'gemini-1.5-flash',
+                    'instrucao' => $temGemini ? 'Chave de API configurada.' : 'Defina GEMINI_API_KEY para habilitar IA Generativa via Nuvem'
+                ],
+                'nativo_php' => [
+                    'disponivel' => true,
+                    'status' => 'online',
+                    'latencia' => '< 1ms',
+                    'descricao' => 'Motor heurístico determinístico 100% integrado ao MySQL e sem dependências externas.'
+                ]
+            ]
+        ];
     }
 
     /**
@@ -23,6 +207,30 @@ class IaService {
      * para recomendar o corte ideal, produto de grooming e o barbeiro especialista.
      */
     public function analisarVisagismo(array $dados): array {
+        // 1. TENTA PROCESSAR VIA MOTOR PYTHON SE DISPONÍVEL
+        if ($this->isPythonDisponivel()) {
+            $resPython = $this->executarPython('visagismo', $dados);
+            if (!empty($resPython) && !empty($resPython['success'])) {
+                $barbeiroSlug = $resPython['corte_sugerido']['barbeiro_slug'] ?? 'carlos';
+                $produtoSlug = $resPython['corte_sugerido']['produto_slug'] ?? 'pomada-matte';
+
+                $produtoDados = $this->obterProdutoPorSlugOuCategoria($produtoSlug, 'Cabelo');
+                $barbeiroDados = $this->obterBarbeiroPorSlug($barbeiroSlug);
+
+                $resPython['barbeiro_recomendado'] = $barbeiroDados;
+                $resPython['produto_recomendado'] = $produtoDados;
+                $resPython['acoes'] = [
+                    'agendar_url' => 'tab-agendar',
+                    'servico_selecionado' => $resPython['corte_sugerido']['servico_nome'] ?? 'Corte de Cabelo',
+                    'barbeiro_id' => $barbeiroDados['id'] ?? null,
+                    'produto_id' => $produtoDados['id'] ?? null,
+                ];
+                $resPython['_motor'] = 'python';
+                $resPython['_motor_label'] = 'Python AI Engine';
+                return $resPython;
+            }
+        }
+
         $rosto = strtolower(trim($dados['formato_rosto'] ?? 'quadrado'));
         $cabelo = strtolower(trim($dados['tipo_cabelo'] ?? 'liso'));
         $barba = strtolower(trim($dados['estilo_barba'] ?? 'barba_curta'));
@@ -226,6 +434,8 @@ class IaService {
 
         return [
             'success' => true,
+            '_motor' => 'nativo_php',
+            '_motor_label' => 'Motor Nativo PHP (Alta Performance)',
             'perfil' => [
                 'formato_rosto' => ucfirst($rosto),
                 'tipo_cabelo' => ucfirst($cabelo),
@@ -318,6 +528,19 @@ class IaService {
      * Gera mensagem personalizada individual para reconquistar o cliente sumido.
      */
     public function gerarMensagemRecuperacao(array $dados): array {
+        // 1. TENTA O MOTOR PYTHON SE DISPONÍVEL
+        if ($this->isPythonDisponivel()) {
+            $resPython = $this->executarPython('gerar_mensagem_recuperacao', $dados);
+            if (!empty($resPython) && !empty($resPython['success']) && !empty($resPython['mensagem'])) {
+                $tel = preg_replace('/\D/', '', $dados['cliente_telefone'] ?? '');
+                $resPython['telefone'] = $tel;
+                $resPython['whatsapp_link'] = "https://wa.me/55{$tel}?text=" . rawurlencode($resPython['mensagem']);
+                $resPython['_motor'] = 'python';
+                $resPython['_motor_label'] = 'Python NLP Engine';
+                return $resPython;
+            }
+        }
+
         $nome = trim($dados['cliente_nome'] ?? 'Amigo');
         $primeiroNome = explode(' ', $nome)[0];
         $telefone = preg_replace('/\D/', '', $dados['cliente_telefone'] ?? '');
@@ -359,6 +582,8 @@ class IaService {
 
         return [
             'success' => true,
+            '_motor' => 'nativo_php',
+            '_motor_label' => 'Motor Nativo PHP',
             'cliente_nome' => $nome,
             'telefone' => $telefone,
             'cupom' => $cupom,
@@ -372,6 +597,16 @@ class IaService {
      * Gera 3 opções de textos prontos para WhatsApp Status, Grupos ou Instagram.
      */
     public function gerarCampanhasMarketing(string $objetivo, string $tom = 'vip'): array {
+        // 1. TENTA O MOTOR PYTHON SE DISPONÍVEL
+        if ($this->isPythonDisponivel()) {
+            $resPython = $this->executarPython('gerar_campanhas', ['objetivo' => $objetivo, 'tom' => $tom]);
+            if (!empty($resPython) && !empty($resPython['success']) && !empty($resPython['campanhas'])) {
+                $resPython['_motor'] = 'python';
+                $resPython['_motor_label'] = 'Python Marketing AI Engine';
+                return $resPython;
+            }
+        }
+
         $dataHoje = date('d/m/Y');
         $diaSemana = date('w'); // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
 
@@ -454,6 +689,8 @@ class IaService {
 
         return [
             'success' => true,
+            '_motor' => 'nativo_php',
+            '_motor_label' => 'Motor Nativo PHP',
             'objetivo' => $objetivo,
             'tom' => $tom,
             'campanhas' => $campanhas

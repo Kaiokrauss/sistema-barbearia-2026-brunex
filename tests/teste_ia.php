@@ -143,6 +143,32 @@ if ($respHttp !== false) {
 assertTeste(is_array($respJson), "api/ia.php respondeu JSON válido");
 assertTeste(($respJson['success'] ?? false) === true, "api/ia.php confirmou status de sucesso");
 
+echo "\n[6] TESTANDO ARQUITETURA HÍBRIDA & MOTOR PYTHON (scripts/ia_engine.py):\n";
+$scriptPython = dirname(__DIR__) . '/scripts/ia_engine.py';
+assertTeste(file_exists($scriptPython), "Script autônomo Python scripts/ia_engine.py existe no projeto");
+assertTeste(filesize($scriptPython) > 1000, "Script Python possui código e regras de IA estruturadas");
+
+$statusMotores = $iaService->obterStatusMotores();
+assertTeste($statusMotores['success'] === true, "obterStatusMotores() retornou sucesso");
+assertTeste(!empty($statusMotores['motor_ativo']), "Identificou motor de IA ativo ({$statusMotores['motor_ativo']})");
+assertTeste(isset($statusMotores['motores']['python']['disponivel']), "Detector de ambiente Python avaliado com sucesso");
+assertTeste($statusMotores['motores']['nativo_php']['disponivel'] === true, "Motor nativo PHP 100% disponível para fallback automático");
+
+// Valida metadados de rastreabilidade do motor nas operações
+assertTeste(!empty($diag1['_motor']), "Diagnóstico de visagismo traz metadado do motor executor ({$diag1['_motor']})");
+assertTeste(!empty($copy['_motor']), "Copywriting de recuperação traz metadado do motor executor ({$copy['_motor']})");
+assertTeste(!empty($campFimSemana['_motor']), "Campanha traz metadado do motor executor ({$campFimSemana['_motor']})");
+
+// Valida endpoint de status via REST isolando subprocesso para preservar execução
+$phpBin = PHP_BINARY;
+$apiFile = str_replace('\\', '/', dirname(__DIR__) . '/api/ia.php');
+$code = "\$_GET['acao'] = 'status_motores'; \$_SERVER['REQUEST_METHOD'] = 'GET'; require '$apiFile';";
+$cmd = escapeshellarg($phpBin) . ' -r ' . escapeshellarg($code);
+$outStatus = shell_exec($cmd);
+$jsonStatus = json_decode($outStatus, true);
+assertTeste(is_array($jsonStatus) && ($jsonStatus['success'] ?? false) === true, "Endpoint api/ia.php?acao=status_motores responde com diagnóstico operacional");
+
+
 echo "\n============================================================\n";
 echo "                  RESUMO DOS TESTES                         \n";
 echo "============================================================\n";

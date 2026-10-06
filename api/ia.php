@@ -37,6 +37,12 @@ try {
             exit;
         }
 
+        if ($acao === 'status' || $acao === 'status_motores') {
+            $res = $iaService->obterStatusMotores();
+            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            exit;
+        }
+
         if ($acao === 'campanhas') {
             $objetivo = $_GET['objetivo'] ?? 'fim_de_semana';
             $tom = $_GET['tom'] ?? 'vip';
@@ -55,6 +61,12 @@ try {
         $dados = !empty($json) ? $json : $_POST;
 
         $acao = $dados['acao'] ?? $_GET['acao'] ?? '';
+
+        if ($acao === 'status' || $acao === 'status_motores') {
+            $res = $iaService->obterStatusMotores();
+            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            exit;
+        }
 
         if ($acao === 'visagismo') {
             $res = $iaService->analisarVisagismo($dados);
