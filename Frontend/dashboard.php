@@ -71,6 +71,8 @@ $tituloPainel = $isMasterAdmin ? '👑 Painel do Administrador' : ($isBarbeiro ?
                     <a href="../views/admin/servicos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">📋 Serviços</a>
                     <a href="../views/admin/caixa.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">💼 Caixa & Comissões</a>
                     <a href="../views/admin/agendamentos.html" class="rounded-xl px-3 py-2 text-zinc-300 hover:bg-white/10 hover:text-white transition">📥 Exportações</a>
+                    <a href="../api/qrcode_pix.php" class="rounded-xl px-3 py-2 text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 font-semibold transition">💳 QR Code PIX</a>
+                    <a href="../api/calculadora_comissao.php" class="rounded-xl px-3 py-2 text-purple-300 bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 font-semibold transition">🐍 Calculadora Python</a>
                     <a href="../api/backup.php?download=1" class="rounded-xl px-3 py-2 text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 font-semibold transition">💾 Backup (.sql)</a>
                 <?php endif; ?>
                 <a href="logout.php" class="rounded-xl bg-red-500/15 border border-red-500/30 px-3 py-2 text-red-300 hover:bg-red-500/30 transition">🚪 Sair</a>
