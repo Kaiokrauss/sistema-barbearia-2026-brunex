@@ -411,7 +411,6 @@
             </button>
             <a href="../api/qrcode_pix.php" class="nav-btn text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Gerador de QR Code PIX e Cartão Digital"><span class="nav-icon">💳</span> <span>QR Code PIX</span></a>
             <a href="../api/calculadora_comissao.php" class="nav-btn text-purple-300 hover:text-purple-200 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Calculadora de Lucro e Comissão em Python"><span class="nav-icon">🐍</span> <span>Calculadora Python</span></a>
-            <a href="../api/ia_combos_sentimento.php" id="btn-tab-ia-combos" class="nav-btn text-sky-300 hover:text-sky-200 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="IA Calculadora de Combos/Tempo e Analisadora de Sentimento em Python"><span class="nav-icon">🤖</span> <span>IA Combos & Sentimento (Python)</span> <span id="nav-badge-ia-combos" class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1">ON</span></a>
             <a href="../api/relatorio_python.php" class="nav-btn text-emerald-300 hover:text-emerald-200 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Relatório Financeiro Executivo (PDF/Excel via Python)"><span class="nav-icon">📈</span> <span>Relatório Python</span></a>
             <a href="../api/backup.php?download=1" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
                 <span class="nav-icon">💾</span> <span>Backup SQL</span>
@@ -906,7 +905,7 @@
                         <p class="text-xs text-zinc-400 mt-0.5">Ative ou desative as IAs do sistema em tempo real de acordo com a sua preferência.</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Visagista IA Control -->
                     <div id="dash-card-ia-visagista" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3">
@@ -936,22 +935,6 @@
                             </div>
                         </div>
                         <button type="button" onclick="toggleStatusIa('marketing')" id="dash-btn-toggle-marketing" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0">
-                            🔴 Desligar IA
-                        </button>
-                    </div>
-                    <!-- IA de Combos & Sentimento (Python) Control -->
-                    <div id="dash-card-ia-combos" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-sky-500/30 transition flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-300 flex items-center justify-center text-xl flex-shrink-0">
-                                🤖
-                            </div>
-                            <div>
-                                <h4 class="text-xs sm:text-sm font-bold text-white">IA Combos & Sentimento (Python)</h4>
-                                <span id="dash-status-combos-txt" class="text-xs text-emerald-400 font-semibold block mt-0.5">🟢 Ligada</span>
-                                <span class="text-[10px] text-zinc-400">Tempo na cadeira e avaliações</span>
-                            </div>
-                        </div>
-                        <button type="button" onclick="toggleStatusIa('combos')" id="dash-btn-toggle-combos" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0">
                             🔴 Desligar IA
                         </button>
                     </div>
@@ -1652,10 +1635,6 @@
                 <span class="flex items-center gap-2.5"><span>🎯</span> <strong>IA Marketing & Radar de Retenção</strong></span>
                 <span id="drawer-badge-ia-marketing" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
             </button>
-            <a href="../api/ia_combos_sentimento.php" id="drawer-btn-ia-combos" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/50 text-sm font-semibold text-sky-300 transition text-left shadow-lg shadow-sky-500/10">
-                <span class="flex items-center gap-2.5"><span>🤖</span> <strong>IA Combos & Sentimento (Python)</strong></span>
-                <span id="drawer-badge-ia-combos" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
-            </a>
             <button type="button" onclick="changeTab('tab-clube-vip'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
                 <span class="flex items-center gap-2.5"><span>💎</span> Clube VIP / Barber Pass</span>
                 <span class="text-amber-400">→</span>
@@ -1941,20 +1920,6 @@
                     </div>
                 </div>
                 <button type="button" onclick="toggleStatusIa('marketing')" id="modal-btn-toggle-marketing" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
-                    🔴 Desligar IA
-                </button>
-            </div>
-
-            <!-- IA Combos & Sentimento (Python) -->
-            <div id="modal-card-ia-combos" class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3 transition-colors">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl">🤖</span>
-                    <div>
-                        <h4 class="text-sm font-bold text-white">IA Combos & Sentimento (Python)</h4>
-                        <span id="modal-status-combos-txt" class="text-xs text-emerald-400 font-bold">🟢 Ligada</span>
-                    </div>
-                </div>
-                <button type="button" onclick="toggleStatusIa('combos')" id="modal-btn-toggle-combos" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
                     🔴 Desligar IA
                 </button>
             </div>
@@ -4477,8 +4442,7 @@
     // --- GESTÃO E CONTROLE DE STATUS DAS INTELIGÊNCIAS ARTIFICIAIS (ATIVAR / DESATIVAR) ---
     const IA_STATUS = {
         visagista: localStorage.getItem('barber_ia_visagista') !== 'false',
-        marketing: localStorage.getItem('barber_ia_marketing') !== 'false',
-        combos: localStorage.getItem('barber_ia_combos') !== 'false'
+        marketing: localStorage.getItem('barber_ia_marketing') !== 'false'
     };
 
     function toggleStatusIa(tipo) {
@@ -4487,12 +4451,7 @@
         localStorage.setItem('barber_ia_' + tipo, IA_STATUS[tipo] ? 'true' : 'false');
         aplicarStatusIas();
 
-        const nomes = {
-            visagista: 'Visagista Virtual com IA',
-            marketing: 'IA de Marketing & Retenção',
-            combos: 'IA Combos & Sentimento (Python)'
-        };
-        const nome = nomes[tipo] || 'Inteligência Artificial';
+        const nome = tipo === 'visagista' ? 'Visagista Virtual com IA' : 'IA de Marketing & Retenção';
         const st = IA_STATUS[tipo] ? 'LIGADA' : 'DESLIGADA';
         mostrarToast(`✨ ${nome} foi ${st}!`, IA_STATUS[tipo] ? 'sucesso' : 'aviso');
 
@@ -4600,55 +4559,19 @@
             if (modalBtnMkt) { modalBtnMkt.innerHTML = '<span>🟢</span> Ligar IA'; modalBtnMkt.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md'; }
         }
 
-        // 2.5 IA Combos & Sentimento (Python)
-        const combosAtivo = IA_STATUS.combos;
-        const navBadgeCombos = document.getElementById('nav-badge-ia-combos');
-        const drawerBadgeCombos = document.getElementById('drawer-badge-ia-combos');
-        const drawerBtnCombos = document.getElementById('drawer-btn-ia-combos');
-        const dashCardCombos = document.getElementById('dash-card-ia-combos');
-        const dashTxtCombos = document.getElementById('dash-status-combos-txt');
-        const dashBtnCombos = document.getElementById('dash-btn-toggle-combos');
-        const modalCardCombos = document.getElementById('modal-card-ia-combos');
-        const modalTxtCombos = document.getElementById('modal-status-combos-txt');
-        const modalBtnCombos = document.getElementById('modal-btn-toggle-combos');
-
-        if (combosAtivo) {
-            if (navBadgeCombos) { navBadgeCombos.textContent = 'ON'; navBadgeCombos.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1'; }
-            if (drawerBadgeCombos) { drawerBadgeCombos.textContent = 'ON'; drawerBadgeCombos.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
-            if (drawerBtnCombos) drawerBtnCombos.className = 'w-full flex items-center justify-between p-3.5 rounded-2xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/50 text-sm font-semibold text-sky-300 transition text-left shadow-lg shadow-sky-500/10';
-            if (dashCardCombos) dashCardCombos.className = 'p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-sky-500/30 transition flex items-center justify-between gap-3';
-            if (dashTxtCombos) { dashTxtCombos.textContent = '🟢 Ligada'; dashTxtCombos.className = 'text-xs text-emerald-400 font-semibold block mt-0.5'; }
-            if (dashBtnCombos) { dashBtnCombos.innerHTML = '<span>🔴</span> Desligar IA'; dashBtnCombos.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex-shrink-0 flex items-center gap-1'; }
-            if (modalCardCombos) modalCardCombos.className = 'p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3 transition-colors';
-            if (modalTxtCombos) { modalTxtCombos.textContent = '🟢 Ligada'; modalTxtCombos.className = 'text-xs text-emerald-400 font-bold'; }
-            if (modalBtnCombos) { modalBtnCombos.innerHTML = '<span>🔴</span> Desligar IA'; modalBtnCombos.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition flex items-center gap-1.5 shadow-md'; }
-        } else {
-            if (navBadgeCombos) { navBadgeCombos.textContent = '🔴 OFF'; navBadgeCombos.className = 'text-[9px] px-1.5 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/40 font-bold ml-1'; }
-            if (drawerBadgeCombos) { drawerBadgeCombos.textContent = '🔴 OFF'; drawerBadgeCombos.className = 'px-2 py-0.5 rounded-md bg-red-500/20 text-red-400 border border-red-500/40 font-extrabold text-[10px]'; }
-            if (drawerBtnCombos) drawerBtnCombos.className = 'w-full flex items-center justify-between p-3.5 rounded-2xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/40 text-sm font-semibold text-red-300 transition text-left shadow-lg shadow-red-500/10';
-            if (dashCardCombos) dashCardCombos.className = 'p-4 rounded-2xl bg-red-500/[0.06] border border-red-500/40 hover:border-red-500/60 transition flex items-center justify-between gap-3 shadow-md shadow-red-500/10';
-            if (dashTxtCombos) { dashTxtCombos.textContent = '🔴 Desligada'; dashTxtCombos.className = 'text-xs text-red-400 font-semibold block mt-0.5'; }
-            if (dashBtnCombos) { dashBtnCombos.innerHTML = '<span>🟢</span> Ligar IA'; dashBtnCombos.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex-shrink-0 flex items-center gap-1'; }
-            if (modalCardCombos) modalCardCombos.className = 'p-4 rounded-2xl bg-red-500/[0.08] border border-red-500/40 flex items-center justify-between gap-3 shadow-md shadow-red-500/10 transition-colors';
-            if (modalTxtCombos) { modalTxtCombos.textContent = '🔴 Desligada'; modalTxtCombos.className = 'text-xs text-red-400 font-bold'; }
-            if (modalBtnCombos) { modalBtnCombos.innerHTML = '<span>🟢</span> Ligar IA'; modalBtnCombos.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md'; }
-        }
-
         // 3. Status Geral (Botão Topo e Gaveta Mobile)
-        const totalLigadas = (visAtivo ? 1 : 0) + (mktAtivo ? 1 : 0) + (combosAtivo ? 1 : 0);
-        const totalIas = 3;
-        const desligadas = totalIas - totalLigadas;
+        const totalLigadas = (visAtivo ? 1 : 0) + (mktAtivo ? 1 : 0);
         const topoTxt = document.getElementById('topo-ia-status-texto');
         const drawerTxt = document.getElementById('drawer-ia-status-texto');
         const btnTopo = document.getElementById('btn-topo-controle-ia');
 
-        if (totalLigadas === totalIas) {
-            if (topoTxt) topoTxt.textContent = `IAs Ligadas (${totalLigadas}/${totalIas})`;
-            if (drawerTxt) { drawerTxt.textContent = `${totalLigadas} Ligadas (ON)`; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
+        if (totalLigadas === 2) {
+            if (topoTxt) topoTxt.textContent = 'IAs Ligadas (2/2)';
+            if (drawerTxt) { drawerTxt.textContent = '2 Ligadas (ON)'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]'; }
             if (btnTopo) btnTopo.className = 'text-xs font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
-        } else if (totalLigadas > 0) {
-            if (topoTxt) topoTxt.textContent = desligadas === 1 ? '1 IA Desligada' : `${desligadas} IAs Desligadas`;
-            if (drawerTxt) { drawerTxt.textContent = `${desligadas} Desligada${desligadas > 1 ? 's' : ''}`; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30 font-extrabold text-[10px]'; }
+        } else if (totalLigadas === 1) {
+            if (topoTxt) topoTxt.textContent = '1 IA Desligada';
+            if (drawerTxt) { drawerTxt.textContent = '1 Desligada'; drawerTxt.className = 'px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30 font-extrabold text-[10px]'; }
             if (btnTopo) btnTopo.className = 'text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm';
         } else {
             if (topoTxt) topoTxt.textContent = '🔴 IAs Desligadas (OFF)';
