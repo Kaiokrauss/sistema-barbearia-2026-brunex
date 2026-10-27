@@ -47,6 +47,11 @@ class WhatsAppService {
 
         $servicoComBarbeiro = $barbeiroNome ? "{$servico} com {$barbeiroNome}" : $servico;
 
+        $servicoPreco = isset($dados['servico_preco']) ? (float)$dados['servico_preco'] : 0.0;
+        $produtoNome = $dados['produto_nome'] ?? '';
+        $produtoPreco = isset($dados['produto_preco']) ? (float)$dados['produto_preco'] : 0.0;
+        $valorTotal = isset($dados['valor_total']) ? (float)$dados['valor_total'] : ($servicoPreco + $produtoPreco);
+
         $msg = "💈 *NOVO AGENDAMENTO RECEBIDO - BARBEARIA VIP*\n\n"
              . "👤 *Cliente:* {$nome}\n"
              . "📞 *Telefone:* {$tel}\n"
@@ -54,9 +59,22 @@ class WhatsAppService {
         if ($barbeiroNome) {
             $msg .= "💈 *Barbeiro:* {$barbeiroNome}\n";
         }
+        if ($produtoNome) {
+            $prodPrecoTxt = $produtoPreco > 0 ? " (R$ " . number_format($produtoPreco, 2, ',', '.') . ")" : "";
+            $msg .= "🧴 *Produto:* {$produtoNome}{$prodPrecoTxt}\n";
+        }
         $msg .= "📅 *Data:* {$data}\n"
-             . "⏰ *Horário:* {$horario}\n"
-             . "🔑 *Código:* {$codigo}\n\n"
+             . "⏰ *Horário:* {$horario}\n";
+        if ($produtoNome && $valorTotal > 0) {
+            $corteFmt = number_format($servicoPreco, 2, ',', '.');
+            $prodFmt = number_format($produtoPreco, 2, ',', '.');
+            $totFmt = number_format($valorTotal, 2, ',', '.');
+            $msg .= "💰 *Total (Corte + Produto):* R$ {$totFmt} _(Corte: R$ {$corteFmt} + Produto: R$ {$prodFmt})_\n";
+        } elseif ($valorTotal > 0) {
+            $totFmt = number_format($valorTotal, 2, ',', '.');
+            $msg .= "💰 *Total:* R$ {$totFmt}\n";
+        }
+        $msg .= "🔑 *Código:* {$codigo}\n\n"
              . "_Agendamento cadastrado com sucesso no sistema._";
 
         return self::criarLinkWhatsApp($telefoneBarbeiro, $msg);
@@ -76,15 +94,33 @@ class WhatsAppService {
 
         $servicoComBarbeiro = $barbeiroNome ? "{$servico} com {$barbeiroNome}" : $servico;
 
+        $servicoPreco = isset($dados['servico_preco']) ? (float)$dados['servico_preco'] : 0.0;
+        $produtoNome = $dados['produto_nome'] ?? '';
+        $produtoPreco = isset($dados['produto_preco']) ? (float)$dados['produto_preco'] : 0.0;
+        $valorTotal = isset($dados['valor_total']) ? (float)$dados['valor_total'] : ($servicoPreco + $produtoPreco);
+
         $msg = "💈 *CONFIRMAÇÃO DE AGENDAMENTO - BARBEARIA VIP*\n\n"
              . "Olá, *{$nome}*! Seu horário foi agendado com sucesso:\n\n"
              . "✂️ *Serviço:* {$servicoComBarbeiro}\n";
         if ($barbeiroNome) {
             $msg .= "💈 *Barbeiro:* {$barbeiroNome}\n";
         }
+        if ($produtoNome) {
+            $prodPrecoTxt = $produtoPreco > 0 ? " (R$ " . number_format($produtoPreco, 2, ',', '.') . ")" : "";
+            $msg .= "🧴 *Produto para Retirada:* {$produtoNome}{$prodPrecoTxt}\n";
+        }
         $msg .= "📅 *Data:* {$data}\n"
-              . "⏰ *Horário:* {$horario}\n"
-              . "🔑 *Código do Agendamento:* {$codigo}\n\n"
+              . "⏰ *Horário:* {$horario}\n";
+        if ($produtoNome && $valorTotal > 0) {
+            $corteFmt = number_format($servicoPreco, 2, ',', '.');
+            $prodFmt = number_format($produtoPreco, 2, ',', '.');
+            $totFmt = number_format($valorTotal, 2, ',', '.');
+            $msg .= "💰 *Total (Corte + Produto):* R$ {$totFmt} _(Corte: R$ {$corteFmt} + Produto: R$ {$prodFmt})_\n";
+        } elseif ($valorTotal > 0) {
+            $totFmt = number_format($valorTotal, 2, ',', '.');
+            $msg .= "💰 *Valor Total:* R$ {$totFmt}\n";
+        }
+        $msg .= "🔑 *Código do Agendamento:* {$codigo}\n\n"
               . "Caso precise cancelar, você pode usar seu código no site.\n"
               . "Te aguardamos! Obrigado pela preferência! ✂️🔥";
 
@@ -110,4 +146,3 @@ class WhatsAppService {
     }
 }
 ?>
-

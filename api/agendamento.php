@@ -239,6 +239,8 @@ if ($method === 'POST') {
         $ag->barbeiro_id = !empty($input['barbeiro_id']) ? (int)$input['barbeiro_id'] : null;
         $ag->data_agendada = $input['data_agendada'] ?? null; // YYYY-MM-DD
         $ag->horario = substr(trim($input['horario'] ?? ''), 0, 5); // HH:MM
+        $produtoId = !empty($input['produto_id']) ? (int)$input['produto_id'] : null;
+        $cupom = trim($input['cupom'] ?? '');
 
         // Se o serviço vier como texto/nome, busca o ID correspondente
         if (!is_numeric($rawServico)) {
@@ -271,14 +273,54 @@ if ($method === 'POST') {
         if ($ag->criar()) {
             // Busca dados do serviço para compor a mensagem do WhatsApp
             $servicoNome = 'Atendimento Barbearia';
+            $servicoNomePuro = 'Atendimento Barbearia';
+            $servicoPreco = 0.0;
             try {
                 $stSvc = $conn->prepare("SELECT nome, preco FROM servicos WHERE id = :id");
                 $stSvc->execute([':id' => $ag->servico_id]);
                 $svcRow = $stSvc->fetch(PDO::FETCH_ASSOC);
                 if ($svcRow) {
-                    $servicoNome = $svcRow['nome'] . " (R$ " . number_format($svcRow['preco'], 2, ',', '.') . ")";
+                    $servicoNomePuro = $svcRow['nome'];
+                    $servicoPreco = (float)$svcRow['preco'];
+                    $servicoNome = $servicoNomePuro . " (R$ " . number_format($servicoPreco, 2, ',', '.') . ")";
                 }
             } catch (Exception $e) {}
+
+            // Se houver cupom de desconto informado, calcula o valor final do serviço
+            if ($servicoPreco > 0 && !empty($cupom)) {
+                try {
+                    require_once __DIR__ . '/../Models/DescontoStrategy.php';
+                    require_once __DIR__ . '/../Models/CalculadoraPreco.php';
+                    $calc = CalculadoraPreco::criarMelhorEstrategia($cupom, $ag->data_agendada, $servicoPreco);
+                    $resCalc = $calc->calcular($servicoPreco, $ag->data_agendada, $cupom);
+                    if (!empty($resCalc['teve_desconto'])) {
+                        $servicoPreco = (float)$resCalc['valor_final'];
+                        $servicoNome = $servicoNomePuro . " (R$ " . number_format($servicoPreco, 2, ',', '.') . ")";
+                    }
+                } catch (Throwable $e) {}
+            }
+
+            // Busca dados do produto adicional (upsell), se selecionado
+            $produtoNome = null;
+            $produtoPreco = 0.0;
+            if ($produtoId) {
+                try {
+                    $stProd = $conn->prepare("SELECT nome, preco FROM produtos WHERE id = :id LIMIT 1");
+                    $stProd->execute([':id' => $produtoId]);
+                    $prodRow = $stProd->fetch(PDO::FETCH_ASSOC);
+                    if ($prodRow) {
+                        $produtoNome = $prodRow['nome'];
+                        $produtoPreco = (float)$prodRow['preco'];
+                    }
+                } catch (Exception $e) {}
+            }
+            if (!$produtoNome && !empty($input['produto_nome'])) {
+                $produtoNome = trim($input['produto_nome']);
+                $produtoPreco = isset($input['produto_preco']) ? (float)$input['produto_preco'] : 0.0;
+            }
+
+            $valorTotal = $servicoPreco + $produtoPreco;
+            $valorTotalFormatado = "R$ " . number_format($valorTotal, 2, ',', '.');
 
             // Busca dados do barbeiro escolhido
             $barbeiroNome = null;
@@ -299,6 +341,12 @@ if ($method === 'POST') {
                 'cliente_nome' => $ag->cliente_nome,
                 'cliente_telefone' => $ag->cliente_telefone,
                 'servico_nome' => $servicoNome,
+                'servico_preco' => $servicoPreco,
+                'produto_id' => $produtoId,
+                'produto_nome' => $produtoNome,
+                'produto_preco' => $produtoPreco,
+                'valor_total' => $valorTotal,
+                'valor_total_formatado' => $valorTotalFormatado,
                 'barbeiro_id' => $ag->barbeiro_id,
                 'barbeiro_nome' => $barbeiroNome,
                 'data_agendada' => date('d/m/Y', strtotime($ag->data_agendada)),
@@ -306,7 +354,7 @@ if ($method === 'POST') {
                 'codigo' => $ag->codigo
             ];
 
-            // Gera links da API do WhatsApp para o cliente e para o barbeiro (com nome do barbeiro no texto)
+            // Gera links da API do WhatsApp para o cliente e para o barbeiro (com nome do barbeiro e total Corte + Produto)
             $whatsappUrlCliente = WhatsAppService::gerarLinkConfirmacaoCliente($dadosAgendamento);
             $whatsappUrlBarbeiro = WhatsAppService::gerarLinkNovoAgendamentoBarbeiro($dadosAgendamento, $barbeiroTelefone ?: '5511999999999');
 
@@ -322,6 +370,8 @@ if ($method === 'POST') {
                 'codigo' => $ag->codigo,
                 'dados' => $dadosAgendamento,
                 'barbeiro_nome' => $barbeiroNome,
+                'valor_total' => $valorTotal,
+                'valor_total_formatado' => $valorTotalFormatado,
                 'whatsapp_url_cliente' => $whatsappUrlCliente,
                 'whatsapp_url_barbeiro' => $whatsappUrlBarbeiro
             ]);

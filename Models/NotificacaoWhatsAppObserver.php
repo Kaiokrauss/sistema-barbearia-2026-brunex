@@ -26,6 +26,11 @@ class NotificacaoWhatsAppObserver implements AgendamentoObserver {
         $servicoComBarbeiro = $barbeiroNome ? "{$servico} com {$barbeiroNome}" : $servico;
         $codigo = $dados['codigo'] ?? '';
 
+        $servicoPreco = isset($dados['servico_preco']) ? (float)$dados['servico_preco'] : 0.0;
+        $produtoNome = $dados['produto_nome'] ?? '';
+        $produtoPreco = isset($dados['produto_preco']) ? (float)$dados['produto_preco'] : 0.0;
+        $valorTotal = isset($dados['valor_total']) ? (float)$dados['valor_total'] : ($servicoPreco + $produtoPreco);
+
         if ($tipo === 'AGENDAMENTO_CRIADO') {
             $msg = "💈 *Barbearia VIP Borcelle*\n";
             $msg .= "Olá, *{$cliente}*! Seu agendamento foi confirmado:\n";
@@ -33,7 +38,20 @@ class NotificacaoWhatsAppObserver implements AgendamentoObserver {
             if ($barbeiroNome) {
                 $msg .= "💈 Barbeiro: {$barbeiroNome}\n";
             }
+            if ($produtoNome) {
+                $prodPrecoTxt = $produtoPreco > 0 ? " (R$ " . number_format($produtoPreco, 2, ',', '.') . ")" : "";
+                $msg .= "🧴 Produto: {$produtoNome}{$prodPrecoTxt}\n";
+            }
             $msg .= "📅 Data: {$data} às {$horario}\n";
+            if ($produtoNome && $valorTotal > 0) {
+                $corteFmt = number_format($servicoPreco, 2, ',', '.');
+                $prodFmt = number_format($produtoPreco, 2, ',', '.');
+                $totFmt = number_format($valorTotal, 2, ',', '.');
+                $msg .= "💰 Total (Corte + Produto): R$ {$totFmt} (Corte: R$ {$corteFmt} + Produto: R$ {$prodFmt})\n";
+            } elseif ($valorTotal > 0) {
+                $totFmt = number_format($valorTotal, 2, ',', '.');
+                $msg .= "💰 Total: R$ {$totFmt}\n";
+            }
             $msg .= "🔑 Código de Segurança: #{$codigo}\n";
             $msg .= "Tolerância de 10 minutos. Apresente seu código na recepção!";
         } elseif ($tipo === 'AGENDAMENTO_CANCELADO') {

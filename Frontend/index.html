@@ -540,7 +540,7 @@
                         <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400">Serviço Desejado *</label>
                     </div>
                     <!-- Select tradicional mantido para envio e sincronização -->
-                    <select id="cliente-servico" class="dark-input text-zinc-200 mb-2" required>
+                    <select id="cliente-servico" class="dark-input text-zinc-200 mb-2" onchange="atualizarResumoTotalAgendamento()" required>
                         <option value="">Carregando serviços do banco...</option>
                     </select>
                 </div>
@@ -595,9 +595,21 @@
                         <span class="text-[10px] text-zinc-400">Retirar no atendimento</span>
                     </div>
                     <p class="text-[11px] text-zinc-400 mb-2">Finalize seu corte com um produto profissional de fixação ou tratamento:</p>
-                    <select id="cliente-produto-upsell" class="dark-input text-zinc-200 text-xs font-semibold">
+                    <select id="cliente-produto-upsell" class="dark-input text-zinc-200 text-xs font-semibold" onchange="atualizarResumoTotalAgendamento()">
                         <option value="">Nenhum produto adicional por enquanto</option>
                     </select>
+                </div>
+
+                <!-- RESUMO DINÂMICO DO VALOR TOTAL (CORTE + PRODUTO) -->
+                <div id="resumo-total-agendamento" class="hidden mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-400 block">💰 Resumo do Atendimento</span>
+                        <span id="resumo-total-detalhe" class="text-xs text-zinc-300">Selecione o serviço</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] uppercase text-zinc-400 block">Total (Corte + Produto)</span>
+                        <strong id="resumo-total-valor" class="text-lg font-mono font-extrabold text-emerald-300">R$ 0,00</strong>
+                    </div>
                 </div>
                 
                 <button type="submit" id="btnConfirmarAgendamento" class="w-full gold-btn py-4 rounded-2xl text-base transition flex items-center justify-center gap-2">
@@ -2304,6 +2316,8 @@
                 data.data.forEach((s, idx) => {
                     const opt = document.createElement('option');
                     opt.value = s.id;
+                    opt.dataset.nome = s.nome;
+                    opt.dataset.preco = s.preco;
                     opt.textContent = `${s.nome} — R$ ${parseFloat(s.preco).toFixed(2)} (${s.duracao_minutos} min)`;
                     select.appendChild(opt);
                 });
@@ -2313,6 +2327,56 @@
         } catch (e) {
             console.error('Erro ao carregar serviços:', e);
         }
+    }
+
+    // Atualiza o Resumo Dinâmico do Total (Corte + Produto)
+    function atualizarResumoTotalAgendamento() {
+        const box = document.getElementById('resumo-total-agendamento');
+        const detEl = document.getElementById('resumo-total-detalhe');
+        const valEl = document.getElementById('resumo-total-valor');
+        if (!box || !detEl || !valEl) return;
+
+        const svcSelect = document.getElementById('cliente-servico');
+        const prodSelect = document.getElementById('cliente-produto-upsell');
+
+        let precoCorte = 0;
+        let nomeCorte = '';
+        if (svcSelect && svcSelect.value && svcSelect.selectedOptions && svcSelect.selectedOptions[0]) {
+            const optS = svcSelect.selectedOptions[0];
+            precoCorte = parseFloat(optS.dataset.preco || 0);
+            nomeCorte = optS.dataset.nome || 'Corte';
+        }
+        if (assinanteAtivoDetectado) {
+            precoCorte = 0;
+        } else if (cupomAtivo && cupomAtivo.valido && cupomAtivo.valor_final !== undefined) {
+            precoCorte = parseFloat(cupomAtivo.valor_final);
+        }
+
+        let precoProd = 0;
+        let nomeProd = '';
+        if (prodSelect && prodSelect.value && prodSelect.selectedOptions && prodSelect.selectedOptions[0]) {
+            const optP = prodSelect.selectedOptions[0];
+            precoProd = parseFloat(optP.dataset.preco || 0);
+            nomeProd = optP.dataset.nome || 'Produto';
+        }
+
+        if (!svcSelect?.value && !prodSelect?.value) {
+            box.classList.add('hidden');
+            return;
+        }
+
+        const total = precoCorte + precoProd;
+        const corteFmt = `R$ ${precoCorte.toFixed(2).replace('.', ',')}`;
+        const prodFmt = `R$ ${precoProd.toFixed(2).replace('.', ',')}`;
+        const totalFmt = `R$ ${total.toFixed(2).replace('.', ',')}`;
+
+        if (nomeProd) {
+            detEl.innerHTML = `✂️ ${nomeCorte || 'Serviço'} (<strong>${corteFmt}</strong>) + 🧴 ${nomeProd} (<strong>${prodFmt}</strong>)`;
+        } else {
+            detEl.innerHTML = `✂️ ${nomeCorte || 'Serviço'} (<strong>${corteFmt}</strong>)`;
+        }
+        valEl.textContent = totalFmt;
+        box.classList.remove('hidden');
     }
 
     // Carregar Horários Livres para a data selecionada em chips interativos
@@ -2407,6 +2471,7 @@
                 feedback.className = 'text-xs mt-2 text-amber-300 font-medium p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 block';
                 feedback.textContent = `⚠️ ${res.mensagem || 'Cupom não encontrado ou inválido.'}`;
             }
+            atualizarResumoTotalAgendamento();
         } catch (e) {
             feedback.className = 'text-xs mt-2 text-red-300 block';
             feedback.textContent = 'Erro ao verificar cupom no servidor.';
@@ -2435,6 +2500,20 @@
             return;
         }
 
+        // Verifica se foi selecionado produto de upsell para levar antes de enviar à API
+        const upsellSelect = document.getElementById('cliente-produto-upsell');
+        const upsellId = upsellSelect ? upsellSelect.value : '';
+        let pNome = '';
+        let pPrecoNum = 0;
+        let upsellInfoTxt = '';
+        if (upsellId && upsellSelect.selectedOptions && upsellSelect.selectedOptions[0]) {
+            const opt = upsellSelect.selectedOptions[0];
+            pNome = opt.dataset.nome || opt.textContent;
+            pPrecoNum = parseFloat(opt.dataset.preco || 0);
+            const pPrecoFmt = pPrecoNum > 0 ? `R$ ${pPrecoNum.toFixed(2).replace('.', ',')}` : '';
+            upsellInfoTxt = pPrecoFmt ? `${pNome} (${pPrecoFmt})` : pNome;
+        }
+
         const btn = document.getElementById('btnConfirmarAgendamento');
         btn.disabled = true;
         btn.textContent = 'Processando agendamento...';
@@ -2448,6 +2527,9 @@
                     cliente_telefone: telefone,
                     servico_id: servico_id,
                     barbeiro_id: barbeiro_id ? Number(barbeiro_id) : null,
+                    produto_id: upsellId ? Number(upsellId) : null,
+                    produto_nome: pNome || null,
+                    produto_preco: pPrecoNum || 0,
                     data_agendada: data_agendada,
                     horario: horario,
                     cupom: cupomFinal
@@ -2462,16 +2544,22 @@
                 const sNome = result.dados?.servico_nome || '';
                 const sComBarbeiro = bNome ? `${sNome} com ${bNome}` : sNome;
 
-                // Verifica se foi selecionado produto de upsell para levar
-                const upsellSelect = document.getElementById('cliente-produto-upsell');
-                const upsellId = upsellSelect ? upsellSelect.value : '';
-                let upsellInfoTxt = '';
-                if (upsellId && upsellSelect.selectedOptions && upsellSelect.selectedOptions[0]) {
-                    const opt = upsellSelect.selectedOptions[0];
-                    const pNome = opt.dataset.nome || opt.textContent;
-                    const pPreco = opt.dataset.preco ? `R$ ${Number(opt.dataset.preco).toFixed(2).replace('.', ',')}` : '';
-                    upsellInfoTxt = `${pNome} (${pPreco})`;
-                    
+                const svcSelectEl = document.getElementById('cliente-servico');
+                const optSvc = svcSelectEl?.selectedOptions?.[0];
+                const precoCorteCalc = result.dados?.servico_preco !== undefined
+                    ? Number(result.dados.servico_preco)
+                    : (cupomAtivo && cupomAtivo.valido ? Number(cupomAtivo.valor_final) : Number(optSvc?.dataset?.preco || 0));
+                const precoTotalCalc = result.valor_total !== undefined
+                    ? Number(result.valor_total)
+                    : (precoCorteCalc + pPrecoNum);
+                const totalFmtModal = `R$ ${precoTotalCalc.toFixed(2).replace('.', ',')}`;
+                const corteFmtModal = `R$ ${precoCorteCalc.toFixed(2).replace('.', ',')}`;
+                const prodFmtModal = `R$ ${pPrecoNum.toFixed(2).replace('.', ',')}`;
+                const detalheSomaTxt = upsellInfoTxt
+                    ? `${totalFmtModal} <span class="text-[11px] text-zinc-400 font-normal">(Corte: ${corteFmtModal} + Produto: ${prodFmtModal})</span>`
+                    : totalFmtModal;
+
+                if (upsellId) {
                     // Dispara reserva assíncrona do produto na loja
                     fetch(API_PRODUTOS, {
                         method: 'POST',
@@ -2509,6 +2597,10 @@
                             <strong class="text-right">${upsellInfoTxt}</strong>
                         </div>` : ''}
                         <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-zinc-400 text-xs">💰 Total (Corte + Produto):</span>
+                            <strong class="text-emerald-400 text-sm font-mono text-right">${detalheSomaTxt}</strong>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
                             <span class="text-zinc-400 text-xs">📅 Data & Horário:</span>
                             <strong class="text-white text-sm">${data_agendada} às ${horario}</strong>
                         </div>
@@ -2525,15 +2617,21 @@
                     `;
                 }
 
+                // Garante que a URL do WhatsApp contenha o produto e o valor total (Corte + Produto)
+                let finalWhatsUrl = result.whatsapp_url_cliente || '';
+                if (finalWhatsUrl && !decodeURIComponent(finalWhatsUrl).includes('Total')) {
+                    if (upsellInfoTxt) {
+                        finalWhatsUrl += encodeURIComponent(`\n🧴 *Produto para Retirada:* ${upsellInfoTxt}\n💰 *Total (Corte + Produto):* ${totalFmtModal} _(Corte: ${corteFmtModal} + Produto: ${prodFmtModal})_`);
+                    } else if (precoTotalCalc > 0) {
+                        finalWhatsUrl += encodeURIComponent(`\n💰 *Valor Total:* ${totalFmtModal}`);
+                    }
+                }
+
                 // Configura botões de ação do Modal
                 const btnWhats = document.getElementById('btn-modal-whatsapp');
                 if (btnWhats) {
-                    if (result.whatsapp_url_cliente) {
-                        let finalUrl = result.whatsapp_url_cliente;
-                        if (upsellInfoTxt) {
-                            finalUrl += encodeURIComponent(`\n🧴 *Produto para Retirada:* ${upsellInfoTxt}`);
-                        }
-                        btnWhats.href = finalUrl;
+                    if (finalWhatsUrl) {
+                        btnWhats.href = finalWhatsUrl;
                         btnWhats.style.display = 'flex';
                     } else {
                         btnWhats.style.display = 'none';
@@ -2563,6 +2661,8 @@
                             <p>👤 Cliente: <strong>${nome}</strong></p>
                             <p>✂️ Serviço: <strong>${sComBarbeiro}</strong></p>
                             ${bNome ? `<p>💈 Barbeiro: <strong>${bNome}</strong></p>` : ''}
+                            ${upsellInfoTxt ? `<p>🧴 Produto: <strong>${upsellInfoTxt}</strong></p>` : ''}
+                            <p>💰 Total: <strong class="text-emerald-300 font-mono">${detalheSomaTxt}</strong></p>
                             <p>📅 Data & Horário: <strong>${data_agendada} às ${horario}</strong></p>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span>🔑 Código de cancelamento:</span>
@@ -2576,8 +2676,8 @@
                             <a href="../api/comprovante.php?codigo=${result.codigo}" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#EAD086] via-[#D4AF37] to-[#B38728] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-lg hover:brightness-110">
                                 <span>🎫 Baixar Voucher VIP</span>
                             </a>
-                            ${result.whatsapp_url_cliente ? `
-                                <a href="${result.whatsapp_url_cliente}" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow">
+                            ${finalWhatsUrl ? `
+                                <a href="${finalWhatsUrl}" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold text-xs py-2.5 px-4 rounded-xl transition shadow">
                                     <span>📲 Abrir no WhatsApp</span>
                                 </a>
                             ` : ''}
@@ -2617,6 +2717,8 @@
         if (bannerAssinante) bannerAssinante.classList.add('hidden');
         const feedbackEl = document.getElementById('cupom-feedback');
         if (feedbackEl) feedbackEl.classList.add('hidden');
+        const resumoTot = document.getElementById('resumo-total-agendamento');
+        if (resumoTot) resumoTot.classList.add('hidden');
         const box = document.getElementById('boxSucessoAgendamento');
         if (box) box.classList.add('hidden');
         carregarHorariosDisponiveis();
