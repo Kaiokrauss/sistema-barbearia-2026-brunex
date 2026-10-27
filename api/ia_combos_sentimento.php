@@ -164,12 +164,39 @@ $sent = $resultado['sentimento_avaliacoes'];
                     <p class="text-xs text-zinc-400">Duas inteligências artificiais em Python fáceis de entender: monta combos com cálculo de tempo na cadeira e lê o sentimento das avaliações.</p>
                 </div>
             </div>
-            <a href="../Frontend/index.html" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-zinc-300 transition self-start md:self-center">
-                ← Voltar para a Barbearia
-            </a>
+            <div class="flex flex-wrap items-center gap-3 self-start md:self-center">
+                <!-- Controle Ligar / Desligar IA -->
+                <div id="status-combos-box" class="flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 transition-colors">
+                    <div>
+                        <span class="text-[10px] uppercase tracking-wider text-zinc-400 block">Status da IA</span>
+                        <span id="status-combos-label" class="text-xs text-emerald-400 font-bold">🟢 Ligada</span>
+                    </div>
+                    <button type="button" onclick="toggleIaCombos()" id="btn-toggle-combos" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition flex items-center gap-1">
+                        <span>🔴</span> Desligar IA
+                    </button>
+                </div>
+
+                <a href="../Frontend/index.html" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-zinc-300 transition">
+                    ← Voltar para a Barbearia
+                </a>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- BANNER QUANDO A IA ESTÁ DESLIGADA -->
+        <div id="combos-desativado-banner" class="hidden rounded-3xl p-8 bg-gradient-to-br from-red-950/40 via-[#14141c] to-[#0f0f15] border border-red-500/40 text-center space-y-4 shadow-2xl">
+            <div class="w-16 h-16 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 flex items-center justify-center text-3xl mx-auto">
+                ⏸️
+            </div>
+            <h2 class="text-xl font-bold text-white">IA de Combos & Sentimento (Python) está Desligada</h2>
+            <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">
+                Você desativou esta inteligência artificial no painel de controle. Clique no botão abaixo (ou na aba "Ligar / Desligar as IAs" do sistema) para reativá-la instantaneamente.
+            </p>
+            <button type="button" onclick="toggleIaCombos()" class="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider transition shadow-lg">
+                🟢 Ligar IA Agora
+            </button>
+        </div>
+
+        <div id="combos-conteudo-ativo" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
             <!-- =========================================================================
                  COLUNA 1 (6 COLUNAS): IA 4 — CALCULADORA DE TEMPO & COMBO IDEAL
@@ -323,5 +350,45 @@ $sent = $resultado['sentimento_avaliacoes'];
         </div>
 
     </div>
+
+    <script>
+        function aplicarStatusIaCombos() {
+            const ativo = localStorage.getItem('barber_ia_combos') !== 'false';
+            const banner = document.getElementById('combos-desativado-banner');
+            const conteudo = document.getElementById('combos-conteudo-ativo');
+            const box = document.getElementById('status-combos-box');
+            const lbl = document.getElementById('status-combos-label');
+            const btn = document.getElementById('btn-toggle-combos');
+
+            if (ativo) {
+                if (banner) banner.classList.add('hidden');
+                if (conteudo) conteudo.classList.remove('hidden');
+                if (box) box.className = 'flex items-center gap-3 bg-[#181820] px-4 py-2.5 rounded-2xl border border-white/10 transition-colors';
+                if (lbl) { lbl.textContent = '🟢 Ligada'; lbl.className = 'text-xs text-emerald-400 font-bold'; }
+                if (btn) {
+                    btn.innerHTML = '<span>🔴</span> Desligar IA';
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition flex items-center gap-1';
+                }
+            } else {
+                if (banner) banner.classList.remove('hidden');
+                if (conteudo) conteudo.classList.add('hidden');
+                if (box) box.className = 'flex items-center gap-3 bg-red-950/30 px-4 py-2.5 rounded-2xl border border-red-500/40 transition-colors';
+                if (lbl) { lbl.textContent = '🔴 Desligada'; lbl.className = 'text-xs text-red-400 font-bold'; }
+                if (btn) {
+                    btn.innerHTML = '<span>🟢</span> Ligar IA';
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-1';
+                }
+            }
+        }
+
+        function toggleIaCombos() {
+            const atual = localStorage.getItem('barber_ia_combos') !== 'false';
+            localStorage.setItem('barber_ia_combos', (!atual) ? 'true' : 'false');
+            aplicarStatusIaCombos();
+        }
+
+        aplicarStatusIaCombos();
+    </script>
 </body>
 </html>
+
