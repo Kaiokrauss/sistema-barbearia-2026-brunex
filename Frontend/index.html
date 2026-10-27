@@ -355,11 +355,14 @@
                     <img src="./icons/logo-personagem.jpg?v=2" alt="Mascote Barbearia VIP" class="w-full h-full rounded-full object-cover bg-[#121217]">
                 </div>
                 <div class="text-left">
-                    <p class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
-                    <h1 class="text-sm sm:text-lg font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
+                    <p id="custom-header-subtitulo" class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-400/90 font-bold">Borcelle Exclusive</p>
+                    <h1 id="custom-header-nome" class="text-sm sm:text-lg font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
                 </div>
             </div>
             <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                <button type="button" onclick="changeTab('tab-personalizar')" class="text-xs font-bold text-pink-300 bg-pink-500/15 hover:bg-pink-500/25 border border-pink-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Personalizar Nome, Cores, Preços e Menu sem programar">
+                    <span>🎨</span> <span class="hidden md:inline">Personalizar</span>
+                </button>
                 <button type="button" onclick="abrirModalControleIa()" id="btn-topo-controle-ia" class="text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Ligar ou Desligar os Recursos de Inteligência Artificial">
                     <span>🤖</span> <span id="topo-ia-status-texto">Ligar/Desligar IAs</span>
                 </button>
@@ -406,13 +409,16 @@
             <button onclick="changeTab('tab-ia-marketing')" id="btn-tab-ia-marketing" class="nav-btn nav-btn-ia-marketing text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">🎯</span> <span>IA Marketing</span> <span id="nav-badge-ia-marketing" class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1">ON</span>
             </button>
-            <button type="button" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
+            <button onclick="changeTab('tab-personalizar')" id="btn-tab-personalizar" class="nav-btn text-pink-300 hover:text-pink-200 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Personalizar Nome, Cores, Preços e Menu sem programar">
+                <span class="nav-icon">🎨</span> <span>Personalizar Site</span>
+            </button>
+            <button type="button" id="btn-nav-ios" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
                 <span class="nav-icon">📱</span> <span>App iOS</span>
             </button>
-            <a href="../api/qrcode_pix.php" class="nav-btn text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Gerador de QR Code PIX e Cartão Digital"><span class="nav-icon">💳</span> <span>QR Code PIX</span></a>
-            <a href="../api/calculadora_comissao.php" class="nav-btn text-purple-300 hover:text-purple-200 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Calculadora de Lucro e Comissão em Python"><span class="nav-icon">🐍</span> <span>Calculadora Python</span></a>
-            <a href="../api/relatorio_python.php" class="nav-btn text-emerald-300 hover:text-emerald-200 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Relatório Financeiro Executivo (PDF/Excel via Python)"><span class="nav-icon">📈</span> <span>Relatório Python</span></a>
-            <a href="../api/backup.php?download=1" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
+            <a href="../api/qrcode_pix.php" id="btn-nav-pix" class="nav-btn text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Gerador de QR Code PIX e Cartão Digital"><span class="nav-icon">💳</span> <span>QR Code PIX</span></a>
+            <a href="../api/calculadora_comissao.php" id="btn-nav-calc-py" class="nav-btn text-purple-300 hover:text-purple-200 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Calculadora de Lucro e Comissão em Python"><span class="nav-icon">🐍</span> <span>Calculadora Python</span></a>
+            <a href="../api/relatorio_python.php" id="btn-nav-rel-py" class="nav-btn text-emerald-300 hover:text-emerald-200 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Relatório Financeiro Executivo (PDF/Excel via Python)"><span class="nav-icon">📈</span> <span>Relatório Python</span></a>
+            <a href="../api/backup.php?download=1" id="btn-nav-backup" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
                 <span class="nav-icon">💾</span> <span>Backup SQL</span>
             </a>
         </div>
@@ -420,7 +426,7 @@
 </div>
 
 <!-- HERO BANNER LUXUOSO -->
-<section class="max-w-6xl mx-auto px-4 pt-6 pb-2 w-full">
+<section id="custom-hero-section" class="max-w-6xl mx-auto px-4 pt-6 pb-2 w-full">
     <div class="glass-panel rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
         <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="flex items-center gap-4 sm:gap-6 relative z-10 text-left">
@@ -430,19 +436,19 @@
             <div>
                 <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25 mb-2.5">
                     <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    Atendimento VIP & Agendamento Instantâneo
+                    <span id="custom-hero-badge-txt">Atendimento VIP & Agendamento Instantâneo</span>
                 </span>
-                <h2 class="text-xl sm:text-2xl md:text-4xl font-display font-bold text-white tracking-wide">
+                <h2 id="custom-hero-titulo" class="text-xl sm:text-2xl md:text-4xl font-display font-bold text-white tracking-wide">
                     Estilo, Precisão & <span class="gold-gradient-text">Tradição</span>
                 </h2>
-                <p class="text-zinc-400 text-xs sm:text-sm mt-1.5 max-w-xl leading-relaxed">
+                <p id="custom-hero-desc" class="text-zinc-400 text-xs sm:text-sm mt-1.5 max-w-xl leading-relaxed">
                     Garanta seu horário com os melhores mestres barbeiros. Escolha o serviço, selecione seu horário preferido e confirme em segundos.
                 </p>
             </div>
         </div>
         <div class="flex items-center gap-3 relative z-10">
             <div class="text-center px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5 shadow-inner">
-                <div class="text-amber-400 font-bold text-xl font-display">★ 4.9</div>
+                <div id="custom-hero-nota" class="text-amber-400 font-bold text-xl font-display">★ 4.9</div>
                 <div class="text-[11px] text-zinc-400 mt-0.5 uppercase tracking-wider">Avaliação</div>
             </div>
             <div class="text-center px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5 shadow-inner">
@@ -1564,12 +1570,225 @@
         </div>
     </div>
 
+    <!-- =========================================================================
+         TELA DE PERSONALIZAÇÃO DO SISTEMA (SEM PROGRAMAÇÃO / NO-CODE)
+         ========================================================================= -->
+    <div id="tab-personalizar" class="tab-content">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-pink-400 font-bold">🎨 Estúdio Visual • Sem Programação</span>
+                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white mt-1">Personalizar Meu Sistema</h2>
+                    <p class="text-sm text-zinc-400 mt-1">Mude o nome da barbearia, cores do site, botões do menu e preços dos serviços com 1 clique.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="salvarPersonalizacaoSistema()" class="px-5 py-2.5 rounded-xl gold-btn text-xs font-bold shadow-lg flex items-center gap-2">
+                        <span>💾</span> Salvar Todas as Alterações
+                    </button>
+                    <button type="button" onclick="restaurarPadraoSistema()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-red-500/20 text-zinc-300 hover:text-red-300 border border-white/10 hover:border-red-500/30 text-xs font-semibold transition">
+                        🔄 Restaurar Original
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- 1. IDENTIDADE VISUAL & TEXTOS DO SITE -->
+                <div class="lg:col-span-6 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>🏪</span> 1. Nome, Textos e Banner do Topo
+                        </h3>
+                        <label class="flex items-center gap-2 text-xs text-emerald-400 font-bold cursor-pointer">
+                            <input type="checkbox" id="cfg-mostrar-banner" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-emerald-500 rounded">
+                            <span>Mostrar Banner Grande</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Nome da Barbearia (Topo e Título)</label>
+                            <input type="text" id="cfg-nome-barbearia" class="dark-input !py-2.5 text-sm" placeholder="Ex: Barbearia VIP" oninput="aplicarPreviewPersonalizacao()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Subtítulo Acima do Nome</label>
+                            <input type="text" id="cfg-subtitulo-topo" class="dark-input !py-2.5 text-sm" placeholder="Ex: Borcelle Exclusive" oninput="aplicarPreviewPersonalizacao()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Frase Principal do Banner</label>
+                            <input type="text" id="cfg-hero-titulo" class="dark-input !py-2.5 text-sm" placeholder="Ex: Estilo, Precisão & Tradição" oninput="aplicarPreviewPersonalizacao()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Nota no Banner</label>
+                            <input type="text" id="cfg-hero-nota" class="dark-input !py-2.5 text-sm" placeholder="Ex: ★ 4.9" oninput="aplicarPreviewPersonalizacao()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Selo de Destaque do Banner</label>
+                        <input type="text" id="cfg-hero-badge" class="dark-input !py-2.5 text-sm" placeholder="Ex: Atendimento VIP & Agendamento Instantâneo" oninput="aplicarPreviewPersonalizacao()">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Descrição do Banner</label>
+                        <textarea id="cfg-hero-desc" rows="2" class="dark-input !py-2 text-xs" placeholder="Texto abaixo do título principal..." oninput="aplicarPreviewPersonalizacao()"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Texto do Rodapé</label>
+                        <input type="text" id="cfg-rodape-texto" class="dark-input !py-2.5 text-xs" placeholder="Ex: Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance." oninput="aplicarPreviewPersonalizacao()">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2 border-t border-white/10">
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-400 mb-1">📲 WhatsApp da Barbearia</label>
+                            <input type="text" id="cfg-whatsapp-barbearia" class="dark-input !py-2.5 text-xs font-mono" placeholder="Ex: (11) 99999-9999">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-400 mb-1">💳 Chave PIX Oficial</label>
+                            <input type="text" id="cfg-chave-pix" class="dark-input !py-2.5 text-xs font-mono" placeholder="Ex: pix@barbeariavip.com.br">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. CORES DO TEMA & ABA DE MENUS VISÍVEIS -->
+                <div class="lg:col-span-6 space-y-6">
+                    <!-- Cores / Tema com 1 clique -->
+                    <div class="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+                            <span>🎨</span> 2. Cor Principal / Tema do Sistema (1 Clique)
+                        </h3>
+                        <p class="text-xs text-zinc-400">Escolha uma cor abaixo para mudar botões, brilhos e detalhes do site na hora:</p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            <button type="button" onclick="selecionarCorTema('#D4AF37')" class="p-3 rounded-xl bg-black/50 border border-amber-500/40 hover:border-amber-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
+                                <span class="w-5 h-5 rounded-full bg-[#D4AF37] shadow-md flex-shrink-0"></span> Dourado VIP
+                            </button>
+                            <button type="button" onclick="selecionarCorTema('#3B82F6')" class="p-3 rounded-xl bg-black/50 border border-blue-500/40 hover:border-blue-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
+                                <span class="w-5 h-5 rounded-full bg-[#3B82F6] shadow-md flex-shrink-0"></span> Azul Safira
+                            </button>
+                            <button type="button" onclick="selecionarCorTema('#10B981')" class="p-3 rounded-xl bg-black/50 border border-emerald-500/40 hover:border-emerald-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
+                                <span class="w-5 h-5 rounded-full bg-[#10B981] shadow-md flex-shrink-0"></span> Verde Esmeralda
+                            </button>
+                            <button type="button" onclick="selecionarCorTema('#A855F7')" class="p-3 rounded-xl bg-black/50 border border-purple-500/40 hover:border-purple-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
+                                <span class="w-5 h-5 rounded-full bg-[#A855F7] shadow-md flex-shrink-0"></span> Roxo Royal
+                            </button>
+                            <button type="button" onclick="selecionarCorTema('#EF4444')" class="p-3 rounded-xl bg-black/50 border border-red-500/40 hover:border-red-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
+                                <span class="w-5 h-5 rounded-full bg-[#EF4444] shadow-md flex-shrink-0"></span> Vermelho Barber
+                            </button>
+                            <button type="button" onclick="selecionarCorTema('#F97316')" class="p-3 rounded-xl bg-black/50 border border-orange-500/40 hover:border-orange-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
+                                <span class="w-5 h-5 rounded-full bg-[#F97316] shadow-md flex-shrink-0"></span> Laranja Vintage
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="text-xs text-zinc-400">Ou escolha qualquer cor personalizada:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="cfg-cor-primaria" value="#D4AF37" onchange="selecionarCorTema(this.value)" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20">
+                                <span id="cfg-cor-hex-label" class="text-xs font-mono text-amber-300 font-bold">#D4AF37</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ligar / Desligar Botões do Menu -->
+                    <div class="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+                            <span>👁️</span> 3. Escolher o que Aparece no Menu Superior
+                        </h3>
+                        <p class="text-xs text-zinc-400">Desmarque qualquer aba ou ferramenta que você não queira mostrar no menu:</p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs" id="cfg-lista-menus">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-tab-fidelidade" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>🎁 Fidelidade VIP</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-tab-avaliacoes" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>⭐ Avaliações</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-tab-clube-vip" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>👑 Clube VIP</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-tab-loja" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>🧴 Loja VIP</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-tab-visagista" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>🧠 Visagista IA</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-tab-ia-marketing" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>🎯 IA Marketing</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-nav-ios" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>📱 App iOS</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-nav-pix" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>💳 QR Code PIX</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-nav-calc-py" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>🐍 Calc. Python</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-nav-rel-py" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>📈 Relatório Python</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-black/40 border border-white/10 cursor-pointer hover:border-white/25">
+                                <input type="checkbox" data-menu-target="btn-nav-backup" checked onchange="salvarPersonalizacaoSistema(true)" class="w-4 h-4 accent-amber-500 rounded">
+                                <span>💾 Backup SQL</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. GERENCIADOR DE SERVIÇOS E PREÇOS (DIRETO NO BANCO SEM PROGRAMAÇÃO) -->
+            <div class="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>✂️</span> 4. Editar Preços e Serviços da Barbearia (Sem Mexer no Código)
+                        </h3>
+                        <p class="text-xs text-zinc-400 mt-0.5">Altere o valor de qualquer corte, mude o nome ou adicione novos serviços direto no banco de dados.</p>
+                    </div>
+                </div>
+
+                <!-- Adicionar novo serviço -->
+                <div class="p-4 rounded-2xl bg-black/40 border border-amber-500/30 grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-amber-300 mb-1">➕ Nome do Novo Serviço / Corte</label>
+                        <input type="text" id="novo-servico-nome" class="dark-input !mt-0 !py-2 text-xs" placeholder="Ex: Corte Degradê + Sobrancelha">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-amber-300 mb-1">Preço (R$)</label>
+                        <input type="number" step="0.50" min="1" id="novo-servico-preco" class="dark-input !mt-0 !py-2 text-xs" placeholder="Ex: 55.00">
+                    </div>
+                    <button type="button" onclick="adicionarServicoSemCodigo()" class="py-2.5 px-4 rounded-xl gold-btn text-xs font-bold shadow-md">
+                        + Adicionar Serviço
+                    </button>
+                </div>
+
+                <!-- Lista de serviços atuais para editar preço ou excluir -->
+                <div id="lista-servicos-personalizar" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="p-4 text-center text-xs text-zinc-500 col-span-2">Carregando serviços da barbearia...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 
 <footer class="bg-[#0A0A0C] border-t border-white/10 p-8 text-center text-xs text-zinc-500 mt-12">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p class="font-display font-medium text-zinc-400">Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance.</p>
+        <p id="custom-footer-texto" class="font-display font-medium text-zinc-400">Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance.</p>
         <div class="flex justify-center gap-4 flex-wrap">
             <a href="index.html" class="hover:text-amber-400 transition">Início</a>
             <a href="javascript:void(0)" onclick="changeTab('tab-horarios')" class="hover:text-amber-400 transition">Horários</a>
@@ -1619,6 +1838,10 @@
         </div>
         <p class="text-xs text-zinc-400 mb-5">Acesse rapidamente as ferramentas administrativas e configurações:</p>
         <div class="space-y-2.5">
+            <button type="button" onclick="changeTab('tab-personalizar'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-pink-500/20 to-amber-500/20 hover:from-pink-500/30 hover:to-amber-500/30 border border-pink-500/50 text-sm font-bold text-pink-300 transition text-left shadow-lg">
+                <span class="flex items-center gap-2.5"><span>🎨</span> <strong>Personalizar Site (Sem Código)</strong></span>
+                <span class="px-2 py-0.5 rounded-md bg-pink-500/30 text-pink-200 font-extrabold text-[10px]">Editar</span>
+            </button>
             <button type="button" onclick="abrirModalControleIa(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 to-purple-500/20 hover:from-amber-500/30 hover:to-purple-500/30 border border-amber-500/50 text-sm font-bold text-amber-300 transition text-left shadow-lg">
                 <span class="flex items-center gap-2.5"><span>🤖</span> <strong>Ligar / Desligar as IAs</strong></span>
                 <span id="drawer-ia-status-texto" class="px-2 py-0.5 rounded-md bg-amber-400 text-black font-extrabold text-[10px]">Configurar</span>
@@ -2280,6 +2503,9 @@
         if (tabId === 'tab-ia-marketing') {
             aplicarStatusIas();
             if (IA_STATUS.marketing) carregarIaMarketing();
+        }
+        if (tabId === 'tab-personalizar') {
+            carregarServicosPainelPersonalizar();
         }
     }
 
@@ -5036,8 +5262,338 @@
     checarDispositivoIos();
     document.addEventListener('DOMContentLoaded', () => {
         aplicarStatusIas();
+        carregarPersonalizacaoSalva();
     });
     aplicarStatusIas();
+
+    // =========================================================================
+    // MOTOR DE PERSONALIZAÇÃO VISUAL (NO-CODE) — SALVO NO NAVEGADOR + BANCO
+    // =========================================================================
+    const PADRAO_PERSONALIZACAO = {
+        nomeBarbearia: 'Barbearia VIP',
+        subtituloTopo: 'Borcelle Exclusive',
+        heroTitulo: 'Estilo, Precisão & Tradição',
+        heroNota: '★ 4.9',
+        heroBadge: 'Atendimento VIP & Agendamento Instantâneo',
+        heroDesc: 'Garanta seu horário com os melhores mestres barbeiros. Escolha o serviço, selecione seu horário preferido e confirme em segundos.',
+        rodapeTexto: 'Barbearia VIP © 2026 — Tradição, Estilo e Alta Performance.',
+        whatsappBarbearia: '(11) 99999-9999',
+        chavePix: 'pix@barbeariavip.com.br',
+        mostrarBanner: true,
+        corPrimaria: '#D4AF37',
+        menusOcultos: []
+    };
+
+    function obterConfigPersonalizacao() {
+        try {
+            const salvo = localStorage.getItem('barber_custom_config_v1');
+            if (salvo) {
+                return { ...PADRAO_PERSONALIZACAO, ...JSON.parse(salvo) };
+            }
+        } catch (e) {}
+        return { ...PADRAO_PERSONALIZACAO };
+    }
+
+    function carregarPersonalizacaoSalva() {
+        const cfg = obterConfigPersonalizacao();
+        const elNome = document.getElementById('cfg-nome-barbearia');
+        const elSub = document.getElementById('cfg-subtitulo-topo');
+        const elTit = document.getElementById('cfg-hero-titulo');
+        const elNota = document.getElementById('cfg-hero-nota');
+        const elBadge = document.getElementById('cfg-hero-badge');
+        const elDesc = document.getElementById('cfg-hero-desc');
+        const elRodape = document.getElementById('cfg-rodape-texto');
+        const elZap = document.getElementById('cfg-whatsapp-barbearia');
+        const elPix = document.getElementById('cfg-chave-pix');
+        const elBanner = document.getElementById('cfg-mostrar-banner');
+        const elCor = document.getElementById('cfg-cor-primaria');
+        const elCorLbl = document.getElementById('cfg-cor-hex-label');
+
+        if (elNome) elNome.value = cfg.nomeBarbearia;
+        if (elSub) elSub.value = cfg.subtituloTopo;
+        if (elTit) elTit.value = cfg.heroTitulo;
+        if (elNota) elNota.value = cfg.heroNota;
+        if (elBadge) elBadge.value = cfg.heroBadge;
+        if (elDesc) elDesc.value = cfg.heroDesc;
+        if (elRodape) elRodape.value = cfg.rodapeTexto;
+        if (elZap) elZap.value = cfg.whatsappBarbearia || PADRAO_PERSONALIZACAO.whatsappBarbearia;
+        if (elPix) elPix.value = cfg.chavePix || PADRAO_PERSONALIZACAO.chavePix;
+        if (elBanner) elBanner.checked = cfg.mostrarBanner !== false;
+        if (elCor) elCor.value = cfg.corPrimaria || '#D4AF37';
+        if (elCorLbl) elCorLbl.textContent = (cfg.corPrimaria || '#D4AF37').toUpperCase();
+
+        // Checkboxes de menu
+        document.querySelectorAll('#cfg-lista-menus input[type="checkbox"]').forEach(chk => {
+            const targetId = chk.getAttribute('data-menu-target');
+            chk.checked = !(cfg.menusOcultos || []).includes(targetId);
+        });
+
+        aplicarConfiguracaoNoDom(cfg);
+    }
+
+    function aplicarPreviewPersonalizacao() {
+        const cfg = obterConfigPersonalizacao();
+        cfg.nomeBarbearia = document.getElementById('cfg-nome-barbearia')?.value || PADRAO_PERSONALIZACAO.nomeBarbearia;
+        cfg.subtituloTopo = document.getElementById('cfg-subtitulo-topo')?.value || PADRAO_PERSONALIZACAO.subtituloTopo;
+        cfg.heroTitulo = document.getElementById('cfg-hero-titulo')?.value || PADRAO_PERSONALIZACAO.heroTitulo;
+        cfg.heroNota = document.getElementById('cfg-hero-nota')?.value || PADRAO_PERSONALIZACAO.heroNota;
+        cfg.heroBadge = document.getElementById('cfg-hero-badge')?.value || PADRAO_PERSONALIZACAO.heroBadge;
+        cfg.heroDesc = document.getElementById('cfg-hero-desc')?.value || PADRAO_PERSONALIZACAO.heroDesc;
+        cfg.rodapeTexto = document.getElementById('cfg-rodape-texto')?.value || PADRAO_PERSONALIZACAO.rodapeTexto;
+        cfg.mostrarBanner = document.getElementById('cfg-mostrar-banner')?.checked !== false;
+        aplicarConfiguracaoNoDom(cfg);
+    }
+
+    function selecionarCorTema(corHex) {
+        soundVIP.playSoftClick();
+        const elCor = document.getElementById('cfg-cor-primaria');
+        const elCorLbl = document.getElementById('cfg-cor-hex-label');
+        if (elCor) elCor.value = corHex;
+        if (elCorLbl) elCorLbl.textContent = corHex.toUpperCase();
+        salvarPersonalizacaoSistema(true);
+    }
+
+    function aplicarConfiguracaoNoDom(cfg) {
+        // 1. Textos
+        const hNome = document.getElementById('custom-header-nome');
+        const hSub = document.getElementById('custom-header-subtitulo');
+        const heroSec = document.getElementById('custom-hero-section');
+        const heroTit = document.getElementById('custom-hero-titulo');
+        const heroNota = document.getElementById('custom-hero-nota');
+        const heroBadge = document.getElementById('custom-hero-badge-txt');
+        const heroDesc = document.getElementById('custom-hero-desc');
+        const footerTxt = document.getElementById('custom-footer-texto');
+
+        if (hNome) hNome.textContent = cfg.nomeBarbearia;
+        if (hSub) hSub.textContent = cfg.subtituloTopo;
+        if (heroTit) heroTit.innerHTML = `<span class="gold-gradient-text">${cfg.heroTitulo}</span>`;
+        if (heroNota) heroNota.textContent = cfg.heroNota;
+        if (heroBadge) heroBadge.textContent = cfg.heroBadge;
+        if (heroDesc) heroDesc.textContent = cfg.heroDesc;
+        if (footerTxt) footerTxt.textContent = cfg.rodapeTexto;
+        document.title = `${cfg.nomeBarbearia} - Sistema Premium de Agendamento`;
+
+        // 2. Mostrar / Ocultar Banner
+        if (heroSec) {
+            if (cfg.mostrarBanner === false) {
+                heroSec.classList.add('hidden');
+            } else {
+                heroSec.classList.remove('hidden');
+            }
+        }
+
+        // 3. Menus visíveis/ocultos
+        const ocultos = cfg.menusOcultos || [];
+        document.querySelectorAll('#cfg-lista-menus input[type="checkbox"]').forEach(chk => {
+            const targetId = chk.getAttribute('data-menu-target');
+            const btn = document.getElementById(targetId);
+            if (btn) {
+                if (ocultos.includes(targetId)) {
+                    btn.classList.add('hidden');
+                } else {
+                    btn.classList.remove('hidden');
+                }
+            }
+        });
+
+        // 4. Cor Primária Dinâmica
+        const cor = cfg.corPrimaria || '#D4AF37';
+        let styleEl = document.getElementById('estilo-personalizado-dinamico');
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'estilo-personalizado-dinamico';
+            document.head.appendChild(styleEl);
+        }
+        styleEl.innerHTML = `
+            .gold-btn {
+                background: ${cor} !important;
+                color: #09090b !important;
+                box-shadow: 0 4px 20px ${cor}44 !important;
+            }
+            .gold-btn:hover {
+                filter: brightness(1.12);
+                box-shadow: 0 6px 28px ${cor}66 !important;
+            }
+            .gold-gradient-text {
+                background: linear-gradient(135deg, #ffffff 0%, ${cor} 65%, ${cor} 100%) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+            }
+            .active-tab-gold {
+                background: ${cor}26 !important;
+                color: ${cor} !important;
+                border-color: ${cor}66 !important;
+            }
+            .glass-panel {
+                border-color: ${cor}33 !important;
+            }
+            .time-chip.selected {
+                background: ${cor} !important;
+                border-color: ${cor} !important;
+                color: #09090b !important;
+            }
+        `;
+    }
+
+    function salvarPersonalizacaoSistema(silencioso = false) {
+        const ocultos = [];
+        document.querySelectorAll('#cfg-lista-menus input[type="checkbox"]').forEach(chk => {
+            if (!chk.checked) {
+                ocultos.push(chk.getAttribute('data-menu-target'));
+            }
+        });
+
+        const novaCfg = {
+            nomeBarbearia: document.getElementById('cfg-nome-barbearia')?.value.trim() || PADRAO_PERSONALIZACAO.nomeBarbearia,
+            subtituloTopo: document.getElementById('cfg-subtitulo-topo')?.value.trim() || PADRAO_PERSONALIZACAO.subtituloTopo,
+            heroTitulo: document.getElementById('cfg-hero-titulo')?.value.trim() || PADRAO_PERSONALIZACAO.heroTitulo,
+            heroNota: document.getElementById('cfg-hero-nota')?.value.trim() || PADRAO_PERSONALIZACAO.heroNota,
+            heroBadge: document.getElementById('cfg-hero-badge')?.value.trim() || PADRAO_PERSONALIZACAO.heroBadge,
+            heroDesc: document.getElementById('cfg-hero-desc')?.value.trim() || PADRAO_PERSONALIZACAO.heroDesc,
+            rodapeTexto: document.getElementById('cfg-rodape-texto')?.value.trim() || PADRAO_PERSONALIZACAO.rodapeTexto,
+            whatsappBarbearia: document.getElementById('cfg-whatsapp-barbearia')?.value.trim() || PADRAO_PERSONALIZACAO.whatsappBarbearia,
+            chavePix: document.getElementById('cfg-chave-pix')?.value.trim() || PADRAO_PERSONALIZACAO.chavePix,
+            mostrarBanner: document.getElementById('cfg-mostrar-banner')?.checked !== false,
+            corPrimaria: document.getElementById('cfg-cor-primaria')?.value || '#D4AF37',
+            menusOcultos: ocultos
+        };
+
+        localStorage.setItem('barber_custom_config_v1', JSON.stringify(novaCfg));
+        aplicarConfiguracaoNoDom(novaCfg);
+
+        if (!silencioso) {
+            soundVIP.playChicSuccess();
+            mostrarToast('🎨 Personalização salva e aplicada em todo o sistema!', 'sucesso');
+        }
+    }
+
+    function restaurarPadraoSistema() {
+        localStorage.removeItem('barber_custom_config_v1');
+        carregarPersonalizacaoSalva();
+        soundVIP.playSoftClick();
+        mostrarToast('🔄 Visual original da Barbearia VIP restaurado!', 'aviso');
+    }
+
+    // --- GERENCIADOR VISUAL DE SERVIÇOS E PREÇOS (SEM PROGRAMAÇÃO) ---
+    async function carregarServicosPainelPersonalizar() {
+        const container = document.getElementById('lista-servicos-personalizar');
+        if (!container) return;
+        try {
+            const resp = await fetch(API_SERVICOS);
+            const json = await resp.json();
+            const lista = json.data || [];
+            if (!lista.length) {
+                container.innerHTML = `<div class="p-4 text-center text-xs text-zinc-500 col-span-2">Nenhum serviço cadastrado. Adicione acima!</div>`;
+                return;
+            }
+            container.innerHTML = lista.map(s => `
+                <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                    <div class="flex-1 flex flex-col sm:flex-row gap-2">
+                        <input type="text" id="edit-srv-nome-${s.id}" value="${(s.nome || '').replace(/"/g, '&quot;')}" class="dark-input !mt-0 !py-1.5 !px-3 text-xs flex-1" title="Nome do Serviço">
+                        <div class="flex items-center gap-1.5 sm:w-32">
+                            <span class="text-xs text-zinc-400 font-bold">R$</span>
+                            <input type="number" step="0.50" id="edit-srv-preco-${s.id}" value="${parseFloat(s.preco || 0).toFixed(2)}" class="dark-input !mt-0 !py-1.5 !px-2.5 text-xs font-mono font-bold text-amber-300" title="Preço em R$">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-end">
+                        <button type="button" onclick="salvarEdicaoServicoSemCodigo(${s.id})" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition">
+                            💾 Salvar
+                        </button>
+                        <button type="button" onclick="excluirServicoSemCodigo(${s.id})" class="px-2.5 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-bold transition" title="Excluir Serviço">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            container.innerHTML = `<div class="p-4 text-center text-xs text-red-400 col-span-2">Erro ao carregar serviços.</div>`;
+        }
+    }
+
+    async function adicionarServicoSemCodigo() {
+        const nomeEl = document.getElementById('novo-servico-nome');
+        const precoEl = document.getElementById('novo-servico-preco');
+        const nome = nomeEl?.value.trim();
+        const preco = parseFloat(precoEl?.value || 0);
+
+        if (!nome || preco <= 0) {
+            mostrarToast('Informe o nome e o preço do novo serviço!', 'aviso');
+            return;
+        }
+
+        try {
+            const resp = await fetch(API_SERVICOS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, preco, duracao_minutos: 35 })
+            });
+            const res = await resp.json();
+            if (res.success) {
+                soundVIP.playChicSuccess();
+                mostrarToast(`✂️ Serviço "${nome}" adicionado com sucesso!`, 'sucesso');
+                nomeEl.value = '';
+                precoEl.value = '';
+                carregarServicosPainelPersonalizar();
+                carregarServicosSelect();
+            } else {
+                mostrarToast(res.error || 'Erro ao criar serviço.', 'erro');
+            }
+        } catch (e) {
+            mostrarToast('Erro de comunicação com o servidor.', 'erro');
+        }
+    }
+
+    async function salvarEdicaoServicoSemCodigo(id) {
+        const nome = document.getElementById(`edit-srv-nome-${id}`)?.value.trim();
+        const preco = parseFloat(document.getElementById(`edit-srv-preco-${id}`)?.value || 0);
+        if (!nome || preco <= 0) {
+            mostrarToast('Preencha um nome e preço válidos.', 'aviso');
+            return;
+        }
+
+        try {
+            const resp = await fetch(API_SERVICOS, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, nome, preco, duracao_minutos: 35 })
+            });
+            const res = await resp.json();
+            if (res.success) {
+                soundVIP.playChicSuccess();
+                mostrarToast(`✅ Preço/nome de "${nome}" atualizado!`, 'sucesso');
+                carregarServicosPainelPersonalizar();
+                carregarServicosSelect();
+            } else {
+                mostrarToast(res.error || 'Erro ao atualizar.', 'erro');
+            }
+        } catch (e) {
+            mostrarToast('Erro ao salvar alteração.', 'erro');
+        }
+    }
+
+    async function excluirServicoSemCodigo(id) {
+        if (!confirm('Deseja realmente remover este serviço da lista de agendamentos?')) return;
+        try {
+            const resp = await fetch(API_SERVICOS, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const res = await resp.json();
+            if (res.success) {
+                soundVIP.playCancelSound();
+                mostrarToast('🗑️ Serviço removido!', 'aviso');
+                carregarServicosPainelPersonalizar();
+                carregarServicosSelect();
+            } else {
+                mostrarToast(res.error || 'Não foi possível excluir (pode ter agendamentos vinculados).', 'erro');
+            }
+        } catch (e) {
+            mostrarToast('Erro ao excluir serviço.', 'erro');
+        }
+    }
+
+    carregarPersonalizacaoSalva();
 
 </script>
 </body>
