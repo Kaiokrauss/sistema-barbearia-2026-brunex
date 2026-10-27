@@ -1659,39 +1659,101 @@
 
                 <!-- 2. CORES DO TEMA & ABA DE MENUS VISÍVEIS -->
                 <div class="lg:col-span-6 space-y-6">
-                    <!-- Cores / Tema com 1 clique -->
-                    <div class="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
+                    <!-- Cores / Tema Completo + Cores de Cada Parte do Sistema -->
+                    <div class="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-5">
                         <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
-                            <span>🎨</span> 2. Cor Principal / Tema do Sistema (1 Clique)
+                            <span>🎨</span> 2. Central Completa de Cores & Temas
                         </h3>
-                        <p class="text-xs text-zinc-400">Escolha uma cor abaixo para mudar botões, brilhos e detalhes do site na hora:</p>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                            <button type="button" onclick="selecionarCorTema('#D4AF37')" class="p-3 rounded-xl bg-black/50 border border-amber-500/40 hover:border-amber-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
-                                <span class="w-5 h-5 rounded-full bg-[#D4AF37] shadow-md flex-shrink-0"></span> Dourado VIP
-                            </button>
-                            <button type="button" onclick="selecionarCorTema('#3B82F6')" class="p-3 rounded-xl bg-black/50 border border-blue-500/40 hover:border-blue-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
-                                <span class="w-5 h-5 rounded-full bg-[#3B82F6] shadow-md flex-shrink-0"></span> Azul Safira
-                            </button>
-                            <button type="button" onclick="selecionarCorTema('#10B981')" class="p-3 rounded-xl bg-black/50 border border-emerald-500/40 hover:border-emerald-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
-                                <span class="w-5 h-5 rounded-full bg-[#10B981] shadow-md flex-shrink-0"></span> Verde Esmeralda
-                            </button>
-                            <button type="button" onclick="selecionarCorTema('#A855F7')" class="p-3 rounded-xl bg-black/50 border border-purple-500/40 hover:border-purple-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
-                                <span class="w-5 h-5 rounded-full bg-[#A855F7] shadow-md flex-shrink-0"></span> Roxo Royal
-                            </button>
-                            <button type="button" onclick="selecionarCorTema('#EF4444')" class="p-3 rounded-xl bg-black/50 border border-red-500/40 hover:border-red-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
-                                <span class="w-5 h-5 rounded-full bg-[#EF4444] shadow-md flex-shrink-0"></span> Vermelho Barber
-                            </button>
-                            <button type="button" onclick="selecionarCorTema('#F97316')" class="p-3 rounded-xl bg-black/50 border border-orange-500/40 hover:border-orange-400 flex items-center gap-2.5 text-xs font-bold text-white transition">
-                                <span class="w-5 h-5 rounded-full bg-[#F97316] shadow-md flex-shrink-0"></span> Laranja Vintage
-                            </button>
+                        <!-- A) Temas Completos Prontos (Muda Fundo + Caixas + Botões + Detalhes) -->
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-zinc-300 block">✨ Temas Completos Prontos (1 Clique muda tudo):</span>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button type="button" onclick="aplicarTemaCompleto('ouro')" class="p-2.5 rounded-xl bg-[#0A0A0C] border border-[#D4AF37]/50 hover:border-[#D4AF37] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#D4AF37] flex-shrink-0"></span> Ouro VIP
+                                </button>
+                                <button type="button" onclick="aplicarTemaCompleto('azul')" class="p-2.5 rounded-xl bg-[#08101D] border border-[#3B82F6]/50 hover:border-[#3B82F6] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#3B82F6] flex-shrink-0"></span> Azul Safira
+                                </button>
+                                <button type="button" onclick="aplicarTemaCompleto('verde')" class="p-2.5 rounded-xl bg-[#071510] border border-[#10B981]/50 hover:border-[#10B981] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#10B981] flex-shrink-0"></span> Esmeralda
+                                </button>
+                                <button type="button" onclick="aplicarTemaCompleto('roxo')" class="p-2.5 rounded-xl bg-[#13091F] border border-[#A855F7]/50 hover:border-[#A855F7] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#A855F7] flex-shrink-0"></span> Roxo Royal
+                                </button>
+                                <button type="button" onclick="aplicarTemaCompleto('vermelho')" class="p-2.5 rounded-xl bg-[#180A0C] border border-[#EF4444]/50 hover:border-[#EF4444] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#EF4444] flex-shrink-0"></span> Barber Red
+                                </button>
+                                <button type="button" onclick="aplicarTemaCompleto('whisky')" class="p-2.5 rounded-xl bg-[#16100A] border border-[#F97316]/50 hover:border-[#F97316] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#F97316] flex-shrink-0"></span> Café Whisky
+                                </button>
+                                <button type="button" onclick="aplicarTemaCompleto('ciano')" class="p-2.5 rounded-xl bg-[#07151A] border border-[#06B6D4]/50 hover:border-[#06B6D4] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#06B6D4] flex-shrink-0"></span> Ciano Ice
+                                </button>
+                                <button type="button" onclick="aplicarTemaCompleto('rosa')" class="p-2.5 rounded-xl bg-[#190914] border border-[#EC4899]/50 hover:border-[#EC4899] flex items-center gap-2 text-[11px] font-bold text-white transition">
+                                    <span class="w-4 h-4 rounded-full bg-[#EC4899] flex-shrink-0"></span> Pink Neon
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
-                            <span class="text-xs text-zinc-400">Ou escolha qualquer cor personalizada:</span>
-                            <div class="flex items-center gap-2">
-                                <input type="color" id="cfg-cor-primaria" value="#D4AF37" onchange="selecionarCorTema(this.value)" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20">
-                                <span id="cfg-cor-hex-label" class="text-xs font-mono text-amber-300 font-bold">#D4AF37</span>
+                        <!-- B) Personalizar Cada Parte Separadamente -->
+                        <div class="pt-3 border-t border-white/10 space-y-3">
+                            <span class="text-xs font-bold text-zinc-300 block">🖌️ Ou escolha a cor exata de cada parte do sistema:</span>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- 1. Cor Principal (Botões, Ícones, Bordas e Destaques) -->
+                                <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2">
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">1. Cor de Destaque & Botões</span>
+                                        <span id="cfg-cor-hex-label" class="text-[10px] font-mono text-zinc-400">#D4AF37</span>
+                                    </div>
+                                    <input type="color" id="cfg-cor-primaria" value="#D4AF37" oninput="atualizarCorIndividual()" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20 flex-shrink-0">
+                                </div>
+
+                                <!-- 2. Cor do Fundo do Site -->
+                                <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2">
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">2. Fundo Geral do Site</span>
+                                        <span id="cfg-cor-fundo-label" class="text-[10px] font-mono text-zinc-400">#0A0A0C</span>
+                                    </div>
+                                    <input type="color" id="cfg-cor-fundo" value="#0A0A0C" oninput="atualizarCorIndividual()" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20 flex-shrink-0">
+                                </div>
+
+                                <!-- 3. Cor dos Painéis / Caixas (Cards) -->
+                                <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2">
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">3. Cor das Caixas / Painéis</span>
+                                        <span id="cfg-cor-card-label" class="text-[10px] font-mono text-zinc-400">#121218</span>
+                                    </div>
+                                    <input type="color" id="cfg-cor-card" value="#121218" oninput="atualizarCorIndividual()" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20 flex-shrink-0">
+                                </div>
+
+                                <!-- 4. Cor dos Campos de Digitação (Inputs) -->
+                                <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2">
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">4. Campos de Digitação</span>
+                                        <span id="cfg-cor-input-label" class="text-[10px] font-mono text-zinc-400">#1C1C24</span>
+                                    </div>
+                                    <input type="color" id="cfg-cor-input" value="#1C1C24" oninput="atualizarCorIndividual()" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20 flex-shrink-0">
+                                </div>
+
+                                <!-- 5. Cor dos Títulos Principais -->
+                                <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2">
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">5. Cor dos Títulos</span>
+                                        <span id="cfg-cor-titulo-label" class="text-[10px] font-mono text-zinc-400">#FFFFFF</span>
+                                    </div>
+                                    <input type="color" id="cfg-cor-titulo" value="#FFFFFF" oninput="atualizarCorIndividual()" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20 flex-shrink-0">
+                                </div>
+
+                                <!-- 6. Cor da Letra dentro do Botão -->
+                                <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2">
+                                    <div>
+                                        <span class="text-xs font-bold text-white block">6. Letra dos Botões</span>
+                                        <span id="cfg-cor-txtbtn-label" class="text-[10px] font-mono text-zinc-400">#09090B</span>
+                                    </div>
+                                    <input type="color" id="cfg-cor-txtbtn" value="#09090B" oninput="atualizarCorIndividual()" class="w-10 h-9 rounded-lg cursor-pointer bg-transparent border border-white/20 flex-shrink-0">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -5285,8 +5347,35 @@
         chavePix: 'pix@barbeariavip.com.br',
         mostrarBanner: true,
         corPrimaria: '#D4AF37',
+        corFundo: '#0A0A0C',
+        corCard: '#121218',
+        corInput: '#1C1C24',
+        corTitulo: '#FFFFFF',
+        corTextoBotao: '#09090B',
         menusOcultos: []
     };
+
+    const TEMAS_COMPLETOS = {
+        ouro:     { corPrimaria: '#D4AF37', corFundo: '#0A0A0C', corCard: '#121218', corInput: '#1C1C24', corTitulo: '#FFFFFF', corTextoBotao: '#09090B' },
+        azul:     { corPrimaria: '#3B82F6', corFundo: '#070E1A', corCard: '#0F1B2D', corInput: '#16263F', corTitulo: '#F0F9FF', corTextoBotao: '#FFFFFF' },
+        verde:    { corPrimaria: '#10B981', corFundo: '#06130E', corCard: '#0C221A', corInput: '#133126', corTitulo: '#ECFDF5', corTextoBotao: '#052E16' },
+        roxo:     { corPrimaria: '#A855F7', corFundo: '#10071A', corCard: '#1B0E2E', corInput: '#271542', corTitulo: '#FAF5FF', corTextoBotao: '#FFFFFF' },
+        vermelho: { corPrimaria: '#EF4444', corFundo: '#14080A', corCard: '#220E12', corInput: '#31151B', corTitulo: '#FEF2F2', corTextoBotao: '#FFFFFF' },
+        whisky:   { corPrimaria: '#F97316', corFundo: '#140E08', corCard: '#241910', corInput: '#332417', corTitulo: '#FFF7ED', corTextoBotao: '#09090B' },
+        ciano:    { corPrimaria: '#06B6D4', corFundo: '#061217', corCard: '#0D222B', corInput: '#14323F', corTitulo: '#ECFEFF', corTextoBotao: '#083344' },
+        rosa:     { corPrimaria: '#EC4899', corFundo: '#160712', corCard: '#260E1F', corInput: '#38152E', corTitulo: '#FDF2F8', corTextoBotao: '#FFFFFF' }
+    };
+
+    function hexParaRgb(hex) {
+        const limpo = (hex || '#D4AF37').replace('#', '');
+        const bigint = parseInt(limpo.length === 3 ? limpo.split('').map(c => c + c).join('') : limpo, 16);
+        if (isNaN(bigint)) return { r: 212, g: 175, b: 55 };
+        return {
+            r: (bigint >> 16) & 255,
+            g: (bigint >> 8) & 255,
+            b: bigint & 255
+        };
+    }
 
     function obterConfigPersonalizacao() {
         try {
@@ -5300,31 +5389,39 @@
 
     function carregarPersonalizacaoSalva() {
         const cfg = obterConfigPersonalizacao();
-        const elNome = document.getElementById('cfg-nome-barbearia');
-        const elSub = document.getElementById('cfg-subtitulo-topo');
-        const elTit = document.getElementById('cfg-hero-titulo');
-        const elNota = document.getElementById('cfg-hero-nota');
-        const elBadge = document.getElementById('cfg-hero-badge');
-        const elDesc = document.getElementById('cfg-hero-desc');
-        const elRodape = document.getElementById('cfg-rodape-texto');
-        const elZap = document.getElementById('cfg-whatsapp-barbearia');
-        const elPix = document.getElementById('cfg-chave-pix');
-        const elBanner = document.getElementById('cfg-mostrar-banner');
-        const elCor = document.getElementById('cfg-cor-primaria');
-        const elCorLbl = document.getElementById('cfg-cor-hex-label');
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = (val || '').toUpperCase(); };
 
-        if (elNome) elNome.value = cfg.nomeBarbearia;
-        if (elSub) elSub.value = cfg.subtituloTopo;
-        if (elTit) elTit.value = cfg.heroTitulo;
-        if (elNota) elNota.value = cfg.heroNota;
-        if (elBadge) elBadge.value = cfg.heroBadge;
-        if (elDesc) elDesc.value = cfg.heroDesc;
-        if (elRodape) elRodape.value = cfg.rodapeTexto;
-        if (elZap) elZap.value = cfg.whatsappBarbearia || PADRAO_PERSONALIZACAO.whatsappBarbearia;
-        if (elPix) elPix.value = cfg.chavePix || PADRAO_PERSONALIZACAO.chavePix;
+        setVal('cfg-nome-barbearia', cfg.nomeBarbearia);
+        setVal('cfg-subtitulo-topo', cfg.subtituloTopo);
+        setVal('cfg-hero-titulo', cfg.heroTitulo);
+        setVal('cfg-hero-nota', cfg.heroNota);
+        setVal('cfg-hero-badge', cfg.heroBadge);
+        setVal('cfg-hero-desc', cfg.heroDesc);
+        setVal('cfg-rodape-texto', cfg.rodapeTexto);
+        setVal('cfg-whatsapp-barbearia', cfg.whatsappBarbearia || PADRAO_PERSONALIZACAO.whatsappBarbearia);
+        setVal('cfg-chave-pix', cfg.chavePix || PADRAO_PERSONALIZACAO.chavePix);
+
+        const elBanner = document.getElementById('cfg-mostrar-banner');
         if (elBanner) elBanner.checked = cfg.mostrarBanner !== false;
-        if (elCor) elCor.value = cfg.corPrimaria || '#D4AF37';
-        if (elCorLbl) elCorLbl.textContent = (cfg.corPrimaria || '#D4AF37').toUpperCase();
+
+        setVal('cfg-cor-primaria', cfg.corPrimaria || '#D4AF37');
+        setTxt('cfg-cor-hex-label', cfg.corPrimaria || '#D4AF37');
+
+        setVal('cfg-cor-fundo', cfg.corFundo || '#0A0A0C');
+        setTxt('cfg-cor-fundo-label', cfg.corFundo || '#0A0A0C');
+
+        setVal('cfg-cor-card', cfg.corCard || '#121218');
+        setTxt('cfg-cor-card-label', cfg.corCard || '#121218');
+
+        setVal('cfg-cor-input', cfg.corInput || '#1C1C24');
+        setTxt('cfg-cor-input-label', cfg.corInput || '#1C1C24');
+
+        setVal('cfg-cor-titulo', cfg.corTitulo || '#FFFFFF');
+        setTxt('cfg-cor-titulo-label', cfg.corTitulo || '#FFFFFF');
+
+        setVal('cfg-cor-txtbtn', cfg.corTextoBotao || '#09090B');
+        setTxt('cfg-cor-txtbtn-label', cfg.corTextoBotao || '#09090B');
 
         // Checkboxes de menu
         document.querySelectorAll('#cfg-lista-menus input[type="checkbox"]').forEach(chk => {
@@ -5346,6 +5443,40 @@
         cfg.rodapeTexto = document.getElementById('cfg-rodape-texto')?.value || PADRAO_PERSONALIZACAO.rodapeTexto;
         cfg.mostrarBanner = document.getElementById('cfg-mostrar-banner')?.checked !== false;
         aplicarConfiguracaoNoDom(cfg);
+    }
+
+    function aplicarTemaCompleto(chaveTema) {
+        const t = TEMAS_COMPLETOS[chaveTema];
+        if (!t) return;
+        soundVIP.playChicSuccess();
+
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val.toUpperCase(); };
+
+        setVal('cfg-cor-primaria', t.corPrimaria); setTxt('cfg-cor-hex-label', t.corPrimaria);
+        setVal('cfg-cor-fundo', t.corFundo);       setTxt('cfg-cor-fundo-label', t.corFundo);
+        setVal('cfg-cor-card', t.corCard);         setTxt('cfg-cor-card-label', t.corCard);
+        setVal('cfg-cor-input', t.corInput);       setTxt('cfg-cor-input-label', t.corInput);
+        setVal('cfg-cor-titulo', t.corTitulo);     setTxt('cfg-cor-titulo-label', t.corTitulo);
+        setVal('cfg-cor-txtbtn', t.corTextoBotao); setTxt('cfg-cor-txtbtn-label', t.corTextoBotao);
+
+        salvarPersonalizacaoSistema(true);
+        mostrarToast('🎨 Tema completo aplicado em todo o sistema!', 'sucesso');
+    }
+
+    function atualizarCorIndividual() {
+        const setTxt = (idLbl, idInput) => {
+            const el = document.getElementById(idInput);
+            const lbl = document.getElementById(idLbl);
+            if (el && lbl) lbl.textContent = el.value.toUpperCase();
+        };
+        setTxt('cfg-cor-hex-label', 'cfg-cor-primaria');
+        setTxt('cfg-cor-fundo-label', 'cfg-cor-fundo');
+        setTxt('cfg-cor-card-label', 'cfg-cor-card');
+        setTxt('cfg-cor-input-label', 'cfg-cor-input');
+        setTxt('cfg-cor-titulo-label', 'cfg-cor-titulo');
+        setTxt('cfg-cor-txtbtn-label', 'cfg-cor-txtbtn');
+        salvarPersonalizacaoSistema(true);
     }
 
     function selecionarCorTema(corHex) {
@@ -5400,8 +5531,18 @@
             }
         });
 
-        // 4. Cor Primária Dinâmica
+        // 4. Motor Profundo de Cores Dinâmicas (Fundo, Cards, Inputs, Títulos, Botões e Todos os Detalhes Amber/Dourados)
         const cor = cfg.corPrimaria || '#D4AF37';
+        const corFundo = cfg.corFundo || '#0A0A0C';
+        const corCard = cfg.corCard || '#121218';
+        const corInput = cfg.corInput || '#1C1C24';
+        const corTitulo = cfg.corTitulo || '#FFFFFF';
+        const corTxtBtn = cfg.corTextoBotao || '#09090B';
+
+        const rgb = hexParaRgb(cor);
+        const rgbCard = hexParaRgb(corCard);
+        const rgbFundo = hexParaRgb(corFundo);
+
         let styleEl = document.getElementById('estilo-personalizado-dinamico');
         if (!styleEl) {
             styleEl = document.createElement('style');
@@ -5409,32 +5550,84 @@
             document.head.appendChild(styleEl);
         }
         styleEl.innerHTML = `
+            /* Fundo Geral, Topo e Rodapé */
+            html, body {
+                background-color: ${corFundo} !important;
+                background-image:
+                    radial-gradient(circle at 50% 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18) 0%, rgba(${rgbFundo.r}, ${rgbFundo.g}, ${rgbFundo.b}, 0.85) 45%, ${corFundo} 90%),
+                    radial-gradient(circle at 10% 40%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.06) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 60%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.06) 0%, transparent 40%) !important;
+            }
+            div.sticky.top-0, footer, nav.md\\:hidden.fixed.bottom-0 {
+                background-color: rgba(${rgbFundo.r}, ${rgbFundo.g}, ${rgbFundo.b}, 0.95) !important;
+            }
+
+            /* Caixas e Painéis (.glass-panel) */
+            .glass-panel {
+                background: rgba(${rgbCard.r}, ${rgbCard.g}, ${rgbCard.b}, 0.82) !important;
+                border-color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28) !important;
+            }
+
+            /* Campos de Digitação e Selects (.dark-input) */
+            .dark-input, .dark-input option, select.dark-input option {
+                background-color: ${corInput} !important;
+            }
+            .dark-input:focus {
+                border-color: ${cor} !important;
+                box-shadow: 0 0 0 3px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25) !important;
+            }
+
+            /* Títulos Principais */
+            h1, h2, h3 {
+                color: ${corTitulo} !important;
+            }
+
+            /* Botões Principais (.gold-btn) */
             .gold-btn {
                 background: ${cor} !important;
-                color: #09090b !important;
-                box-shadow: 0 4px 20px ${cor}44 !important;
+                color: ${corTxtBtn} !important;
+                box-shadow: 0 4px 20px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.32) !important;
             }
             .gold-btn:hover {
                 filter: brightness(1.12);
-                box-shadow: 0 6px 28px ${cor}66 !important;
+                box-shadow: 0 6px 28px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5) !important;
             }
+
+            /* Texto Gradiente Principal */
             .gold-gradient-text {
-                background: linear-gradient(135deg, #ffffff 0%, ${cor} 65%, ${cor} 100%) !important;
+                background: linear-gradient(135deg, #ffffff 0%, ${cor} 60%, ${cor} 100%) !important;
                 -webkit-background-clip: text !important;
                 -webkit-text-fill-color: transparent !important;
             }
-            .active-tab-gold {
-                background: ${cor}26 !important;
+
+            /* Aba Ativa e Horário Selecionado */
+            .active-tab-gold, .nav-btn.active-tab-gold {
+                background: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2) !important;
                 color: ${cor} !important;
-                border-color: ${cor}66 !important;
+                border-color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5) !important;
+                box-shadow: 0 4px 16px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.22) !important;
             }
-            .glass-panel {
-                border-color: ${cor}33 !important;
-            }
-            .time-chip.selected {
+            .time-chip.selected, .barbeiro-chip.selected {
                 background: ${cor} !important;
                 border-color: ${cor} !important;
-                color: #09090b !important;
+                color: ${corTxtBtn} !important;
+            }
+
+            /* Substituição Global dos Detalhes Dourados/Amber pela Cor Escolhida */
+            .text-amber-300, .text-amber-400, .text-amber-500, .text-amber-400\\/90 {
+                color: ${cor} !important;
+            }
+            .bg-amber-400, .bg-amber-500 {
+                background-color: ${cor} !important;
+                color: ${corTxtBtn} !important;
+            }
+            .bg-amber-500\\/10, .bg-amber-400\\/10, .bg-amber-500\\/15, .bg-amber-500\\/20 {
+                background-color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.14) !important;
+            }
+            .border-amber-400, .border-amber-500,
+            .border-amber-400\\/20, .border-amber-400\\/25, .border-amber-400\\/30, .border-amber-400\\/40, .border-amber-400\\/50,
+            .border-amber-500\\/20, .border-amber-500\\/25, .border-amber-500\\/30, .border-amber-500\\/40, .border-amber-500\\/50 {
+                border-color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.38) !important;
             }
         `;
     }
@@ -5459,6 +5652,11 @@
             chavePix: document.getElementById('cfg-chave-pix')?.value.trim() || PADRAO_PERSONALIZACAO.chavePix,
             mostrarBanner: document.getElementById('cfg-mostrar-banner')?.checked !== false,
             corPrimaria: document.getElementById('cfg-cor-primaria')?.value || '#D4AF37',
+            corFundo: document.getElementById('cfg-cor-fundo')?.value || '#0A0A0C',
+            corCard: document.getElementById('cfg-cor-card')?.value || '#121218',
+            corInput: document.getElementById('cfg-cor-input')?.value || '#1C1C24',
+            corTitulo: document.getElementById('cfg-cor-titulo')?.value || '#FFFFFF',
+            corTextoBotao: document.getElementById('cfg-cor-txtbtn')?.value || '#09090B',
             menusOcultos: ocultos
         };
 
