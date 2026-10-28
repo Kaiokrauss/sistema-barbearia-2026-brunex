@@ -98,6 +98,21 @@
                 <span>🔐</span> <span id="btnLoginTexto">Entrar no Sistema</span>
             </button>
 
+            <!-- Atalhos de Acesso Rápido para Barbeiro e Admin -->
+            <div class="pt-3 border-t border-white/10">
+                <span class="text-[11px] text-zinc-400 block mb-2 text-center">Acesso rápido para demonstração da equipe:</span>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <button type="button" onclick="preencherLoginRapido('carlos@barbearia.com', 'barbeiro123')" class="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-amber-500/30 text-amber-300 font-semibold transition text-left">
+                        <strong class="block text-white text-xs">✂️ Barbeiro</strong>
+                        <span class="text-[10px] text-zinc-400 font-mono">carlos@barbearia.com</span>
+                    </button>
+                    <button type="button" onclick="preencherLoginRapido('admin@barbeariavip.com', 'admin123')" class="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-amber-500/30 text-amber-300 font-semibold transition text-left">
+                        <strong class="block text-white text-xs">👑 Administrador</strong>
+                        <span class="text-[10px] text-zinc-400 font-mono">admin@barbeariavip.com</span>
+                    </button>
+                </div>
+            </div>
+
             <div class="text-center text-xs text-zinc-400">
                 Ainda não tem conta? <button type="button" onclick="showRegister()" class="text-amber-400 hover:underline font-semibold ml-1">Criar conta agora</button>
             </div>
@@ -350,6 +365,12 @@
                 btnText.textContent = 'Entrar no Sistema';
             }
         });
+
+                function preencherLoginRapido(email, senha) {
+            document.getElementById('email').value = email;
+            document.getElementById('senha').value = senha;
+            showAlert('Credenciais preenchidas! Clique em "Entrar no Sistema".', 'success');
+        }
 
         window.addEventListener('load', () => showLogin());
     </script>

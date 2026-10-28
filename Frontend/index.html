@@ -348,7 +348,7 @@
 <!-- TOPO FIXO UNIFICADO: CABEÇALHO + BARRA DE NAVEGAÇÃO VIP (Sem corte ou sobreposição) -->
 <div class="sticky top-0 z-50 w-full bg-[#0d0d12]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_12px_30px_rgba(0,0,0,0.65)]">
     <!-- Cabeçalho Principal -->
-    <header class="border-b border-white/5 px-3 sm:px-6 py-2 sm:py-2.5">
+    <header class="border-b border-white/5 px-3 sm:px-6 py-2.5 sm:py-3">
         <div class="max-w-6xl mx-auto flex justify-between items-center gap-2">
             <div class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
                 <div class="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full p-[2px] bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-600 shadow-md shadow-amber-500/25 flex-shrink-0">
@@ -359,68 +359,67 @@
                     <h1 id="custom-header-nome" class="text-sm sm:text-lg font-display font-bold text-white tracking-wide">Barbearia VIP</h1>
                 </div>
             </div>
-            <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                <button type="button" onclick="changeTab('tab-personalizar')" class="text-xs font-bold text-pink-300 bg-pink-500/15 hover:bg-pink-500/25 border border-pink-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Personalizar Nome, Cores, Preços e Menu sem programar">
-                    <span>🎨</span> <span class="hidden md:inline">Personalizar</span>
-                </button>
-                <button type="button" onclick="abrirModalControleIa()" id="btn-topo-controle-ia" class="text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Ligar ou Desligar os Recursos de Inteligência Artificial">
-                    <span>🤖</span> <span id="topo-ia-status-texto">Ligar/Desligar IAs</span>
-                </button>
+            <div class="flex items-center gap-2 flex-shrink-0" id="container-topo-acoes">
                 <button type="button" onclick="toggleSom()" id="btn-toggle-som" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-amber-400 border border-white/10 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5" title="Ativar/Desativar som dos cliques e confirmações">
                     <span id="som-icone">🔊</span> <span id="som-texto" class="hidden sm:inline">Som VIP</span>
                 </button>
-                <button onclick="changeTab('tab-horarios')" class="text-xs font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 hover:text-white border border-white/10 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5">
-                    <span class="text-sm">⏰</span> <span class="hidden sm:inline">Gerenciar Horários</span><span class="sm:hidden">Horários</span>
-                </button>
+                <div id="box-auth-topo">
+                    <a href="login.html" id="btn-topo-barbeiro" class="text-xs font-bold text-amber-300 hover:text-amber-200 bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-amber-500/20 hover:from-amber-500/30 hover:to-amber-500/30 border border-amber-500/40 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm shadow-amber-500/10" title="Acesso do Barbeiro & Painel Administrativo">
+                        <span>✂️</span> <span class="hidden sm:inline">Área do Barbeiro</span><span class="sm:hidden">Barbeiro</span>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Menu de Navegação Horizontal -->
+    <!-- Menu de Navegação Horizontal VIP Limpo -->
     <nav class="px-2 sm:px-6 overflow-x-auto nav-scroll-container">
         <div class="max-w-6xl mx-auto flex gap-1.5 sm:gap-2 py-2 sm:py-2.5 items-center min-w-max">
-            <button onclick="changeTab('tab-agendar')" id="btn-tab-agendar" class="nav-btn nav-btn-agendar active-tab-gold text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+            <!-- Abas do Cliente -->
+            <button onclick="changeTab('tab-agendar')" id="btn-tab-agendar" class="nav-btn nav-btn-agendar active-tab-gold text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">📅</span> <span>Agendar</span>
             </button>
-            <button onclick="changeTab('tab-cancelar')" id="btn-tab-cancelar" class="nav-btn nav-btn-cancel text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">❌</span> <span>Cancelar</span>
+            <button onclick="changeTab('tab-visagista')" id="btn-tab-visagista" class="nav-btn nav-btn-visagista text-zinc-400 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">🧠</span> <span>Visagista IA</span> <span id="nav-badge-ia-visagista" class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1">IA</span>
             </button>
-            <button onclick="changeTab('tab-horarios')" id="btn-tab-horarios" class="nav-btn nav-btn-horarios text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">⏰</span> <span>Horários</span>
-            </button>
-            <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn nav-btn-resumo text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">📊</span> <span>Resumo</span>
-            </button>
-            <button onclick="changeTab('tab-fidelidade')" id="btn-tab-fidelidade" class="nav-btn nav-btn-fidelidade text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+            <button onclick="changeTab('tab-fidelidade')" id="btn-tab-fidelidade" class="nav-btn nav-btn-fidelidade text-zinc-400 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">🎁</span> <span>Fidelidade VIP</span>
             </button>
-            <button onclick="changeTab('tab-avaliacoes')" id="btn-tab-avaliacoes" class="nav-btn nav-btn-avaliacoes text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">⭐</span> <span>Avaliações</span>
-            </button>
-            <button onclick="changeTab('tab-clube-vip')" id="btn-tab-clube-vip" class="nav-btn nav-btn-clube-vip text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+            <button onclick="changeTab('tab-clube-vip')" id="btn-tab-clube-vip" class="nav-btn nav-btn-clube-vip text-zinc-400 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
                 <span class="nav-icon">👑</span> <span>Clube VIP</span>
             </button>
-            <button onclick="changeTab('tab-loja')" id="btn-tab-loja" class="nav-btn nav-btn-loja text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">🧴</span> <span>Loja VIP</span>
+            <button onclick="changeTab('tab-loja')" id="btn-tab-loja" class="nav-btn nav-btn-loja text-zinc-400 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">🧴</span> <span>Loja Grooming</span>
             </button>
-            <button onclick="changeTab('tab-visagista')" id="btn-tab-visagista" class="nav-btn nav-btn-visagista text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">🧠</span> <span>Visagista IA</span> <span id="nav-badge-ia-visagista" class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1">ON</span>
+            <button onclick="changeTab('tab-avaliacoes')" id="btn-tab-avaliacoes" class="nav-btn nav-btn-avaliacoes text-zinc-400 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">⭐</span> <span>Avaliações</span>
             </button>
-            <button onclick="changeTab('tab-ia-marketing')" id="btn-tab-ia-marketing" class="nav-btn nav-btn-ia-marketing text-zinc-400 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap">
-                <span class="nav-icon">🎯</span> <span>IA Marketing</span> <span id="nav-badge-ia-marketing" class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-bold ml-1">ON</span>
+            <button onclick="changeTab('tab-cancelar')" id="btn-tab-cancelar" class="nav-btn nav-btn-cancel text-zinc-400 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                <span class="nav-icon">❌</span> <span>Cancelar</span>
             </button>
-            <button onclick="changeTab('tab-personalizar')" id="btn-tab-personalizar" class="nav-btn text-pink-300 hover:text-pink-200 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Personalizar Nome, Cores, Preços e Menu sem programar">
-                <span class="nav-icon">🎨</span> <span>Personalizar Site</span>
-            </button>
-            <button type="button" id="btn-nav-ios" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
+            <button type="button" id="btn-nav-ios" onclick="abrirModalInstalarIos()" class="nav-btn text-blue-300 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap transition">
                 <span class="nav-icon">📱</span> <span>App iOS</span>
             </button>
-            <a href="../api/qrcode_pix.php" id="btn-nav-pix" class="nav-btn text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Gerador de QR Code PIX e Cartão Digital"><span class="nav-icon">💳</span> <span>QR Code PIX</span></a>
-            <a href="../api/calculadora_comissao.php" id="btn-nav-calc-py" class="nav-btn text-purple-300 hover:text-purple-200 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Calculadora de Lucro e Comissão em Python"><span class="nav-icon">🐍</span> <span>Calculadora Python</span></a>
-            <a href="../api/relatorio_python.php" id="btn-nav-rel-py" class="nav-btn text-emerald-300 hover:text-emerald-200 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/30 text-xs px-3 sm:px-4 py-2 rounded-xl whitespace-nowrap transition" title="Relatório Financeiro Executivo (PDF/Excel via Python)"><span class="nav-icon">📈</span> <span>Relatório Python</span></a>
-            <a href="../api/backup.php?download=1" id="btn-nav-backup" class="nav-btn nav-btn-backup text-emerald-400/90 hover:text-emerald-300 text-xs px-3 py-2 rounded-xl whitespace-nowrap" title="Baixar Backup do Banco (.sql)">
-                <span class="nav-icon">💾</span> <span>Backup SQL</span>
-            </a>
+
+            <!-- Abas Administrativas (desbloqueadas para barbeiro/admin) -->
+            <div id="nav-admin-separator" class="hidden h-5 w-[1px] bg-white/20 mx-1"></div>
+            <div id="nav-admin-grupo" class="hidden items-center gap-1.5 sm:gap-2">
+                <button onclick="changeTab('tab-horarios')" id="btn-tab-horarios" class="nav-btn nav-btn-horarios text-amber-300 bg-amber-500/10 border border-amber-500/30 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                    <span class="nav-icon">⏰</span> <span>Horários</span>
+                </button>
+                <button onclick="changeTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn nav-btn-resumo text-amber-300 bg-amber-500/10 border border-amber-500/30 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                    <span class="nav-icon">📊</span> <span>Resumo & Caixa</span>
+                </button>
+                <button onclick="changeTab('tab-ia-marketing')" id="btn-tab-ia-marketing" class="nav-btn nav-btn-ia-marketing text-purple-300 bg-purple-500/10 border border-purple-500/30 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                    <span class="nav-icon">🎯</span> <span>Marketing</span>
+                </button>
+                <button onclick="changeTab('tab-personalizar')" id="btn-tab-personalizar" class="nav-btn text-pink-300 bg-pink-500/10 border border-pink-400/30 text-xs px-3.5 sm:px-4 py-2 rounded-xl whitespace-nowrap">
+                    <span class="nav-icon">🎨</span> <span>Personalizar</span>
+                </button>
+                <a href="dashboard.php" class="nav-btn text-white bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-xs px-4 py-2 rounded-xl whitespace-nowrap font-bold" title="Abrir Painel Completo do Barbeiro">
+                    <span>👑</span> <span>Painel Completo</span>
+                </a>
+            </div>
         </div>
     </nav>
 </div>
@@ -1873,17 +1872,17 @@
             <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">📅</span>
             <span class="text-[10px] font-semibold mt-0.5">Agendar</span>
         </button>
-        <button onclick="changeTab('tab-cancelar')" id="mobile-nav-cancelar" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-red-400 transition">
-            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">❌</span>
-            <span class="text-[10px] font-semibold mt-0.5">Cancelar</span>
+        <button onclick="changeTab('tab-visagista')" id="mobile-nav-visagista" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">🧠</span>
+            <span class="text-[10px] font-semibold mt-0.5">Visagista</span>
         </button>
-        <button onclick="changeTab('tab-horarios')" id="mobile-nav-horarios" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-white transition">
-            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">⏰</span>
-            <span class="text-[10px] font-semibold mt-0.5">Horários</span>
+        <button onclick="changeTab('tab-fidelidade')" id="mobile-nav-fidelidade" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">🎁</span>
+            <span class="text-[10px] font-semibold mt-0.5">Fidelidade</span>
         </button>
-        <button onclick="changeTab('tab-dashboard')" id="mobile-nav-dashboard" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
-            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">📊</span>
-            <span class="text-[10px] font-semibold mt-0.5">Resumo</span>
+        <button onclick="changeTab('tab-clube-vip')" id="mobile-nav-clube-vip" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
+            <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">👑</span>
+            <span class="text-[10px] font-semibold mt-0.5">Clube VIP</span>
         </button>
         <button onclick="toggleMobileMenuMais()" id="mobile-nav-mais" class="mobile-nav-item flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-zinc-400 hover:text-amber-400 transition">
             <span class="mobile-nav-icon-box w-8 h-8 rounded-xl flex items-center justify-center text-base border border-transparent transition-all">☰</span>
@@ -1902,52 +1901,60 @@
             </h3>
             <button onclick="toggleMobileMenuMais()" class="text-zinc-400 hover:text-white text-xl p-1 leading-none">✕</button>
         </div>
-        <p class="text-xs text-zinc-400 mb-5">Acesse rapidamente as ferramentas administrativas e configurações:</p>
-        <div class="space-y-2.5">
-            <button type="button" onclick="changeTab('tab-personalizar'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-pink-500/20 to-amber-500/20 hover:from-pink-500/30 hover:to-amber-500/30 border border-pink-500/50 text-sm font-bold text-pink-300 transition text-left shadow-lg">
-                <span class="flex items-center gap-2.5"><span>🎨</span> <strong>Personalizar Site (Sem Código)</strong></span>
-                <span class="px-2 py-0.5 rounded-md bg-pink-500/30 text-pink-200 font-extrabold text-[10px]">Editar</span>
-            </button>
-            <button type="button" onclick="abrirModalControleIa(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 to-purple-500/20 hover:from-amber-500/30 hover:to-purple-500/30 border border-amber-500/50 text-sm font-bold text-amber-300 transition text-left shadow-lg">
-                <span class="flex items-center gap-2.5"><span>🤖</span> <strong>Ligar / Desligar as IAs</strong></span>
-                <span id="drawer-ia-status-texto" class="px-2 py-0.5 rounded-md bg-amber-400 text-black font-extrabold text-[10px]">Configurar</span>
-            </button>
-            <button type="button" onclick="abrirModalInstalarIos(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-blue-400/40 text-sm font-semibold text-blue-200 transition text-left shadow-lg">
-                <span class="flex items-center gap-2.5"><span>📱</span> <strong>Instalar App no iPhone (iOS)</strong></span>
-                <span class="px-2 py-0.5 rounded-md bg-blue-500/30 text-[11px] font-bold text-blue-300">Grátis</span>
-            </button>
-            <button type="button" onclick="changeTab('tab-visagista'); toggleMobileMenuMais();" id="drawer-btn-ia-visagista" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/10">
-                <span class="flex items-center gap-2.5"><span>🧠</span> <strong>Visagista IA (Consultor Facial)</strong></span>
-                <span id="drawer-badge-ia-visagista" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
-            </button>
-            <button type="button" onclick="changeTab('tab-ia-marketing'); toggleMobileMenuMais();" id="drawer-btn-ia-marketing" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-sm font-semibold text-purple-300 transition text-left shadow-lg shadow-purple-500/10">
-                <span class="flex items-center gap-2.5"><span>🎯</span> <strong>IA Marketing & Radar de Retenção</strong></span>
-                <span id="drawer-badge-ia-marketing" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">ON</span>
-            </button>
-            <button type="button" onclick="changeTab('tab-clube-vip'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
-                <span class="flex items-center gap-2.5"><span>💎</span> Clube VIP / Barber Pass</span>
-                <span class="text-amber-400">→</span>
-            </button>
-            <button type="button" onclick="changeTab('tab-loja'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-sm font-semibold text-amber-300 transition text-left shadow-lg shadow-amber-500/5">
-                <span class="flex items-center gap-2.5"><span>🧴</span> Loja VIP de Produtos (Grooming)</span>
-                <span class="text-amber-400">→</span>
-            </button>
-            <button type="button" onclick="changeTab('tab-fidelidade'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-sm font-semibold text-amber-300 transition text-left">
-                <span class="flex items-center gap-2.5"><span>🎁</span> Cartão Fidelidade VIP</span>
-                <span class="text-amber-400">→</span>
-            </button>
-            <button type="button" onclick="changeTab('tab-avaliacoes'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-white transition text-left">
-                <span class="flex items-center gap-2.5"><span>⭐</span> Avaliações & Depoimentos</span>
-                <span class="text-amber-400">→</span>
-            </button>
-            <a href="../api/backup.php?download=1" class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-sm font-semibold text-emerald-300 transition">
-                <span class="flex items-center gap-2.5"><span>💾</span> Baixar Backup do Banco (.sql)</span>
-                <span class="text-emerald-400">↓</span>
+        
+        <!-- Cartão de Acesso do Barbeiro em Destaque -->
+        <div id="drawer-card-barbeiro" class="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-transparent border border-amber-500/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <span class="text-2xl">✂️</span>
+                <div>
+                    <h4 id="drawer-barbeiro-titulo" class="text-xs font-bold text-white">Área Exclusiva do Barbeiro</h4>
+                    <p id="drawer-barbeiro-sub" class="text-[10px] text-zinc-400">Controle de horários, caixa e faturamento</p>
+                </div>
+            </div>
+            <a href="login.html" id="drawer-barbeiro-link" class="px-3 py-1.5 rounded-xl gold-btn text-[11px] font-bold transition flex-shrink-0">
+                Entrar
             </a>
-            <button type="button" onclick="toggleSom(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-zinc-300 transition">
-                <span class="flex items-center gap-2.5"><span id="mobile-drawer-som-icone">🔊</span> Efeitos Sonoros VIP</span>
-                <span id="mobile-drawer-som-status" class="text-xs text-amber-400 font-bold">Ativado</span>
+        </div>
+
+        <p class="text-xs text-zinc-400 mb-3">Serviços e Conveniências VIP:</p>
+        <div class="space-y-2">
+            <button type="button" onclick="changeTab('tab-loja'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-white transition text-left">
+                <span class="flex items-center gap-2.5"><span>🧴</span> Loja VIP de Cosméticos (Grooming)</span>
+                <span class="text-amber-400">→</span>
             </button>
+            <button type="button" onclick="changeTab('tab-avaliacoes'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-white transition text-left">
+                <span class="flex items-center gap-2.5"><span>⭐</span> Avaliações & Depoimentos de Clientes</span>
+                <span class="text-amber-400">→</span>
+            </button>
+            <button type="button" onclick="changeTab('tab-cancelar'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-red-300 transition text-left">
+                <span class="flex items-center gap-2.5"><span>❌</span> Cancelar Horário Agendado</span>
+                <span class="text-zinc-500">→</span>
+            </button>
+            <button type="button" onclick="abrirModalInstalarIos(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3 rounded-2xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-xs font-semibold text-blue-200 transition text-left">
+                <span class="flex items-center gap-2.5"><span>📱</span> Instalar App no iPhone (iOS)</span>
+                <span class="px-2 py-0.5 rounded-md bg-blue-500/30 text-[10px] font-bold text-blue-300">Grátis</span>
+            </button>
+            <button type="button" onclick="toggleSom(); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-zinc-300 transition">
+                <span class="flex items-center gap-2.5"><span id="mobile-drawer-som-icone">🔊</span> Efeitos Sonoros VIP</span>
+                <span id="mobile-drawer-som-status" class="text-[11px] text-amber-400 font-bold">Ativado</span>
+            </button>
+        </div>
+        
+        <!-- Módulos de Gestão no Drawer Móvel (somente se logado) -->
+        <div id="drawer-admin-section" class="hidden mt-5 pt-4 border-t border-white/10 space-y-2">
+            <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider block mb-1">Módulos Administrativos</span>
+            <button type="button" onclick="changeTab('tab-horarios'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-bold text-amber-300 transition text-left">
+                <span>⏰ Gerenciador de Horários</span> <span>→</span>
+            </button>
+            <button type="button" onclick="changeTab('tab-dashboard'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-bold text-amber-300 transition text-left">
+                <span>📊 Resumo & Faturamento Bruto</span> <span>→</span>
+            </button>
+            <button type="button" onclick="changeTab('tab-personalizar'); toggleMobileMenuMais();" class="w-full flex items-center justify-between p-2.5 rounded-xl bg-pink-500/10 border border-pink-400/30 text-xs font-bold text-pink-300 transition text-left">
+                <span>🎨 Personalizar Site & Serviços</span> <span>→</span>
+            </button>
+            <a href="dashboard.php" class="w-full flex items-center justify-between p-2.5 rounded-xl gold-btn text-xs font-bold transition text-left">
+                <span>👑 Abrir Painel Executivo Completo</span> <span>→</span>
+            </a>
         </div>
     </div>
 </div>
@@ -2523,9 +2530,82 @@
         atualizarBotaoSom();
     }
 
-    // Navegação por Abas
+    // Sessão do Usuário
+    let usuarioSessao = null;
+
+    async function verificarSessaoUsuario() {
+        try {
+            const resp = await fetch(`${basePath}/api/login.php`);
+            const data = await resp.json();
+            if (data && data.logged && data.user) {
+                usuarioSessao = data.user;
+                atualizarInterfaceAutenticada();
+            } else {
+                usuarioSessao = null;
+            }
+        } catch (e) {
+            usuarioSessao = null;
+        }
+    }
+
+    function atualizarInterfaceAutenticada() {
+        if (!usuarioSessao) return;
+        const perfil = (usuarioSessao.perfil || '').toLowerCase();
+        const isBarbeiroOuAdmin = ['barbeiro', 'admin'].includes(perfil);
+
+        if (isBarbeiroOuAdmin) {
+            // Revela abas administrativas na barra de navegação
+            const navAdminSep = document.getElementById('nav-admin-separator');
+            const navAdminGrp = document.getElementById('nav-admin-grupo');
+            if (navAdminSep) navAdminSep.classList.remove('hidden');
+            if (navAdminGrp) navAdminGrp.classList.remove('hidden');
+
+            // Atualiza o botão superior do cabeçalho
+            const boxAuthTopo = document.getElementById('box-auth-topo');
+            if (boxAuthTopo) {
+                const primeiroNome = (usuarioSessao.nome || 'Barbeiro').split(' ')[0];
+                boxAuthTopo.innerHTML = `
+                    <div class="flex items-center gap-1.5">
+                        <a href="dashboard.php" class="text-xs font-bold text-amber-300 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 px-3 py-1.5 sm:py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm shadow-amber-500/10" title="Abrir Painel do Barbeiro">
+                            <span>✂️</span> <span class="hidden sm:inline">Olá, ${primeiroNome}</span><span class="sm:hidden">Painel</span>
+                        </a>
+                        <a href="logout.php" title="Encerrar Sessão" class="text-xs bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-xl transition flex items-center justify-center">
+                            🚪
+                        </a>
+                    </div>
+                `;
+            }
+
+            // Atualiza o card no Drawer Móvel
+            const drawerTitulo = document.getElementById('drawer-barbeiro-titulo');
+            const drawerSub = document.getElementById('drawer-barbeiro-sub');
+            const drawerLink = document.getElementById('drawer-barbeiro-link');
+            const drawerAdminSec = document.getElementById('drawer-admin-section');
+            if (drawerTitulo) drawerTitulo.textContent = `✂️ Barbeiro: ${usuarioSessao.nome}`;
+            if (drawerSub) drawerSub.textContent = `Sessão ativa (${perfil.toUpperCase()})`;
+            if (drawerLink) {
+                drawerLink.textContent = 'Painel';
+                drawerLink.href = 'dashboard.php';
+            }
+            if (drawerAdminSec) drawerAdminSec.classList.remove('hidden');
+        }
+    }
+
+    // Navegação por Abas com Proteção de Rota
     function changeTab(tabId) {
         soundVIP.playSoftClick();
+
+        const abasAdmin = ['tab-horarios', 'tab-dashboard', 'tab-ia-marketing', 'tab-personalizar'];
+        if (abasAdmin.includes(tabId)) {
+            const perfil = (usuarioSessao?.perfil || '').toLowerCase();
+            if (!usuarioSessao || !['barbeiro', 'admin'].includes(perfil)) {
+                mostrarToast('🔒 Esta área é restrita aos Barbeiros e Administração. Faça login para acessar.', 'aviso');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1300);
+                return;
+            }
+        }
 
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         const target = document.getElementById(tabId);
@@ -5557,6 +5637,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         aplicarStatusIas();
         carregarPersonalizacaoSalva();
+    verificarSessaoUsuario();
     });
     aplicarStatusIas();
 
@@ -5900,6 +5981,7 @@
     function restaurarPadraoSistema() {
         localStorage.removeItem('barber_custom_config_v1');
         carregarPersonalizacaoSalva();
+    verificarSessaoUsuario();
         soundVIP.playSoftClick();
         mostrarToast('🔄 Visual original da Barbearia VIP restaurado!', 'aviso');
     }
@@ -6060,6 +6142,7 @@
     }
 
     carregarPersonalizacaoSalva();
+    verificarSessaoUsuario();
 
 </script>
 </body>
