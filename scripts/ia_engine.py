@@ -481,6 +481,16 @@ class MotorIaBarbearia:
 
 
 def main():
+    if hasattr(sys.stdin, 'reconfigure'):
+        try:
+            sys.stdin.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+    if hasattr(sys.stdout, 'reconfigure'):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
     motor = MotorIaBarbearia()
 
     # Leitura de argumentos

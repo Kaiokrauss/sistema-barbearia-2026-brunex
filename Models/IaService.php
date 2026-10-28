@@ -74,6 +74,15 @@ class IaService {
             return null;
         }
 
+        // Evita estouro de buffer de pipe do Windows com fotos base64 grandes
+        if (!empty($payload['imagem_base64']) && strlen($payload['imagem_base64']) > 2000) {
+            if (!empty($payload['formato_rosto'])) {
+                unset($payload['imagem_base64']);
+            } else {
+                $payload['imagem_base64'] = substr($payload['imagem_base64'], 0, 500);
+            }
+        }
+
         $payloadJson = json_encode($payload, JSON_UNESCAPED_UNICODE);
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin
@@ -88,16 +97,16 @@ class IaService {
             return null;
         }
 
-        fwrite($pipes[0], $payloadJson);
-        fclose($pipes[0]);
+        @fwrite($pipes[0], $payloadJson);
+        @fclose($pipes[0]);
 
-        $stdout = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
+        $stdout = @stream_get_contents($pipes[1]);
+        @fclose($pipes[1]);
 
-        $stderr = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
+        $stderr = @stream_get_contents($pipes[2]);
+        @fclose($pipes[2]);
 
-        $exitCode = proc_close($process);
+        $exitCode = @proc_close($process);
 
         if ($exitCode === 0 && !empty($stdout)) {
             $json = json_decode(trim($stdout), true);
@@ -763,7 +772,7 @@ class IaService {
 
     private function obterBarbeiroPorSlug(string $slug): array {
         try {
-            $stmt = $this->db->prepare("SELECT id, nome, especialidade, avatar, slug FROM usuarios WHERE (slug = :slug OR nome LIKE :nome) AND cargo = 'barbeiro' LIMIT 1");
+            $stmt = $this->db->prepare("SELECT id, nome, especialidade, avatar, slug FROM usuarios WHERE (slug = :slug OR nome LIKE :nome) AND perfil IN ('barbeiro', 'admin') LIMIT 1");
             $stmt->execute([':slug' => $slug, ':nome' => "%$slug%"]);
             $barbeiro = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($barbeiro) {

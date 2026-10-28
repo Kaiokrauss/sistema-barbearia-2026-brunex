@@ -2694,7 +2694,19 @@
 
         try {
             const resp = await fetch(`${API_AGENDAMENTOS}?disponiveis=1&data=${data}`);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             select.innerHTML = '';
             if (chipsBox) chipsBox.innerHTML = '';
 
@@ -2754,7 +2766,19 @@
 
         try {
             const resp = await fetch(`${basePath}/api/cupom.php?cupom=${encodeURIComponent(cupom)}&servico_id=${encodeURIComponent(servicoId)}&data=${encodeURIComponent(data)}`);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
 
             feedback.classList.remove('hidden');
             if (res.valido) {
@@ -3069,7 +3093,19 @@
 
         try {
             const resp = await fetch(`${API_AGENDAMENTOS}?grade_completa=1&data=${data}`);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             const grade = res.grade || [];
 
             container.innerHTML = '';
@@ -3152,7 +3188,19 @@
                     horario: horario
                 })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (resp.ok && res.success) {
                 soundVIP.playSoftClick();
                 if (feedback) feedback.textContent = `✓ ${res.mensagem || 'Horário atualizado!'}`;
@@ -3178,7 +3226,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ acao: 'bloquear_dia', data: data })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (resp.ok && res.success) {
                 carregarGradeGerenciador();
                 carregarHorariosDisponiveis();
@@ -3201,7 +3261,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ acao: 'desbloquear_dia', data: data })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (resp.ok && res.success) {
                 carregarGradeGerenciador();
                 carregarHorariosDisponiveis();
@@ -3632,7 +3704,19 @@
         const tbody = document.getElementById('tabela-resumo-body');
         try {
             const resp = await fetch(API_AGENDAMENTOS);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             const dados = res.data || [];
             cacheAgendamentosResumo = dados;
 
@@ -3696,7 +3780,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: id })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (resp.ok && res.success) {
                 soundVIP.playCancelSound();
                 alert(res.success);
@@ -3720,7 +3816,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ acao: 'limpar_cancelados' })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (resp.ok && res.success) {
                 soundVIP.playCancelSound();
                 alert(res.success);
@@ -3932,7 +4040,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ acao: 'resgatar', telefone, nome })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
 
             if (res.sucesso && res.voucher) {
                 soundVIP.playSuccessSound();
@@ -4114,7 +4234,19 @@
                 })
             });
 
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
 
             if (res.sucesso) {
                 soundVIP.playSuccessSound();
@@ -4145,7 +4277,19 @@
     async function carregarBarbeirosFrontend() {
         try {
             const resp = await fetch(API_BARBEIROS);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (!res.success || !res.barbeiros) return;
 
             listaBarbeirosFrontend = res.barbeiros;
@@ -4281,7 +4425,19 @@
         timerCheckAssinante = setTimeout(async () => {
             try {
                 const resp = await fetch(`${API_ASSINATURA}?check_telefone=${encodeURIComponent(telefone)}`);
-                const res = await resp.json();
+                const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
 
                 if (res.success && res.assinante) {
                     soundVIP.playChicSuccess();
@@ -4307,7 +4463,19 @@
 
         try {
             const resp = await fetch(`${API_ASSINATURA}?planos=1`);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (!res.success || !res.planos) return;
 
             grid.innerHTML = '';
@@ -4380,7 +4548,19 @@
 
         try {
             const resp = await fetch(`${API_ASSINATURA}?check_telefone=${encodeURIComponent(tel)}`);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
 
             box.classList.remove('hidden');
             if (res.success && res.assinante) {
@@ -4429,7 +4609,19 @@
 
         try {
             const resp = await fetch(API_PRODUTOS);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (res.success && Array.isArray(res.dados)) {
                 select.innerHTML = '<option value="">Nenhum produto adicional por enquanto</option>';
                 res.dados.forEach(p => {
@@ -4461,7 +4653,19 @@
                 : API_PRODUTOS;
 
             const resp = await fetch(url);
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
 
             if (!res.success || !res.dados || res.dados.length === 0) {
                 grid.innerHTML = '<div class="p-8 text-center text-zinc-500 text-sm col-span-full">Nenhum produto encontrado nesta categoria.</div>';
@@ -4626,7 +4830,19 @@
                 })
             });
 
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (res.success && res.whatsapp_url) {
                 soundVIP.playChicSuccess();
                 fecharModalReservaProduto();
@@ -4952,7 +5168,19 @@
                 body: JSON.stringify(payload)
             });
 
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (res.success && res.corte_sugerido) {
                 soundVIP.playChicSuccess();
                 // Sincronizar radio do rosto se a IA detectou outro
@@ -5729,7 +5957,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nome, preco, duracao_minutos: 35 })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (res.success) {
                 soundVIP.playChicSuccess();
                 mostrarToast(`✂️ Serviço "${nome}" adicionado com sucesso!`, 'sucesso');
@@ -5759,7 +5999,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, nome, preco, duracao_minutos: 35 })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (res.success) {
                 soundVIP.playChicSuccess();
                 mostrarToast(`✅ Preço/nome de "${nome}" atualizado!`, 'sucesso');
@@ -5781,7 +6033,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             });
-            const res = await resp.json();
+            const rawText = await resp.text();
+            let res;
+            try {
+                res = JSON.parse(rawText);
+            } catch (jsonErr) {
+                const s = rawText.indexOf('{');
+                const e = rawText.lastIndexOf('}');
+                if (s !== -1 && e !== -1) {
+                    res = JSON.parse(rawText.substring(s, e + 1));
+                } else {
+                    throw new Error(rawText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) || "Resposta inválida da IA");
+                }
+            }
             if (res.success) {
                 soundVIP.playCancelSound();
                 mostrarToast('🗑️ Serviço removido!', 'aviso');

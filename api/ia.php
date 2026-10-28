@@ -8,6 +8,11 @@
  * - POST /api/ia.php (acao: gerar_campanha)
  */
 
+// Impede que avisos ou notices de PHP interfiram no payload JSON
+ini_set('display_errors', '0');
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
+ob_start();
+
 if (!headers_sent()) {
     header('Content-Type: application/json; charset=utf-8');
     header('Access-Control-Allow-Origin: *');
@@ -15,13 +20,22 @@ if (!headers_sent()) {
     header('Access-Control-Allow-Headers: Content-Type, Authorization');
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    if (ob_get_length()) ob_end_clean();
     http_response_code(200);
     exit;
 }
 
 require_once __DIR__ . '/../Models/IaService.php';
+
+function responderJson($dados, int $statusCode = 200) {
+    if (ob_get_length()) {
+        ob_clean();
+    }
+    http_response_code($statusCode);
+    echo json_encode($dados, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
+}
 
 try {
     $iaService = new IaService();
@@ -33,26 +47,22 @@ try {
         if ($acao === 'clientes_inativos') {
             $dias = isset($_GET['dias']) ? max(1, (int)$_GET['dias']) : 20;
             $res = $iaService->obterClientesInativos($dias);
-            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            exit;
+            responderJson($res);
         }
 
         if ($acao === 'status' || $acao === 'status_motores') {
             $res = $iaService->obterStatusMotores();
-            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            exit;
+            responderJson($res);
         }
 
         if ($acao === 'campanhas') {
             $objetivo = $_GET['objetivo'] ?? 'fim_de_semana';
             $tom = $_GET['tom'] ?? 'vip';
             $res = $iaService->gerarCampanhasMarketing($objetivo, $tom);
-            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            exit;
+            responderJson($res);
         }
 
-        echo json_encode(['success' => false, 'erro' => 'Ação GET não reconhecida.']);
-        exit;
+        responderJson(['success' => false, 'erro' => 'Ação GET não reconhecida.'], 400);
     }
 
     if ($method === 'POST') {
@@ -64,39 +74,33 @@ try {
 
         if ($acao === 'status' || $acao === 'status_motores') {
             $res = $iaService->obterStatusMotores();
-            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            exit;
+            responderJson($res);
         }
 
         if ($acao === 'visagismo') {
             $res = $iaService->analisarVisagismo($dados);
-            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            exit;
+            responderJson($res);
         }
 
         if ($acao === 'gerar_mensagem_recuperacao') {
             $res = $iaService->gerarMensagemRecuperacao($dados);
-            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            exit;
+            responderJson($res);
         }
 
         if ($acao === 'gerar_campanha' || $acao === 'gerar_campanhas') {
             $objetivo = $dados['objetivo'] ?? 'fim_de_semana';
             $tom = $dados['tom'] ?? 'vip';
             $res = $iaService->gerarCampanhasMarketing($objetivo, $tom);
-            echo json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            exit;
+            responderJson($res);
         }
 
-        echo json_encode(['success' => false, 'erro' => 'Ação POST não especificada.']);
-        exit;
+        responderJson(['success' => false, 'erro' => 'Ação POST não especificada.'], 400);
     }
 
-    echo json_encode(['success' => false, 'erro' => 'Método não suportado.']);
+    responderJson(['success' => false, 'erro' => 'Método não suportado.'], 405);
 } catch (Throwable $e) {
-    http_response_code(500);
-    echo json_encode([
+    responderJson([
         'success' => false,
         'erro' => 'Erro interno na Inteligência Artificial: ' . $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
+    ], 500);
 }
