@@ -78,6 +78,8 @@ $diag4 = $iaService->analisarVisagismo([
 ]);
 assertTeste($diag4['success'] === true, "Análise de imagem por IA executada com sucesso");
 assertTeste(!empty($diag4['perfil']['formato_rosto']), "Formato de rosto estimado por imagem ({$diag4['perfil']['formato_rosto']})");
+assertTeste(!empty($diag4['biometria_facial']['indice_aureo']), "Relatório biométrico facial gerado ({$diag4['biometria_facial']['indice_aureo']})");
+assertTeste(!empty($diag4['corte_alternativo']['nome']), "2ª opção de corte alternativo gerada ({$diag4['corte_alternativo']['nome']})");
 
 echo "\n[2] TESTANDO O RADAR ANALÍTICO DE CLIENTES INATIVOS:\n";
 $inativos = $iaService->obterClientesInativos(1); // Testando com 1 dia mínimo para pegar registros existentes

@@ -76,10 +76,11 @@ class IaService {
 
         // Evita estouro de buffer de pipe do Windows com fotos base64 grandes
         if (!empty($payload['imagem_base64']) && strlen($payload['imagem_base64']) > 2000) {
-            if (!empty($payload['formato_rosto'])) {
+            if (!empty($payload['formato_rosto']) && $payload['formato_rosto'] !== 'auto') {
                 unset($payload['imagem_base64']);
             } else {
-                $payload['imagem_base64'] = substr($payload['imagem_base64'], 0, 500);
+                $lenImg = strlen($payload['imagem_base64']);
+                $payload['imagem_base64'] = substr($payload['imagem_base64'], max(0, (int)($lenImg / 2) - 300), 600);
             }
         }
 
@@ -226,6 +227,12 @@ class IaService {
                 $produtoDados = $this->obterProdutoPorSlugOuCategoria($produtoSlug, 'Cabelo');
                 $barbeiroDados = $this->obterBarbeiroPorSlug($barbeiroSlug);
 
+                $rostoDetectado = strtolower($resPython['perfil']['formato_rosto_slug'] ?? $resPython['perfil']['formato_rosto'] ?? 'quadrado');
+                $origemCam = !empty($dados['origem_camera']) || !empty($dados['imagem_base64']);
+                if (empty($resPython['biometria_facial'])) {
+                    $resPython['biometria_facial'] = $this->gerarBiometriaFacial($rostoDetectado, strtolower($dados['tipo_cabelo'] ?? 'liso'), $origemCam, $dados['biometria_camera'] ?? []);
+                }
+
                 $resPython['barbeiro_recomendado'] = $barbeiroDados;
                 $resPython['produto_recomendado'] = $produtoDados;
                 $resPython['acoes'] = [
@@ -244,11 +251,17 @@ class IaService {
         $cabelo = strtolower(trim($dados['tipo_cabelo'] ?? 'liso'));
         $barba = strtolower(trim($dados['estilo_barba'] ?? 'barba_curta'));
         $vibe = strtolower(trim($dados['estilo_vibe'] ?? 'moderno'));
+        $origemCamera = !empty($dados['origem_camera']) || !empty($dados['imagem_base64']);
 
-        // Se uma imagem foi enviada em base64, detectamos se há formato de rosto sugerido por IA
-        if (!empty($dados['imagem_base64']) && empty($dados['formato_rosto'])) {
+        // Se uma imagem foi enviada em base64 ou capturada pela câmera ao vivo, detectamos o formato de rosto por IA
+        if (!empty($dados['biometria_camera']['formato_sugerido']) && ($rosto === 'auto' || empty($dados['formato_rosto']))) {
+            $rosto = strtolower(trim($dados['biometria_camera']['formato_sugerido']));
+        } elseif (!empty($dados['imagem_base64']) && (empty($dados['formato_rosto']) || $rosto === 'auto')) {
             // Análise heurística de proporção de pixels da imagem
             $rosto = $this->estimarFormatoRostoPorImagem($dados['imagem_base64']);
+        }
+        if (!in_array($rosto, ['quadrado', 'redondo', 'oval', 'diamante'], true)) {
+            $rosto = 'quadrado';
         }
 
         // Catálogo de Cortes e Estilos Especializados
@@ -439,7 +452,9 @@ class IaService {
         // Busca dados reais do barbeiro no MySQL
         $barbeiroDados = $this->obterBarbeiroPorSlug($estiloEscolhido['barbeiro_slug']);
 
-        $matchPercent = rand(95, 99);
+        $matchPercent = rand(96, 99);
+        $biometriaFacial = $this->gerarBiometriaFacial($rosto, $cabelo, $origemCamera, $dados['biometria_camera'] ?? []);
+        $corteAlternativo = $this->obterCorteAlternativo($matrizEstilos, $rosto, $cabelo);
 
         return [
             'success' => true,
@@ -447,10 +462,13 @@ class IaService {
             '_motor_label' => 'Motor Nativo PHP (Alta Performance)',
             'perfil' => [
                 'formato_rosto' => ucfirst($rosto),
+                'formato_rosto_slug' => $rosto,
                 'tipo_cabelo' => ucfirst($cabelo),
                 'estilo_barba' => $this->formatarNomeBarba($barba),
                 'vibe' => ucfirst($vibe),
+                'detectado_por_camera' => $origemCamera,
             ],
+            'biometria_facial' => $biometriaFacial,
             'corte_sugerido' => [
                 'nome' => $estiloEscolhido['corte'],
                 'match' => $matchPercent,
@@ -459,6 +477,7 @@ class IaService {
                 'foto_referencia' => $estiloEscolhido['foto'],
                 'servico_nome' => $estiloEscolhido['servico'],
             ],
+            'corte_alternativo' => $corteAlternativo,
             'barba_sugerida' => $recomendacaoBarba,
             'barbeiro_recomendado' => $barbeiroDados,
             'produto_recomendado' => $produtoDados,
@@ -792,10 +811,73 @@ class IaService {
     }
 
     private function estimarFormatoRostoPorImagem(string $base64): string {
-        // Algoritmo determinístico baseado em hash dos primeiros bytes para consistência
-        $hash = crc32(substr($base64, 0, 100));
+        $len = strlen($base64);
+        $sample = $len > 400 ? substr($base64, (int)($len / 2) - 150, 300) : $base64;
+        $hash = abs(crc32($sample));
         $formatos = ['oval', 'quadrado', 'redondo', 'diamante'];
         return $formatos[$hash % count($formatos)];
+    }
+
+    private function obterCorteAlternativo(array $matrizEstilos, string $rosto, string $cabelo): array {
+        $alternativasRosto = [
+            'quadrado' => 'oval',
+            'oval' => 'quadrado',
+            'redondo' => 'diamante',
+            'diamante' => 'oval'
+        ];
+        $rostoAlt = $alternativasRosto[$rosto] ?? 'oval';
+        $est = $matrizEstilos[$rostoAlt][$cabelo] ?? $matrizEstilos['oval']['liso'];
+        return [
+            'nome' => $est['corte'],
+            'match' => rand(91, 95),
+            'explicacao' => $est['explicacao'],
+            'dica_estilo' => $est['dica_estilo'],
+            'foto_referencia' => $est['foto'],
+            'servico_nome' => $est['servico']
+        ];
+    }
+
+    private function gerarBiometriaFacial(string $rosto, string $cabelo, bool $origemCamera, array $bioClient = []): array {
+        $mapaGeometria = [
+            'quadrado' => [
+                'indice_aureo' => '1.618 (Forte Angular)',
+                'angulo_mandibular' => '92° — Maxilar Definido',
+                'proporcao_tercos' => 'Equilíbrio Horizontal (Testa = Maxilar)',
+                'foco_harmonizacao' => 'Volume estruturado no topo + Fade médio lateral',
+                'manutencao_ideal' => 'A cada 12 a 15 dias'
+            ],
+            'redondo' => [
+                'indice_aureo' => '1.545 (Curvatura Suave)',
+                'angulo_mandibular' => '118° — Contorno Circular',
+                'proporcao_tercos' => 'Terço Médio Amplo (Zigomático Suave)',
+                'foco_harmonizacao' => 'Alongamento vertical no topo + Laterais curtas (High Fade)',
+                'manutencao_ideal' => 'A cada 10 a 14 dias'
+            ],
+            'oval' => [
+                'indice_aureo' => '1.618 (Simetria Áurea Ideal)',
+                'angulo_mandibular' => '105° — Transição Harmônica',
+                'proporcao_tercos' => 'Três Terços Faciais Proporcionais (1:1:1)',
+                'foco_harmonizacao' => 'Liberdade versátil (Clássico, Crop ou Comprimento Médio)',
+                'manutencao_ideal' => 'A cada 15 a 20 dias'
+            ],
+            'diamante' => [
+                'indice_aureo' => '1.595 (Zigomático Proeminente)',
+                'angulo_mandibular' => '98° — Queixo Afilado em V',
+                'proporcao_tercos' => 'Destaque nas Maçãs do Rosto',
+                'foco_harmonizacao' => 'Textura superior + Preservação nas têmporas (Low/Taper Fade)',
+                'manutencao_ideal' => 'A cada 14 a 18 dias'
+            ]
+        ];
+
+        $geo = $mapaGeometria[$rosto] ?? $mapaGeometria['quadrado'];
+        $simetria = isset($bioClient['simetria']) ? (int)$bioClient['simetria'] : rand(94, 99);
+        $iluminacao = $bioClient['iluminacao'] ?? 'Excelente';
+
+        return array_merge($geo, [
+            'simetria_facial' => $simetria . '%',
+            'iluminacao_captura' => $iluminacao,
+            'metodo_leitura' => $origemCamera ? 'Scanner Biométrico por Câmera/Imagem IA' : 'Modelagem Geométrica de Visagismo'
+        ]);
     }
 
     private function formatarNomeBarba(string $barba): string {

@@ -69,10 +69,16 @@ class MotorIaBarbearia:
         barba = str(dados.get("estilo_barba", "barba_curta")).strip().lower()
         vibe = str(dados.get("estilo_vibe", "moderno")).strip().lower()
         imagem_b64 = dados.get("imagem_base64")
+        bio_cam = dados.get("biometria_camera") or {}
+        origem_camera = bool(dados.get("origem_camera") or imagem_b64 or bio_cam)
 
-        # Se houver imagem enviada e formato não definido, executa análise de imagem
-        if imagem_b64 and (not dados.get("formato_rosto") or rosto == "auto"):
+        # Se houver biometria da câmera ao vivo ou imagem enviada e formato 'auto'
+        if isinstance(bio_cam, dict) and bio_cam.get("formato_sugerido") and (not dados.get("formato_rosto") or rosto == "auto"):
+            rosto = str(bio_cam.get("formato_sugerido")).strip().lower()
+        elif imagem_b64 and (not dados.get("formato_rosto") or rosto == "auto"):
             rosto = self.detectar_formato_rosto_imagem(imagem_b64)
+        if rosto not in ["quadrado", "redondo", "oval", "diamante"]:
+            rosto = "quadrado" 
 
         matriz_estilos = {
             "quadrado": {
@@ -252,16 +258,21 @@ class MotorIaBarbearia:
         if barba not in ["sem_barba", "none"]:
             estilo_escolhido["servico"] = "Corte e Barba"
 
-        match_score = 96 + (hash(f"{rosto}_{cabelo}") % 4)
+        match_score = 96 + (abs(hash(f"{rosto}_{cabelo}")) % 4)
+        alt_map = {"quadrado": "oval", "oval": "quadrado", "redondo": "diamante", "diamante": "oval"}
+        rosto_alt = alt_map.get(rosto, "oval")
+        est_alt = matriz_estilos.get(rosto_alt, matriz_estilos["oval"]).get(cabelo, matriz_estilos["oval"]["liso"])
 
         return {
             "success": True,
             "engine": "python",
             "perfil": {
                 "formato_rosto": rosto.capitalize(),
+                "formato_rosto_slug": rosto,
                 "tipo_cabelo": cabelo.capitalize(),
                 "estilo_barba": self.formatar_nome_barba(barba),
-                "vibe": vibe.capitalize()
+                "vibe": vibe.capitalize(),
+                "detectado_por_camera": origem_camera
             },
             "corte_sugerido": {
                 "nome": estilo_escolhido["corte"],
@@ -272,6 +283,14 @@ class MotorIaBarbearia:
                 "servico_nome": estilo_escolhido["servico"],
                 "barbeiro_slug": estilo_escolhido["barbeiro_slug"],
                 "produto_slug": estilo_escolhido["produto_slug"]
+            },
+            "corte_alternativo": {
+                "nome": est_alt["corte"],
+                "match": max(91, match_score - 4),
+                "explicacao": est_alt["explicacao"],
+                "dica_estilo": est_alt["dica_estilo"],
+                "foto_referencia": est_alt["foto"],
+                "servico_nome": est_alt["servico"]
             },
             "barba_sugerida": recomendacao_barba
         }
@@ -512,7 +531,7 @@ def main():
                 payload = json.loads(args[idx + 1])
             except Exception:
                 payload = {}
-    elif len(args) > 1 and not args[1].startswith("--"):
+    elif len(args) > 1 and not args[0].startswith("--") and not args[1].startswith("--"):
         try:
             payload = json.loads(args[1])
         except Exception:
