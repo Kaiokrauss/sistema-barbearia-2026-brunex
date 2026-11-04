@@ -1269,8 +1269,9 @@
                     <div id="visor-camera-visagista" class="hidden mt-5 pt-5 border-t border-white/10 animate-fadeIn">
                         <div class="max-w-md mx-auto">
                             <div class="relative rounded-2xl overflow-hidden bg-black border-2 border-amber-400/60 shadow-2xl aspect-[4/3]">
-                                <!-- Stream de Vídeo Espelhado -->
+                                <!-- Stream de Vídeo Espelhado + Overlay AR de Corte Ao Vivo -->
                                 <video id="video-camera-visagista" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
+                                <canvas id="canvas-ar-live-visagista" class="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"></canvas>
                                 <canvas id="canvas-camera-visagista" class="hidden"></canvas>
 
                                 <!-- HUD Superior de Telemetria -->
@@ -1320,6 +1321,28 @@
                                     <span id="cam-hud-instrucao" class="inline-block px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-[11px] text-zinc-200 font-medium">
                                         📐 Centralize seu rosto na malha geométrica e clique em Capturar
                                     </span>
+                                </div>
+                            </div>
+
+                            <!-- Seletor de Corte em Tempo Real (AR Ao Vivo na Câmera) -->
+                            <div class="mt-3 p-2.5 rounded-xl bg-black/60 border border-amber-500/30">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1">
+                                        <span>💈</span> <span>Provador AR Ao Vivo (Ver Corte em Mim Agora):</span>
+                                    </span>
+                                    <button type="button" onclick="toggleFiltroArCamera()" id="btn-toggle-ar-live" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold cursor-pointer">
+                                        🟢 AR Ligado
+                                    </button>
+                                </div>
+                                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-[10px]">
+                                    <button type="button" onclick="selecionarEstiloArLive('auto')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-amber-400 text-black font-bold whitespace-nowrap cursor-pointer">✨ Auto IA</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('pompadour')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Pompadour Fade</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('crop')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">French Crop</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('quiff')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Quiff Topete</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('cachos')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Taper Cachos</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('afro')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Afro Skin Fade</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('sidepart')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Side Part</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('buzz')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Buzz Cut</button>
                                 </div>
                             </div>
 
@@ -1465,7 +1488,7 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
                                 3. Preferência de Barba
                             </label>
-                            <select id="ia_barba" class="dark-input text-xs font-semibold text-zinc-200">
+                            <select id="ia_barba" onchange="if (typeof renderizarSimulacaoCortePessoa === 'function') renderizarSimulacaoCortePessoa();" class="dark-input text-xs font-semibold text-zinc-200">
                                 <option value="barba_curta">✂️ Barba Curta / Alinhada no Degradê</option>
                                 <option value="barba_cheia">🧔 Barba Cheia / Lenhador Volumosa</option>
                                 <option value="cavanhaque">📐 Cavanhaque Estilizado</option>
@@ -5240,7 +5263,8 @@
             }
 
             iniciarMonitoramentoLuzCamera();
-            mostrarToast('📷 Câmera ao vivo ativada! Posicione o rosto na guia.', 'sucesso');
+            iniciarLoopArCamera();
+            mostrarToast('📷 Câmera ao vivo com Provador AR ativada! Posicione o rosto na guia.', 'sucesso');
         } catch (err) {
             console.warn('Erro ao abrir câmera:', err);
             mostrarToast('⚠️ Permissão da câmera negada ou webcam não encontrada. Libere o acesso à câmera no navegador!', 'erro');
@@ -5251,6 +5275,10 @@
         if (cameraMonitorInterval) {
             clearInterval(cameraMonitorInterval);
             cameraMonitorInterval = null;
+        }
+        if (arLiveAnimFrame) {
+            cancelAnimationFrame(arLiveAnimFrame);
+            arLiveAnimFrame = null;
         }
         if (cameraStreamVisagista) {
             cameraStreamVisagista.getTracks().forEach(track => track.stop());
@@ -5639,22 +5667,83 @@
                         </div>
 
                         <div class="flex flex-col lg:flex-row gap-8 items-start">
-                            <!-- Imagem do Corte em Destaque + Miniatura da Câmera -->
-                            <div class="w-full lg:w-72 flex-shrink-0 space-y-3">
-                                <div class="relative rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-2xl bg-black/60 aspect-[4/5]">
-                                    <img src="${c.foto_referencia}" alt="${c.nome}" class="w-full h-full object-cover">
-                                    <div class="absolute top-3 left-3 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-400/40 text-amber-300 font-extrabold text-xs shadow-lg flex items-center gap-1">
-                                        <span>🎯</span> <span>${c.match}% Match de Harmonia</span>
+                            <!-- Provador Virtual AR: A Própria Pessoa com o Corte Aplicado -->
+                            <div class="w-full lg:w-80 flex-shrink-0 space-y-3">
+                                <div class="relative rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-2xl bg-black/80 aspect-[4/5] select-none">
+                                    <!-- Canvas Principal onde a Própria Pessoa aparece com o Corte -->
+                                    <canvas id="canvas-provador-virtual" width="480" height="600" class="${fotoVisagistaBase64 ? 'w-full h-full object-cover cursor-move' : 'hidden'}" title="Arraste para ajustar o encaixe do corte no seu rosto"></canvas>
+
+                                    <!-- Imagem de Referência (exibida apenas se não tirou foto ou ao alternar modo) -->
+                                    <img id="img-referencia-visagismo" src="${c.foto_referencia}" alt="${c.nome}" class="${fotoVisagistaBase64 ? 'hidden' : 'w-full h-full object-cover'}">
+
+                                    <div class="absolute top-3 left-3 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-400/40 text-amber-300 font-extrabold text-xs shadow-lg flex items-center gap-1 pointer-events-none">
+                                        <span>🎯</span> <span>${c.match}% Match • ${fotoVisagistaBase64 ? 'Simulação em Você' : 'Corte Ideal'}</span>
                                     </div>
+
                                     ${fotoVisagistaBase64 ? `
-                                    <div class="absolute top-3 right-3 w-14 h-14 rounded-xl overflow-hidden border-2 border-emerald-400 shadow-xl bg-black" title="Sua captura da câmera">
-                                        <img src="${fotoVisagistaBase64}" alt="Sua Foto" class="w-full h-full object-cover">
+                                    <div class="absolute top-3 right-3 flex items-center gap-1">
+                                        <button type="button" onmousedown="mostrarAntesProvador(true)" onmouseup="mostrarAntesProvador(false)" onmouseleave="mostrarAntesProvador(false)" ontouchstart="mostrarAntesProvador(true)" ontouchend="mostrarAntesProvador(false)" class="px-2.5 py-1 rounded-full bg-black/85 hover:bg-amber-400 hover:text-black text-amber-300 border border-amber-400/50 text-[10px] font-extrabold shadow-lg transition cursor-pointer">
+                                            👀 Antes / Depois
+                                        </button>
                                     </div>` : ''}
-                                    <div class="absolute bottom-3 inset-x-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-3 rounded-xl">
-                                        <span class="text-[10px] uppercase font-bold text-amber-400 block">Rosto ${res.perfil.formato_rosto} + ${res.perfil.tipo_cabelo}</span>
-                                        <h4 class="text-sm font-bold text-white leading-tight">${c.nome}</h4>
+
+                                    <div class="absolute bottom-3 inset-x-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-3 rounded-xl pointer-events-none">
+                                        <span class="text-[10px] uppercase font-bold text-emerald-400 block">${fotoVisagistaBase64 ? '✨ Provador Virtual IA no Seu Rosto' : `Rosto ${res.perfil.formato_rosto} + ${res.perfil.tipo_cabelo}`}</span>
+                                        <h4 id="titulo-corte-provador" class="text-sm font-bold text-white leading-tight">${c.nome}</h4>
+                                        ${fotoVisagistaBase64 ? `<span class="text-[10px] text-zinc-300 block mt-0.5">👆 Arraste o corte na foto para ajustar posição</span>` : ''}
                                     </div>
                                 </div>
+
+                                ${fotoVisagistaBase64 ? `
+                                <!-- Painel Interativo do Provador Virtual (Ajuste de Corte, Cor e Posição na Pessoa) -->
+                                <div class="p-3.5 rounded-2xl bg-black/50 border border-amber-500/30 space-y-3 text-left">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400">💇‍♂️ Testar Cortes no Seu Rosto:</span>
+                                        <button type="button" onclick="alternarModoFotoReferencia()" id="btn-alternar-ref-modelo" class="text-[10px] font-bold text-zinc-300 hover:text-amber-300 underline cursor-pointer">
+                                            Ver Foto Modelo
+                                        </button>
+                                    </div>
+                                    <select id="select-estilo-provador" onchange="mudarEstiloProvadorVirtual(this.value)" class="dark-input text-xs font-bold text-white py-2">
+                                        <option value="auto">✨ ${c.nome} (Recomendado IA)</option>
+                                        <option value="pompadour">💈 Fade Americano + Pompadour</option>
+                                        <option value="crop">✂️ Textured French Crop + Fade</option>
+                                        <option value="quiff">🔥 High Fade + Quiff (Topete)</option>
+                                        <option value="cachos">🌀 Taper Fade + Cachos Definidos</option>
+                                        <option value="afro">⚡ High Skin Fade + Afro Nudred</option>
+                                        <option value="sidepart">👑 Side Part Clássico (Risca Navalha)</option>
+                                        <option value="curtains">🌊 Curtains Médio Despojado</option>
+                                        <option value="slickback">💎 Slick Back (Penteado p/ Trás)</option>
+                                        <option value="buzz">🪒 Buzz Cut + Line-Up Geométrico</option>
+                                    </select>
+
+                                    <!-- Cor dos Fios & Posição -->
+                                    <div class="flex items-center justify-between gap-2 pt-1">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[10px] text-zinc-400 font-semibold">Cor:</span>
+                                            <button type="button" onclick="mudarCorCabeloProvador('auto')" title="Tom Natural Detectado" class="w-5 h-5 rounded-full bg-gradient-to-tr from-zinc-900 to-amber-700 border-2 border-amber-400 cursor-pointer"></button>
+                                            <button type="button" onclick="mudarCorCabeloProvador('#141416')" title="Preto Natural" class="w-5 h-5 rounded-full bg-[#141416] border border-white/30 cursor-pointer"></button>
+                                            <button type="button" onclick="mudarCorCabeloProvador('#3b271a')" title="Castanho Escuro" class="w-5 h-5 rounded-full bg-[#3b271a] border border-white/30 cursor-pointer"></button>
+                                            <button type="button" onclick="mudarCorCabeloProvador('#8c6239')" title="Loiro Escuro / Mel" class="w-5 h-5 rounded-full bg-[#8c6239] border border-white/30 cursor-pointer"></button>
+                                            <button type="button" onclick="mudarCorCabeloProvador('#d4d4d8')" title="Platinado / Grisalho" class="w-5 h-5 rounded-full bg-[#d4d4d8] border border-white/30 cursor-pointer"></button>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" onclick="ajustarTransformProvador(0, -6, 0)" title="Subir corte" class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-[10px] text-white cursor-pointer">⬆️</button>
+                                            <button type="button" onclick="ajustarTransformProvador(0, 6, 0)" title="Descer corte" class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-[10px] text-white cursor-pointer">⬇️</button>
+                                            <button type="button" onclick="ajustarTransformProvador(0, 0, 0.05)" title="Aumentar corte" class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-[10px] text-white cursor-pointer">➕</button>
+                                            <button type="button" onclick="ajustarTransformProvador(0, 0, -0.05)" title="Diminuir corte" class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-[10px] text-white cursor-pointer">➖</button>
+                                            <button type="button" onclick="resetarTransformProvador()" title="Centralizar" class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-[10px] text-amber-300 cursor-pointer">🔄</button>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" onclick="baixarFotoComCorteProvador()" class="w-full py-2 px-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                        <span>💾</span> <span>Baixar Minha Foto com o Corte</span>
+                                    </button>
+                                </div>
+                                ` : `
+                                <button type="button" onclick="abrirCameraVisagista()" class="w-full py-3 px-4 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-extrabold flex items-center justify-center gap-2 transition cursor-pointer shadow-lg">
+                                    <span>📷</span> <span>Ver Este Corte no Meu Rosto (Abrir Câmera)</span>
+                                </button>
+                                `}
                             </div>
 
                             <!-- Explicação Técnica e Recomendações -->
@@ -5735,6 +5824,12 @@
                         </div>
                     </div>
                 `;
+
+                if (fotoVisagistaBase64) {
+                    setTimeout(() => {
+                        iniciarProvadorVirtualNaPessoa(c.nome, estiloBarba);
+                    }, 40);
+                }
             } else {
                 boxResultado.innerHTML = `<div class="p-6 text-center text-red-400 text-sm">Não foi possível calcular o diagnóstico. Tente novamente.</div>`;
             }
@@ -5744,6 +5839,698 @@
             if (btn) btn.disabled = false;
             if (btnTxt) btnTxt.textContent = 'ANALISAR COM INTELIGÊNCIA ARTIFICIAL';
         }
+    }
+
+
+    // --- MOTOR DE PROVADOR VIRTUAL AR (SIMULAÇÃO DO CORTE E BARBA NA PRÓPRIA PESSOA) ---
+    let filtroArCameraAtivo = true;
+    let estiloArLiveAtual = 'auto';
+    let arLiveAnimFrame = null;
+
+    let imagemPessoaProvador = null;
+    let estiloCorteProvadorAtual = 'pompadour';
+    let nomeCorteOriginalIA = '';
+    let estiloBarbaProvadorAtual = 'barba_curta';
+    let corCabeloProvador = 'auto';
+    let corNaturalDetectada = { r: 26, g: 22, b: 20 };
+    let corPeleDetectada = { r: 198, g: 152, b: 126 };
+    let geometriaRostoDetectada = { cx: 240, cy: 305, fw: 182, fh: 228 };
+    let transformProvador = { dx: 0, dy: 0, scale: 1.0 };
+    let mostrandoAntesProvador = false;
+    let mostrandoFotoModeloRef = false;
+    let arrastandoCorteProvador = false;
+    let pontoArrastoInicial = { x: 0, y: 0 };
+
+    function mapearNomeCorteParaEstilo(nomeCorte, tipoCabeloFallback = 'liso') {
+        const n = (nomeCorte || '').toLowerCase();
+        if (n.includes('pompadour')) return 'pompadour';
+        if (n.includes('crop')) return 'crop';
+        if (n.includes('quiff') || n.includes('topete') || n.includes('faux') || n.includes('moicano')) return 'quiff';
+        if (n.includes('cacho') || n.includes('drop fade') || n.includes('franja caída') || n.includes('mullet')) return 'cachos';
+        if (n.includes('skin fade') || n.includes('nudge') || n.includes('flattop') || n.includes('black') || n.includes('linhas')) return 'afro';
+        if (n.includes('side part') || n.includes('repartido')) return 'sidepart';
+        if (n.includes('curtains') || n.includes('waves') || n.includes('médio')) return 'curtains';
+        if (n.includes('slick')) return 'slickback';
+        if (n.includes('buzz')) return 'buzz';
+
+        if (tipoCabeloFallback === 'cacheado') return 'cachos';
+        if (tipoCabeloFallback === 'crespo') return 'afro';
+        if (tipoCabeloFallback === 'ondulado') return 'crop';
+        return 'pompadour';
+    }
+
+    function toggleFiltroArCamera() {
+        filtroArCameraAtivo = !filtroArCameraAtivo;
+        const btn = document.getElementById('btn-toggle-ar-live');
+        if (btn) {
+            btn.innerHTML = filtroArCameraAtivo ? '🟢 AR Ligado' : '⚪ AR Desligado';
+            btn.className = filtroArCameraAtivo
+                ? 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold cursor-pointer'
+                : 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 border border-white/10 text-[10px] font-bold cursor-pointer';
+        }
+        const canvasAr = document.getElementById('canvas-ar-live-visagista');
+        if (canvasAr && !filtroArCameraAtivo) {
+            const ctx = canvasAr.getContext('2d');
+            ctx.clearRect(0, 0, canvasAr.width, canvasAr.height);
+        }
+    }
+
+    function selecionarEstiloArLive(estilo) {
+        estiloArLiveAtual = estilo;
+        document.querySelectorAll('.chip-ar-live').forEach(btn => {
+            btn.className = 'chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer';
+        });
+        if (event && event.currentTarget) {
+            event.currentTarget.className = 'chip-ar-live px-2.5 py-1 rounded-lg bg-amber-400 text-black font-bold whitespace-nowrap cursor-pointer';
+        }
+        if (!filtroArCameraAtivo) toggleFiltroArCamera();
+    }
+
+    function iniciarLoopArCamera() {
+        if (arLiveAnimFrame) cancelAnimationFrame(arLiveAnimFrame);
+        const canvasAr = document.getElementById('canvas-ar-live-visagista');
+        const video = document.getElementById('video-camera-visagista');
+        if (!canvasAr || !video) return;
+
+        canvasAr.width = 480;
+        canvasAr.height = 360;
+
+        function renderLoop() {
+            if (!cameraStreamVisagista) return;
+            const ctx = canvasAr.getContext('2d');
+            ctx.clearRect(0, 0, canvasAr.width, canvasAr.height);
+
+            if (filtroArCameraAtivo && video.readyState >= 2) {
+                const cabeloSel = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
+                const barbaSel = document.getElementById('ia_barba')?.value || 'barba_curta';
+                const est = estiloArLiveAtual === 'auto' ? mapearNomeCorteParaEstilo('', cabeloSel) : estiloArLiveAtual;
+
+                desenharCorteVirtualCanvas(ctx, {
+                    cx: 240,
+                    cy: 175,
+                    fw: 142,
+                    fh: 176,
+                    estiloCorte: est,
+                    estiloBarba: barbaSel,
+                    rgbCabelo: { r: 24, g: 20, b: 18 },
+                    rgbPele: { r: 195, g: 148, b: 120 },
+                    alphaGlobal: 0.92
+                });
+            }
+            arLiveAnimFrame = requestAnimationFrame(renderLoop);
+        }
+        arLiveAnimFrame = requestAnimationFrame(renderLoop);
+    }
+
+    function hexParaRgbCabelo(hex) {
+        if (!hex || hex === 'auto') return corNaturalDetectada;
+        const limpo = hex.replace('#', '');
+        const num = parseInt(limpo, 16);
+        return {
+            r: (num >> 16) & 255,
+            g: (num >> 8) & 255,
+            b: num & 255
+        };
+    }
+
+    async function detectarGeometriaRostoImagem(imgEl, canvasW, canvasH) {
+        // 1. Cria canvas temporário com o enquadramento 480x600 (retrato 4:5)
+        const tempC = document.createElement('canvas');
+        tempC.width = canvasW;
+        tempC.height = canvasH;
+        const tCtx = tempC.getContext('2d', { willReadFrequently: true });
+
+        const imgRatio = imgEl.width / imgEl.height;
+        const targetRatio = canvasW / canvasH;
+        let sx = 0, sy = 0, sw = imgEl.width, sh = imgEl.height;
+        if (imgRatio > targetRatio) {
+            sw = imgEl.height * targetRatio;
+            sx = (imgEl.width - sw) / 2;
+        } else {
+            sh = imgEl.width / targetRatio;
+            sy = (imgEl.height - sh) / 2;
+        }
+        tCtx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, canvasW, canvasH);
+
+        let cx = canvasW * 0.5;
+        let cy = canvasH * 0.49;
+        let fw = canvasW * 0.42;
+        let fh = canvasH * 0.40;
+        let detectouNativo = false;
+
+        // 2. Tenta detector nativo FaceDetector do navegador se disponível
+        if ('FaceDetector' in window) {
+            try {
+                const detector = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+                const faces = await detector.detect(tempC);
+                if (faces && faces.length > 0) {
+                    const box = faces[0].boundingBox;
+                    cx = box.x + box.width / 2;
+                    cy = box.y + box.height / 2;
+                    fw = box.width * 1.04;
+                    fh = box.height * 1.08;
+                    detectouNativo = true;
+                }
+            } catch (e) {}
+        }
+
+        // 3. Scanner de pixels para tom de pele, centroide facial e cor natural do cabelo
+        const data = tCtx.getImageData(0, 0, canvasW, canvasH).data;
+        let somaX = 0, somaY = 0, contPele = 0;
+        let somaR = 0, somaG = 0, somaB = 0;
+        let minX = canvasW, maxX = 0, minY = canvasH, maxY = 0;
+
+        for (let y = Math.floor(canvasH * 0.18); y < Math.floor(canvasH * 0.82); y += 4) {
+            for (let x = Math.floor(canvasW * 0.18); x < Math.floor(canvasW * 0.82); x += 4) {
+                const i = (y * canvasW + x) * 4;
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                // Regra cromática RGB/YCbCr para detecção de pele humana em diferentes tons
+                const isSkin = (r > 65 && g > 40 && b > 25 && r > g && r > b && (r - Math.min(g, b)) > 12);
+                if (isSkin) {
+                    somaX += x;
+                    somaY += y;
+                    somaR += r;
+                    somaG += g;
+                    somaB += b;
+                    contPele++;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (contPele > 80) {
+            corPeleDetectada = {
+                r: Math.round(somaR / contPele),
+                g: Math.round(somaG / contPele),
+                b: Math.round(somaB / contPele)
+            };
+            if (!detectouNativo) {
+                const skinCx = somaX / contPele;
+                const skinCy = somaY / contPele;
+                cx = canvasW * 0.5 * 0.55 + skinCx * 0.45;
+                cy = canvasH * 0.50 * 0.55 + skinCy * 0.45;
+                const estW = (maxX - minX) * 0.78;
+                if (estW > canvasW * 0.28 && estW < canvasW * 0.56) {
+                    fw = estW;
+                    fh = estW * 1.24;
+                }
+            }
+        }
+
+        // 4. Amostra da cor natural do cabelo no topo da cabeça
+        let cabR = 0, cabG = 0, cabB = 0, contCab = 0;
+        const topoYIni = Math.max(8, Math.floor(cy - fh * 0.68));
+        const topoYFim = Math.max(24, Math.floor(cy - fh * 0.42));
+        for (let y = topoYIni; y < topoYFim; y += 3) {
+            for (let x = Math.floor(cx - fw * 0.28); x < Math.floor(cx + fw * 0.28); x += 3) {
+                if (x >= 0 && x < canvasW && y >= 0 && y < canvasH) {
+                    const i = (y * canvasW + x) * 4;
+                    const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                    if (lum < 175) {
+                        cabR += data[i];
+                        cabG += data[i + 1];
+                        cabB += data[i + 2];
+                        contCab++;
+                    }
+                }
+            }
+        }
+        if (contCab > 15) {
+            corNaturalDetectada = {
+                r: Math.max(14, Math.min(140, Math.round(cabR / contCab * 0.75))),
+                g: Math.max(12, Math.min(120, Math.round(cabG / contCab * 0.72))),
+                b: Math.max(10, Math.min(110, Math.round(cabB / contCab * 0.70)))
+            };
+        } else {
+            corNaturalDetectada = { r: 24, g: 20, b: 18 };
+        }
+
+        return { cx, cy, fw, fh };
+    }
+
+    function desenharCorteVirtualCanvas(ctx, cfg) {
+        const cx = cfg.cx;
+        const cy = cfg.cy;
+        const fw = cfg.fw;
+        const fh = cfg.fh;
+        const estilo = cfg.estiloCorte || 'pompadour';
+        const barba = cfg.estiloBarba || 'barba_curta';
+        const cCab = cfg.rgbCabelo || { r: 24, g: 20, b: 18 };
+        const cPele = cfg.rgbPele || { r: 195, g: 148, b: 120 };
+        const alpha = cfg.alphaGlobal || 0.96;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+
+        const rBase = cCab.r, gBase = cCab.g, bBase = cCab.b;
+        const rDark = Math.max(5, rBase - 22), gDark = Math.max(5, gBase - 22), bDark = Math.max(5, bBase - 22);
+        const rLight = Math.min(245, rBase + 48), gLight = Math.min(245, gBase + 44), bLight = Math.min(245, bBase + 40);
+
+        const foreheadY = cy - fh * 0.36;
+        const crownY = cy - fh * 0.65;
+        const leftTempleX = cx - fw * 0.50;
+        const rightTempleX = cx + fw * 0.50;
+
+        // 1. EFEITO DEGRADÊ LATERAL (SKIN FADE / MID FADE / HIGH FADE) NAS TÊMPORAS
+        const fadeAltura = (estilo === 'afro' || estilo === 'quiff' || estilo === 'buzz') ? fh * 0.30 : fh * 0.36;
+        [-1, 1].forEach(dir => {
+            const tempX = cx + dir * fw * 0.49;
+            const fadeGrad = ctx.createLinearGradient(tempX, foreheadY - fh * 0.14, tempX, foreheadY + fadeAltura);
+            fadeGrad.addColorStop(0, `rgba(${rDark}, ${gDark}, ${bDark}, 0.92)`);
+            fadeGrad.addColorStop(0.45, `rgba(${rBase}, ${gBase}, ${bBase}, 0.48)`);
+            fadeGrad.addColorStop(0.82, `rgba(${cPele.r}, ${cPele.g}, ${cPele.b}, 0.18)`);
+            fadeGrad.addColorStop(1, `rgba(${cPele.r}, ${cPele.g}, ${cPele.b}, 0.0)`);
+
+            ctx.fillStyle = fadeGrad;
+            ctx.beginPath();
+            ctx.moveTo(cx + dir * fw * 0.36, foreheadY - fh * 0.14);
+            ctx.quadraticCurveTo(tempX + dir * fw * 0.08, foreheadY + fadeAltura * 0.25, tempX + dir * fw * 0.02, foreheadY + fadeAltura);
+            ctx.lineTo(cx + dir * fw * 0.41, foreheadY + fadeAltura * 0.85);
+            ctx.quadraticCurveTo(cx + dir * fw * 0.40, foreheadY, cx + dir * fw * 0.36, foreheadY - fh * 0.14);
+            ctx.closePath();
+            ctx.fill();
+        });
+
+        // 2. SOMBRA SUAVE DE IMPLANTAÇÃO NA TESTA (NATURALIDADE ÓPTICA)
+        const sombraTesta = ctx.createLinearGradient(cx, foreheadY - 12, cx, foreheadY + 18);
+        sombraTesta.addColorStop(0, `rgba(0, 0, 0, 0.42)`);
+        sombraTesta.addColorStop(1, `rgba(0, 0, 0, 0)`);
+        ctx.fillStyle = sombraTesta;
+        ctx.beginPath();
+        ctx.ellipse(cx, foreheadY + 2, fw * 0.46, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3. BASE VOLUMÉTRICA DO CORTE DE CABELO
+        const topGrad = ctx.createLinearGradient(cx, crownY - fh * 0.18, cx, foreheadY + 12);
+        topGrad.addColorStop(0, `rgb(${rBase}, ${gBase}, ${bBase})`);
+        topGrad.addColorStop(0.35, `rgb(${rLight}, ${gLight}, ${bLight})`);
+        topGrad.addColorStop(0.85, `rgb(${rDark}, ${gDark}, ${bDark})`);
+        topGrad.addColorStop(1, `rgb(${rDark}, ${gDark}, ${bDark})`);
+        ctx.fillStyle = topGrad;
+
+        ctx.beginPath();
+        if (estilo === 'pompadour' || estilo === 'slickback') {
+            const altTop = estilo === 'pompadour' ? fh * 0.22 : fh * 0.15;
+            ctx.moveTo(leftTempleX, foreheadY + 6);
+            ctx.bezierCurveTo(leftTempleX - fw * 0.05, crownY - altTop * 0.5, cx - fw * 0.25, crownY - altTop * 1.25, cx + fw * 0.08, crownY - altTop);
+            ctx.bezierCurveTo(rightTempleX + fw * 0.05, crownY - altTop * 0.6, rightTempleX + fw * 0.04, foreheadY - 10, rightTempleX, foreheadY + 6);
+            ctx.quadraticCurveTo(cx, foreheadY - 10, leftTempleX, foreheadY + 6);
+        } else if (estilo === 'quiff') {
+            ctx.moveTo(leftTempleX + 4, foreheadY + 4);
+            ctx.bezierCurveTo(leftTempleX, crownY, cx - fw * 0.18, crownY - fh * 0.28, cx, crownY - fh * 0.30);
+            ctx.bezierCurveTo(cx + fw * 0.18, crownY - fh * 0.28, rightTempleX, crownY, rightTempleX - 4, foreheadY + 4);
+            ctx.quadraticCurveTo(cx, foreheadY - 8, leftTempleX + 4, foreheadY + 4);
+        } else if (estilo === 'crop') {
+            ctx.moveTo(leftTempleX - 2, foreheadY + 12);
+            ctx.bezierCurveTo(leftTempleX - 6, crownY - fh * 0.08, rightTempleX + 6, crownY - fh * 0.08, rightTempleX + 2, foreheadY + 12);
+            ctx.bezierCurveTo(cx + fw * 0.22, foreheadY + 22, cx - fw * 0.22, foreheadY + 22, leftTempleX - 2, foreheadY + 12);
+        } else if (estilo === 'sidepart') {
+            ctx.moveTo(leftTempleX, foreheadY + 6);
+            ctx.bezierCurveTo(leftTempleX - 4, crownY - fh * 0.12, cx - fw * 0.22, crownY - fh * 0.16, cx + fw * 0.18, crownY - fh * 0.14);
+            ctx.bezierCurveTo(rightTempleX + 4, crownY - fh * 0.08, rightTempleX + 2, foreheadY - 4, rightTempleX, foreheadY + 6);
+            ctx.quadraticCurveTo(cx, foreheadY - 6, leftTempleX, foreheadY + 6);
+        } else if (estilo === 'curtains') {
+            ctx.moveTo(leftTempleX - 8, foreheadY + fh * 0.16);
+            ctx.bezierCurveTo(leftTempleX - 14, crownY - fh * 0.12, cx - fw * 0.10, crownY - fh * 0.16, cx, crownY - fh * 0.12);
+            ctx.bezierCurveTo(cx + fw * 0.10, crownY - fh * 0.16, rightTempleX + 14, crownY - fh * 0.12, rightTempleX + 8, foreheadY + fh * 0.16);
+            ctx.quadraticCurveTo(cx + fw * 0.25, foreheadY - 6, cx, foreheadY - 12);
+            ctx.quadraticCurveTo(cx - fw * 0.25, foreheadY - 6, leftTempleX - 8, foreheadY + fh * 0.16);
+        } else if (estilo === 'afro') {
+            ctx.moveTo(leftTempleX + 2, foreheadY + 2);
+            ctx.lineTo(leftTempleX + 4, crownY - fh * 0.14);
+            ctx.quadraticCurveTo(cx, crownY - fh * 0.22, rightTempleX - 4, crownY - fh * 0.14);
+            ctx.lineTo(rightTempleX - 2, foreheadY + 2);
+            ctx.lineTo(leftTempleX + 2, foreheadY + 2);
+        } else if (estilo === 'buzz') {
+            ctx.moveTo(leftTempleX + 3, foreheadY + 2);
+            ctx.bezierCurveTo(leftTempleX + 2, crownY - fh * 0.02, rightTempleX - 2, crownY - fh * 0.02, rightTempleX - 3, foreheadY + 2);
+            ctx.lineTo(leftTempleX + 3, foreheadY + 2);
+        } else {
+            // cachos / default
+            ctx.moveTo(leftTempleX - 4, foreheadY + 8);
+            ctx.bezierCurveTo(leftTempleX - 10, crownY - fh * 0.18, rightTempleX + 10, crownY - fh * 0.18, rightTempleX + 4, foreheadY + 8);
+            ctx.quadraticCurveTo(cx, foreheadY + 14, leftTempleX - 4, foreheadY + 8);
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        // 4. MICRO-FIOS, CACHOS 3D OU TEXTURA ESPONJADA (DETALHAMENTO REALISTA)
+        if (estilo === 'cachos') {
+            for (let i = 0; i < 95; i++) {
+                const t = i / 95;
+                const ang = (i * 137.5) * (Math.PI / 180);
+                const rx = (Math.sin(i * 1.9) * 0.46) * fw;
+                const ry = ((i % 10) / 10) * (fh * 0.34);
+                const x = cx + rx;
+                const y = foreheadY + 10 - ry;
+                const raio = 6 + (i % 5) * 1.8;
+
+                ctx.beginPath();
+                ctx.arc(x, y, raio, 0, Math.PI * 1.75);
+                ctx.strokeStyle = (i % 3 === 0)
+                    ? `rgba(${rLight}, ${gLight}, ${bLight}, 0.55)`
+                    : `rgba(${rDark}, ${gDark}, ${bDark}, 0.78)`;
+                ctx.lineWidth = 2.4;
+                ctx.stroke();
+            }
+        } else if (estilo === 'afro' || estilo === 'buzz') {
+            const qtd = estilo === 'afro' ? 180 : 90;
+            for (let i = 0; i < qtd; i++) {
+                const rx = (( (i * 73) % 100 ) / 100 - 0.5) * fw * 0.92;
+                const ry = (( (i * 41) % 100 ) / 100) * (estilo === 'afro' ? fh * 0.38 : fh * 0.24);
+                const x = cx + rx;
+                const y = foreheadY - ry;
+                ctx.beginPath();
+                ctx.arc(x, y, estilo === 'afro' ? 3.2 : 1.8, 0, Math.PI * 2);
+                ctx.fillStyle = (i % 2 === 0)
+                    ? `rgba(${rDark}, ${gDark}, ${bDark}, 0.85)`
+                    : `rgba(${rLight}, ${gLight}, ${bLight}, 0.35)`;
+                ctx.fill();
+            }
+            // Line-up (Pezinho navalhado reto + Risco lateral na sobrancelha/têmpora)
+            ctx.strokeStyle = `rgba(${cPele.r + 25}, ${cPele.g + 20}, ${cPele.b + 15}, 0.75)`;
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(leftTempleX + 8, foreheadY - 6);
+            ctx.lineTo(leftTempleX + 26, foreheadY - 18);
+            ctx.stroke();
+        } else {
+            // Fios penteados direcionais (Pompadour, Quiff, Crop, Side Part, Curtains, Slick Back)
+            const numFios = 140;
+            for (let i = 0; i < numFios; i++) {
+                const frac = (i / numFios) - 0.5;
+                const startX = cx + frac * fw * 0.94;
+                const startY = (estilo === 'crop') ? (foreheadY - fh * 0.16) : (foreheadY + 2);
+
+                let endX = startX;
+                let endY = crownY - fh * 0.10;
+                let ctrlX = startX;
+                let ctrlY = (startY + endY) / 2;
+
+                if (estilo === 'pompadour') {
+                    endX = startX + fw * 0.10;
+                    endY = crownY - fh * 0.16 - (1 - Math.abs(frac) * 1.6) * (fh * 0.10);
+                    ctrlX = startX - fw * 0.06;
+                    ctrlY = startY - fh * 0.24;
+                } else if (estilo === 'quiff') {
+                    endX = cx + frac * fw * 0.52;
+                    endY = crownY - fh * 0.20 - (0.5 - Math.abs(frac)) * (fh * 0.18);
+                    ctrlX = startX;
+                    ctrlY = startY - fh * 0.18;
+                } else if (estilo === 'crop') {
+                    endX = startX + Math.sin(i) * 10;
+                    endY = foreheadY + 14 + (i % 5) * 2;
+                    ctrlX = startX - 5;
+                    ctrlY = (startY + endY) / 2;
+                } else if (estilo === 'sidepart') {
+                    const dirPart = frac < -0.22 ? -1 : 1;
+                    endX = startX + dirPart * fw * 0.24;
+                    endY = crownY - fh * 0.08;
+                    ctrlX = startX + dirPart * fw * 0.10;
+                    ctrlY = startY - fh * 0.16;
+                } else if (estilo === 'curtains') {
+                    const dirCurtain = frac < 0 ? -1 : 1;
+                    endX = startX + dirCurtain * fw * 0.26;
+                    endY = foreheadY + fh * 0.12;
+                    ctrlX = startX + dirCurtain * fw * 0.18;
+                    ctrlY = crownY - fh * 0.04;
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+                ctx.strokeStyle = (i % 4 === 0)
+                    ? `rgba(${rLight}, ${gLight}, ${bLight}, 0.46)`
+                    : `rgba(${rDark}, ${gDark}, ${bDark}, 0.65)`;
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+            }
+
+            if (estilo === 'sidepart') {
+                // Risca de navalha (Hard Part)
+                ctx.beginPath();
+                ctx.moveTo(cx - fw * 0.24, foreheadY + 2);
+                ctx.lineTo(cx - fw * 0.16, crownY - fh * 0.05);
+                ctx.strokeStyle = `rgba(${cPele.r + 18}, ${cPele.g + 12}, ${cPele.b + 10}, 0.82)`;
+                ctx.lineWidth = 2.6;
+                ctx.stroke();
+            }
+        }
+
+        // 5. SIMULAÇÃO DE BARBA ALINHADA NA MANDÍBULA E BIGODE
+        if (barba && barba !== 'sem_barba' && barba !== 'none') {
+            const mouthY = cy + fh * 0.22;
+            const chinY = cy + fh * 0.49 + (barba === 'barba_cheia' ? fh * 0.07 : 0);
+            const jawLeftX = cx - fw * 0.44;
+            const jawRightX = cx + fw * 0.44;
+
+            if (barba === 'cavanhaque') {
+                // Bigode + Cavanhaque no queixo
+                ctx.fillStyle = `rgba(${rDark}, ${gDark}, ${bDark}, 0.72)`;
+                ctx.beginPath();
+                ctx.moveTo(cx - fw * 0.19, mouthY - 4);
+                ctx.quadraticCurveTo(cx, mouthY - 14, cx + fw * 0.19, mouthY - 4);
+                ctx.quadraticCurveTo(cx, mouthY + 2, cx - fw * 0.19, mouthY - 4);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(cx, chinY - fh * 0.06, fw * 0.17, 0, Math.PI, false);
+                ctx.fill();
+            } else {
+                // Barba Curta Degradê ou Barba Cheia Lenhador
+                const opacidadeBarba = barba === 'barba_cheia' ? 0.84 : 0.58;
+                const barbaGrad = ctx.createLinearGradient(cx, cy + fh * 0.05, cx, chinY);
+                barbaGrad.addColorStop(0, `rgba(${rBase}, ${gBase}, ${bBase}, 0.15)`);
+                barbaGrad.addColorStop(0.35, `rgba(${rDark}, ${gDark}, ${bDark}, ${opacidadeBarba * 0.85})`);
+                barbaGrad.addColorStop(1, `rgba(${rDark}, ${gDark}, ${bDark}, ${opacidadeBarba})`);
+
+                ctx.fillStyle = barbaGrad;
+                ctx.beginPath();
+                // Costeleta esquerda descendo até o queixo
+                ctx.moveTo(jawLeftX - 2, cy - fh * 0.02);
+                ctx.quadraticCurveTo(jawLeftX - 4, cy + fh * 0.32, cx, chinY);
+                ctx.quadraticCurveTo(jawRightX + 4, cy + fh * 0.32, jawRightX + 2, cy - fh * 0.02);
+                // Linha interna da bochecha desenhada na navalha
+                ctx.lineTo(jawRightX - 8, cy + fh * 0.08);
+                ctx.quadraticCurveTo(cx + fw * 0.24, mouthY + 12, cx + fw * 0.17, mouthY + 10);
+                ctx.quadraticCurveTo(cx, mouthY + 22, cx - fw * 0.17, mouthY + 10);
+                ctx.quadraticCurveTo(cx - fw * 0.24, mouthY + 12, jawLeftX + 8, cy + fh * 0.08);
+                ctx.closePath();
+                ctx.fill();
+
+                // Bigode conectado
+                ctx.fillStyle = `rgba(${rDark}, ${gDark}, ${bDark}, ${opacidadeBarba * 0.92})`;
+                ctx.beginPath();
+                ctx.moveTo(cx - fw * 0.21, mouthY - 2);
+                ctx.quadraticCurveTo(cx, mouthY - 13, cx + fw * 0.21, mouthY - 2);
+                ctx.quadraticCurveTo(cx, mouthY + 4, cx - fw * 0.21, mouthY - 2);
+                ctx.fill();
+
+                // Micro-fios da barba para textura realista
+                const fiosBarba = barba === 'barba_cheia' ? 130 : 75;
+                for (let i = 0; i < fiosBarba; i++) {
+                    const ang = (i / fiosBarba) * Math.PI;
+                    const dist = fw * (0.28 + ((i * 19) % 16) / 100);
+                    const bx = cx + Math.cos(ang) * dist;
+                    const by = (cy + fh * 0.12) + Math.sin(ang) * (fh * 0.35);
+                    ctx.beginPath();
+                    ctx.moveTo(bx, by);
+                    ctx.lineTo(bx + (bx < cx ? 2 : -2), by + (barba === 'barba_cheia' ? 9 : 5));
+                    ctx.strokeStyle = (i % 4 === 0)
+                        ? `rgba(${rLight}, ${gLight}, ${bLight}, 0.28)`
+                        : `rgba(${rDark}, ${gDark}, ${bDark}, 0.65)`;
+                    ctx.lineWidth = 1.3;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        ctx.restore();
+    }
+
+    async function iniciarProvadorVirtualNaPessoa(nomeCorteIA, estiloBarbaIA) {
+        if (!fotoVisagistaBase64) return;
+        nomeCorteOriginalIA = nomeCorteIA || 'Corte Recomendado IA';
+        const cabeloSel = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
+        estiloCorteProvadorAtual = mapearNomeCorteParaEstilo(nomeCorteIA, cabeloSel);
+        estiloBarbaProvadorAtual = estiloBarbaIA || (document.getElementById('ia_barba')?.value || 'barba_curta');
+        transformProvador = { dx: 0, dy: 0, scale: 1.0 };
+        mostrandoAntesProvador = false;
+        mostrandoFotoModeloRef = false;
+
+        const img = new Image();
+        img.onload = async function() {
+            imagemPessoaProvador = img;
+            geometriaRostoDetectada = await detectarGeometriaRostoImagem(img, 480, 600);
+            configurarInteracaoCanvasProvador();
+            renderizarSimulacaoCortePessoa();
+        };
+        img.src = fotoVisagistaBase64;
+    }
+
+    function configurarInteracaoCanvasProvador() {
+        const canvas = document.getElementById('canvas-provador-virtual');
+        if (!canvas || canvas.dataset.listenerAtivo === '1') return;
+        canvas.dataset.listenerAtivo = '1';
+
+        const iniciarArrasto = (clientX, clientY) => {
+            arrastandoCorteProvador = true;
+            pontoArrastoInicial = { x: clientX, y: clientY };
+        };
+        const moverArrasto = (clientX, clientY) => {
+            if (!arrastandoCorteProvador) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            transformProvador.dx += (clientX - pontoArrastoInicial.x) * scaleX;
+            transformProvador.dy += (clientY - pontoArrastoInicial.y) * scaleY;
+            pontoArrastoInicial = { x: clientX, y: clientY };
+            renderizarSimulacaoCortePessoa();
+        };
+        const pararArrasto = () => {
+            arrastandoCorteProvador = false;
+        };
+
+        canvas.addEventListener('mousedown', e => iniciarArrasto(e.clientX, e.clientY));
+        window.addEventListener('mousemove', e => moverArrasto(e.clientX, e.clientY));
+        window.addEventListener('mouseup', pararArrasto);
+
+        canvas.addEventListener('touchstart', e => {
+            if (e.touches.length === 1) {
+                iniciarArrasto(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+        canvas.addEventListener('touchmove', e => {
+            if (arrastandoCorteProvador && e.touches.length === 1) {
+                e.preventDefault();
+                moverArrasto(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+        canvas.addEventListener('touchend', pararArrasto);
+    }
+
+    function renderizarSimulacaoCortePessoa() {
+        const canvas = document.getElementById('canvas-provador-virtual');
+        if (!canvas || !imagemPessoaProvador) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // 1. Desenha a foto real da pessoa centralizada em proporção 4:5
+        const imgRatio = imagemPessoaProvador.width / imagemPessoaProvador.height;
+        const targetRatio = W / H;
+        let sx = 0, sy = 0, sw = imagemPessoaProvador.width, sh = imagemPessoaProvador.height;
+        if (imgRatio > targetRatio) {
+            sw = imagemPessoaProvador.height * targetRatio;
+            sx = (imagemPessoaProvador.width - sw) / 2;
+        } else {
+            sh = imagemPessoaProvador.width / targetRatio;
+            sy = (imagemPessoaProvador.height - sh) / 2;
+        }
+        ctx.drawImage(imagemPessoaProvador, sx, sy, sw, sh, 0, 0, W, H);
+
+        // Leve vinheta cinematográfica de barbearia VIP
+        const vig = ctx.createRadialGradient(W / 2, H / 2, W * 0.32, W / 2, H / 2, W * 0.75);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.32)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+
+        // 2. Se não estiver segurando "Antes / Depois", aplica o corte e a barba na pessoa!
+        if (!mostrandoAntesProvador) {
+            const rgbCabelo = hexParaRgbCabelo(corCabeloProvador);
+            desenharCorteVirtualCanvas(ctx, {
+                cx: geometriaRostoDetectada.cx + transformProvador.dx,
+                cy: geometriaRostoDetectada.cy + transformProvador.dy,
+                fw: geometriaRostoDetectada.fw * transformProvador.scale,
+                fh: geometriaRostoDetectada.fh * transformProvador.scale,
+                estiloCorte: estiloCorteProvadorAtual,
+                estiloBarba: document.getElementById('ia_barba')?.value || estiloBarbaProvadorAtual,
+                rgbCabelo: rgbCabelo,
+                rgbPele: corPeleDetectada,
+                alphaGlobal: 0.96
+            });
+        }
+    }
+
+    function mudarEstiloProvadorVirtual(valor) {
+        soundVIP.playSoftClick();
+        const cabeloSel = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
+        if (valor === 'auto') {
+            estiloCorteProvadorAtual = mapearNomeCorteParaEstilo(nomeCorteOriginalIA, cabeloSel);
+        } else {
+            estiloCorteProvadorAtual = valor;
+        }
+        const selectEl = document.getElementById('select-estilo-provador');
+        const tituloEl = document.getElementById('titulo-corte-provador');
+        if (selectEl && tituloEl) {
+            const textoOpcao = selectEl.options[selectEl.selectedIndex]?.text || nomeCorteOriginalIA;
+            tituloEl.textContent = textoOpcao.replace(/^[^\s]+\s/, '');
+        }
+        if (mostrandoFotoModeloRef) alternarModoFotoReferencia();
+        renderizarSimulacaoCortePessoa();
+    }
+
+    function mudarCorCabeloProvador(corHex) {
+        soundVIP.playSoftClick();
+        corCabeloProvador = corHex;
+        renderizarSimulacaoCortePessoa();
+    }
+
+    function ajustarTransformProvador(dx, dy, dScale) {
+        transformProvador.dx += dx;
+        transformProvador.dy += dy;
+        transformProvador.scale = Math.max(0.70, Math.min(1.45, transformProvador.scale + dScale));
+        renderizarSimulacaoCortePessoa();
+    }
+
+    function resetarTransformProvador() {
+        soundVIP.playSoftClick();
+        transformProvador = { dx: 0, dy: 0, scale: 1.0 };
+        renderizarSimulacaoCortePessoa();
+    }
+
+    function mostrarAntesProvador(mostrarAntes) {
+        mostrandoAntesProvador = mostrarAntes;
+        renderizarSimulacaoCortePessoa();
+    }
+
+    function alternarModoFotoReferencia() {
+        soundVIP.playSoftClick();
+        mostrandoFotoModeloRef = !mostrandoFotoModeloRef;
+        const canvas = document.getElementById('canvas-provador-virtual');
+        const imgRef = document.getElementById('img-referencia-visagismo');
+        const btn = document.getElementById('btn-alternar-ref-modelo');
+
+        if (mostrandoFotoModeloRef) {
+            if (canvas) canvas.classList.add('hidden');
+            if (imgRef) {
+                imgRef.classList.remove('hidden');
+                imgRef.className = 'w-full h-full object-cover';
+            }
+            if (btn) btn.textContent = '👤 Voltar para Meu Rosto com o Corte';
+        } else {
+            if (canvas) canvas.classList.remove('hidden');
+            if (imgRef) imgRef.classList.add('hidden');
+            if (btn) btn.textContent = 'Ver Foto Modelo';
+            renderizarSimulacaoCortePessoa();
+        }
+    }
+
+    function baixarFotoComCorteProvador() {
+        const canvas = document.getElementById('canvas-provador-virtual');
+        if (!canvas) return;
+        soundVIP.playChicSuccess();
+        const link = document.createElement('a');
+        link.download = 'meu-corte-visagista-ia.jpg';
+        link.href = canvas.toDataURL('image/jpeg', 0.92);
+        link.click();
+        mostrarToast('💾 Sua foto com a simulação do corte foi baixada!', 'sucesso');
     }
 
     function aplicarCorteVisagismoNoAgendamento(servicoNome, barbeiroId, produtoId, barbeiroNome) {
