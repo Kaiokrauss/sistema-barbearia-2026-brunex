@@ -344,13 +344,27 @@ class Database {
             if ((int)$stProd->fetchColumn() === 0) {
                 $this->conn->exec("
                     INSERT IGNORE INTO `produtos` (`nome`, `slug`, `categoria`, `preco`, `estoque`, `descricao`, `imagem`, `ativo`, `destaque`) VALUES
-                    ('Pomada Matte Efeito Seco (150g)', 'pomada-matte', 'Cabelo', 45.00, 20, 'Fixação extra-forte e acabamento natural sem brilho. Ideal para topetes, fades e penteados modernos.', 'https://images.unsplash.com/photo-1598452963314-b09f397a5c48?w=500&auto=format&fit=crop&q=80', 1, 1),
-                    ('Óleo Nobre para Barba & Bigode (30ml)', 'oleo-barba', 'Barba', 38.00, 15, 'Hidratação profunda com óleos essenciais de argan e jojoba. Devolve maciez aos fios e aroma amadeirado VIP.', 'https://images.unsplash.com/photo-1621607512214-68297480165e?w=500&auto=format&fit=crop&q=80', 1, 1),
-                    ('Balm Multifuncional de Barba (120g)', 'balm-barba', 'Barba', 35.00, 18, 'Alinha os fios rebeldes, elimina o frizz e refresca a pele no pós-barba sem engordurar.', 'https://images.unsplash.com/photo-1608248597359-25f00e93b169?w=500&auto=format&fit=crop&q=80', 1, 0),
-                    ('Shampoo 3 em 1 Cabelo, Barba & Corpo (250ml)', 'shampoo-3em1', 'Cuidados', 42.00, 12, 'Fórmula com mentol e carvão ativado. Limpeza profunda revigorante para o dia a dia do homem moderno.', 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500&auto=format&fit=crop&q=80', 1, 1),
-                    ('Tônico Fortalecedor Fator de Crescimento (60ml)', 'tonico-capilar', 'Tratamento', 59.90, 10, 'Fórmula biotina concentrada. Auxilia no preenchimento de falhas na barba e fortalecimento capilar.', 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&auto=format&fit=crop&q=80', 1, 0),
-                    ('Pente Curvo de Madeira Nobre Anti-Frizz', 'pente-madeira', 'Acessórios', 25.00, 25, 'Artesanal em madeira maciça. Desembaraça sem quebrar os fios e distribui uniformemente o óleo na barba.', 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=80', 1, 0);
+                    ('Pomada Matte Efeito Seco (150g)', 'pomada-matte', 'Cabelo', 45.00, 20, 'Fixação extra-forte e acabamento natural sem brilho. Ideal para topetes, fades e penteados modernos.', 'icons/produtos/pomada-matte.jpg', 1, 1),
+                    ('Óleo Nobre para Barba & Bigode (30ml)', 'oleo-barba', 'Barba', 38.00, 15, 'Hidratação profunda com óleos essenciais de argan e jojoba. Devolve maciez aos fios e aroma amadeirado VIP.', 'icons/produtos/oleo-barba.jpg', 1, 1),
+                    ('Balm Multifuncional de Barba (120g)', 'balm-barba', 'Barba', 35.00, 18, 'Alinha os fios rebeldes, elimina o frizz e refresca a pele no pós-barba sem engordurar.', 'icons/produtos/balm-barba.jpg', 1, 0),
+                    ('Shampoo 3 em 1 Cabelo, Barba & Corpo (250ml)', 'shampoo-3em1', 'Cuidados', 42.00, 12, 'Fórmula com mentol e carvão ativado. Limpeza profunda revigorante para o dia a dia do homem moderno.', 'icons/produtos/shampoo-3em1.jpg', 1, 1),
+                    ('Tônico Fortalecedor Fator de Crescimento (60ml)', 'tonico-capilar', 'Tratamento', 59.90, 10, 'Fórmula biotina concentrada. Auxilia no preenchimento de falhas na barba e fortalecimento capilar.', 'icons/produtos/tonico-capilar.jpg', 1, 0),
+                    ('Pente Curvo de Madeira Nobre Anti-Frizz', 'pente-madeira', 'Acessórios', 25.00, 25, 'Artesanal em madeira maciça. Desembaraça sem quebrar os fios e distribui uniformemente o óleo na barba.', 'icons/produtos/pente-madeira.jpg', 1, 0);
                 ");
+            }
+
+            // Garante que produtos existentes usem as fotos reais masculinas da linha Brunex Barber VIP
+            $mapaImagensReais = [
+                'pomada-matte'   => 'icons/produtos/pomada-matte.jpg',
+                'oleo-barba'     => 'icons/produtos/oleo-barba.jpg',
+                'balm-barba'     => 'icons/produtos/balm-barba.jpg',
+                'shampoo-3em1'   => 'icons/produtos/shampoo-3em1.jpg',
+                'tonico-capilar' => 'icons/produtos/tonico-capilar.jpg',
+                'pente-madeira'  => 'icons/produtos/pente-madeira.jpg',
+            ];
+            $stmtUpImg = $this->conn->prepare("UPDATE `produtos` SET `imagem` = :img WHERE `slug` = :slug AND (`imagem` IS NULL OR `imagem` = '' OR `imagem` LIKE '%unsplash.com%')");
+            foreach ($mapaImagensReais as $slugProd => $imgPath) {
+                $stmtUpImg->execute([':img' => $imgPath, ':slug' => $slugProd]);
             }
 
             self::$schemaVerificado = true;

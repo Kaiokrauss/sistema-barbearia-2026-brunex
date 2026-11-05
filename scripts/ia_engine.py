@@ -16,31 +16,15 @@ import os
 import base64
 import math
 import hashlib
+import importlib.util
 from typing import Dict, Any
 
-# Verifica bibliotecas opcionais de Visão Computacional e ML
-PIL_AVAILABLE = False
-CV2_AVAILABLE = False
-NUMPY_AVAILABLE = False
 
-try:
-    from PIL import Image
-    import io
-    PIL_AVAILABLE = True
-except ImportError:
-    pass
-
-try:
-    import cv2
-    CV2_AVAILABLE = True
-except ImportError:
-    pass
-
-try:
-    import numpy as np
-    NUMPY_AVAILABLE = True
-except ImportError:
-    pass
+def _modulo_disponivel(nome: str) -> bool:
+    try:
+        return importlib.util.find_spec(nome) is not None
+    except Exception:
+        return False
 
 
 class MotorIaBarbearia:
@@ -54,9 +38,9 @@ class MotorIaBarbearia:
             "versao_python": sys.version.split()[0],
             "plataforma": sys.platform,
             "modulos_ia": {
-                "pillow": PIL_AVAILABLE,
-                "opencv": CV2_AVAILABLE,
-                "numpy": NUMPY_AVAILABLE
+                "pillow": _modulo_disponivel("PIL"),
+                "opencv": _modulo_disponivel("cv2"),
+                "numpy": _modulo_disponivel("numpy")
             },
             "status": "online",
             "mensagem": "Motor Python de IA operacional e pronto para processamento."
@@ -78,7 +62,12 @@ class MotorIaBarbearia:
         elif imagem_b64 and (not dados.get("formato_rosto") or rosto == "auto"):
             rosto = self.detectar_formato_rosto_imagem(imagem_b64)
         if rosto not in ["quadrado", "redondo", "oval", "diamante"]:
-            rosto = "quadrado" 
+            rosto = "quadrado"
+
+        if isinstance(bio_cam, dict) and bio_cam.get("cabelo_sugerido") and (not dados.get("tipo_cabelo") or cabelo == "auto"):
+            cabelo = str(bio_cam.get("cabelo_sugerido")).strip().lower()
+        if cabelo not in ["liso", "ondulado", "cacheado", "crespo"]:
+            cabelo = "liso"
 
         matriz_estilos = {
             "quadrado": {
@@ -107,17 +96,17 @@ class MotorIaBarbearia:
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "lucas",
                     "barbeiro_nome": "Lucas Degradê",
-                    "produto_slug": "balm-hidratante",
+                    "produto_slug": "balm-barba",
                     "explicacao": "O degradê suave nas têmporas e na nuca cria um formato alongado elegante, permitindo que a curvatura dos cachos ganhe protagonismo sem pesar nas laterais.",
-                    "dica_estilo": "Aplique Balm nos cachos para hidratar e alinhar o frizz sem enrijecer os fios.",
+                    "dica_estilo": "Aplique Balm Modelador nos cachos para hidratar e alinhar o frizz sem enrijecer os fios.",
                     "foto": "https://images.unsplash.com/photo-1517832606589-7629c3397143?w=600&auto=format&fit=crop&q=80"
                 },
                 "crespo": {
-                    "corte": "High Skin Fade com Nudge Texturizado",
+                    "corte": "High Skin Fade com Nudred Texturizado",
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "carlos",
                     "barbeiro_nome": "Carlos Navalha",
-                    "produto_slug": "balm-hidratante",
+                    "produto_slug": "tonico-capilar",
                     "explicacao": "Um degradê alto a zero (Skin Fade) com contornos milimetricamente alinhados na navalha realça a angulação forte do rosto quadrado.",
                     "dica_estilo": "Hidrate diariamente o couro cabeludo e use esponja modeladora para efeito nudred uniforme.",
                     "foto": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80"
@@ -135,12 +124,12 @@ class MotorIaBarbearia:
                     "foto": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=80"
                 },
                 "ondulado": {
-                    "corte": "Faux Hawk (Moicano Suave) com Fade Alto",
+                    "corte": "Faux Hawk (Moicano Urbano) com Fade Alto",
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "lucas",
                     "barbeiro_nome": "Lucas Degradê",
                     "produto_slug": "pomada-matte",
-                    "explicacao": "O volume central pontiagudo direciona o foco para o eixo vertical, afinando as bochechas e equilibrando perfeitamente o formato de rosto redondo.",
+                    "explicacao": "O volume central direciona o foco para o eixo vertical, afinando as bochechas e equilibrando perfeitamente o formato de rosto redondo.",
                     "dica_estilo": "Junte os fios em direção ao centro da cabeça com uma pequena porção de pomada modeladora.",
                     "foto": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
                 },
@@ -149,7 +138,7 @@ class MotorIaBarbearia:
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "lucas",
                     "barbeiro_nome": "Lucas Degradê",
-                    "produto_slug": "balm-hidratante",
+                    "produto_slug": "balm-barba",
                     "explicacao": "O degradê que cai atrás da orelha (Drop Fade) mantém a nuca limpa e cria a ilusão óptica de um perfil mais esbelto.",
                     "dica_estilo": "Use óleo e balm para manter o topo solto e sem peso lateral.",
                     "foto": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
@@ -162,7 +151,7 @@ class MotorIaBarbearia:
                     "produto_slug": "tonico-capilar",
                     "explicacao": "As laterais bem curtas eliminam o volume lateral e a altura no topo cria harmonia geométrica.",
                     "dica_estilo": "Mantenha a navalha alinhada a cada 15 dias para sustentar a linha vertical.",
-                    "foto": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80"
+                    "foto": "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=600&auto=format&fit=crop&q=80"
                 }
             },
             "oval": {
@@ -171,30 +160,30 @@ class MotorIaBarbearia:
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "joao",
                     "barbeiro_nome": "João Barbeiro",
-                    "produto_slug": "pomada-matte",
+                    "produto_slug": "pente-madeira",
                     "explicacao": "O rosto oval é considerado o mais simétrico e versátil do visagismo. O repartido clássico com acabamento moderno transmite autoridade e elegância.",
-                    "dica_estilo": "Trace o risco natural com pente de madeira e finalize para o lado desejado com acabamento suave.",
+                    "dica_estilo": "Trace o risco natural com Pente de Madeira Antiestático e finalize para o lado desejado com Pomada Matte.",
                     "foto": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80"
                 },
                 "ondulado": {
-                    "corte": "Curtains / Cabelo Médio Despojado com Taper",
+                    "corte": "Old Money Flow / Cabelo Médio com Taper",
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "lucas",
                     "barbeiro_nome": "Lucas Degradê",
-                    "produto_slug": "oleo-barba",
-                    "explicacao": "O rosto oval suporta comprimentos médios sem achatar. O estilo repartido ao meio ou levemente jogado valoriza os traços naturais.",
-                    "dica_estilo": "Deixe secar naturalmente com pouca pomada para aspecto natural e refinado.",
+                    "produto_slug": "shampoo-3em1",
+                    "explicacao": "O rosto oval suporta comprimentos médios sem achatar. O estilo repartido ou jogado para trás valoriza os traços naturais.",
+                    "dica_estilo": "Lave com Shampoo Mentolado 3 em 1 e deixe secar naturalmente com leve toque de pomada.",
                     "foto": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=600&auto=format&fit=crop&q=80"
                 },
                 "cacheado": {
-                    "corte": "Mullet Moderno / Fade com Nuca Alongada",
+                    "corte": "Burst Fade / Mullet Moderno com Cachos",
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "lucas",
                     "barbeiro_nome": "Lucas Degradê",
-                    "produto_slug": "balm-hidratante",
-                    "explicacao": "Tendência internacional de altíssima procura. Aproveita a proporção harmônica do rosto oval para ousar no visual.",
-                    "dica_estilo": "Ative os cachos com água e algumas gotas de óleo finalizador.",
-                    "foto": "https://images.unsplash.com/photo-1517832606589-7629c3397143?w=600&auto=format&fit=crop&q=80"
+                    "produto_slug": "balm-barba",
+                    "explicacao": "Tendência internacional de altíssima procura. Aproveita a proporção harmônica do rosto oval para destacar a textura dos cachos.",
+                    "dica_estilo": "Ative os cachos com água e finalize com Balm Hidratante para definição duradoura.",
+                    "foto": "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=600&auto=format&fit=crop&q=80"
                 },
                 "crespo": {
                     "corte": "Buzz Cut com Desenho Geométrico e Degradê",
@@ -203,8 +192,8 @@ class MotorIaBarbearia:
                     "barbeiro_nome": "Carlos Navalha",
                     "produto_slug": "tonico-capilar",
                     "explicacao": "O corte raspado milimetricamente acentua a estrutura óssea simétrica do rosto oval com estética imponente.",
-                    "dica_estilo": "Manutenção a cada 10 dias garante o aspecto impecável.",
-                    "foto": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80"
+                    "dica_estilo": "Aplique Tônico Fortalecedor Mentolado após o banho e mantenha o contorno a cada 10 dias.",
+                    "foto": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?w=600&auto=format&fit=crop&q=80"
                 }
             },
             "diamante": {
@@ -215,36 +204,36 @@ class MotorIaBarbearia:
                     "barbeiro_nome": "João Barbeiro",
                     "produto_slug": "pomada-matte",
                     "explicacao": "O formato diamante possui maçãs do rosto mais proeminentes com queixo afinado. Um Low Fade mantém presença nas têmporas e equilibra a largura das maçãs.",
-                    "dica_estilo": "Penteie todo para trás com pente largo mantendo textura encorpada.",
-                    "foto": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&auto=format&fit=crop&q=80"
+                    "dica_estilo": "Penteie todo para trás com pente de madeira largo mantendo textura encorpada.",
+                    "foto": "https://images.unsplash.com/photo-1480455624313-e29b44bbfde1?w=600&auto=format&fit=crop&q=80"
                 },
                 "ondulado": {
-                    "corte": "Messy Waves com Degradê Baixo",
+                    "corte": "Messy Waves com Degradê Baixo (Low Taper)",
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "lucas",
                     "barbeiro_nome": "Lucas Degradê",
                     "produto_slug": "pomada-matte",
                     "explicacao": "O volume texturizado na parte superior suaviza a ponta do queixo e confere ar contemporâneo e sofisticado.",
-                    "dica_estilo": "Espalhe pomada na palma das mãos e bagunce os fios para criar volume despojado.",
-                    "foto": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&auto=format&fit=crop&q=80"
+                    "dica_estilo": "Espalhe pomada matte na palma das mãos e texturize os fios para criar volume despojado.",
+                    "foto": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=80"
                 },
                 "cacheado": {
-                    "corte": "Taper Fade com Franja Caída",
+                    "corte": "Taper Fade com Franja Texturizada",
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "lucas",
                     "barbeiro_nome": "Lucas Degradê",
-                    "produto_slug": "balm-hidratante",
-                    "explicacao": "A franja reduz a sensação de testa estreita e destaca os olhos, criando equilíbrio visual impecável.",
-                    "dica_estilo": "Deixe alguns cachos caírem naturalmente sobre a testa com auxílio do balm.",
-                    "foto": "https://images.unsplash.com/photo-1517832606589-7629c3397143?w=600&auto=format&fit=crop&q=80"
+                    "produto_slug": "balm-barba",
+                    "explicacao": "A franja reduz a sensação de testa estreita e destaca os olhos, criando equilíbrio visual impecável para o rosto diamante.",
+                    "dica_estilo": "Deixe alguns cachos caírem naturalmente sobre a testa com auxílio do Balm Hidratante.",
+                    "foto": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
                 },
                 "crespo": {
-                    "corte": "Mid Fade com Linhas Marcadas na Testa",
+                    "corte": "Mid Fade com Linhas Marcadas na Navalha",
                     "servico": "Corte de Cabelo",
                     "barbeiro_slug": "carlos",
                     "barbeiro_nome": "Carlos Navalha",
                     "produto_slug": "tonico-capilar",
-                    "explicacao": "O desenho reto na testa cria uma base horizontal que harmoniza com a linha do queixo.",
+                    "explicacao": "O desenho reto na testa cria uma base horizontal que harmoniza perfeitamente com a linha do queixo.",
                     "dica_estilo": "Linhas nítidas feitas com navalhete dão o acabamento perfeito.",
                     "foto": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80"
                 }
@@ -252,16 +241,20 @@ class MotorIaBarbearia:
         }
 
         estilos_rosto = matriz_estilos.get(rosto, matriz_estilos["quadrado"])
-        estilo_escolhido = estilos_rosto.get(cabelo, estilos_rosto["liso"])
+        estilo_escolhido = dict(estilos_rosto.get(cabelo, estilos_rosto["liso"]))
+
+        # Personalização real de acordo com a Vibe escolhida pelo cliente
+        estilo_escolhido = self.aplicar_personalizacao_vibe(estilo_escolhido, rosto, cabelo, vibe, barba)
+        ficha_tecnica = self.gerar_ficha_tecnica(rosto, cabelo, vibe, barba)
 
         recomendacao_barba = self.recomendar_barba(rosto, barba)
         if barba not in ["sem_barba", "none"]:
             estilo_escolhido["servico"] = "Corte e Barba"
 
-        match_score = 96 + (abs(hash(f"{rosto}_{cabelo}")) % 4)
+        match_score = 96 + (abs(hash(f"{rosto}_{cabelo}_{vibe}_{barba}")) % 4)
         alt_map = {"quadrado": "oval", "oval": "quadrado", "redondo": "diamante", "diamante": "oval"}
         rosto_alt = alt_map.get(rosto, "oval")
-        est_alt = matriz_estilos.get(rosto_alt, matriz_estilos["oval"]).get(cabelo, matriz_estilos["oval"]["liso"])
+        est_alt = dict(matriz_estilos.get(rosto_alt, matriz_estilos["oval"]).get(cabelo, matriz_estilos["oval"]["liso"]))
 
         return {
             "success": True,
@@ -282,7 +275,8 @@ class MotorIaBarbearia:
                 "foto_referencia": estilo_escolhido["foto"],
                 "servico_nome": estilo_escolhido["servico"],
                 "barbeiro_slug": estilo_escolhido["barbeiro_slug"],
-                "produto_slug": estilo_escolhido["produto_slug"]
+                "produto_slug": estilo_escolhido["produto_slug"],
+                "ficha_tecnica": ficha_tecnica
             },
             "corte_alternativo": {
                 "nome": est_alt["corte"],
@@ -295,26 +289,124 @@ class MotorIaBarbearia:
             "barba_sugerida": recomendacao_barba
         }
 
+    def aplicar_personalizacao_vibe(self, estilo: Dict[str, Any], rosto: str, cabelo: str, vibe: str, barba: str) -> Dict[str, Any]:
+        """Adapta o corte, explicação, barbeiro e produto de acordo com a Vibe e Barba do cliente."""
+        if vibe == "classico":
+            mapa_nomes = {
+                "quadrado": "Executive Contour & Taper Clássico",
+                "redondo": "Pompadour Executivo com Degradê Médio",
+                "oval": "Side Part Tradicional à Tesoura & Navalha",
+                "diamante": "Slick Back Italiano com Low Taper"
+            }
+            estilo["corte"] = mapa_nomes.get(rosto, estilo["corte"])
+            estilo["barbeiro_slug"] = "joao"
+            estilo["barbeiro_nome"] = "João Barbeiro"
+            estilo["produto_slug"] = "pente-madeira" if cabelo in ["liso", "ondulado"] else "oleo-barba"
+            estilo["explicacao"] += " Adaptado para a Vibe Clássica/Executiva: laterais conectadas na tesoura sem couro cabeludo exposto, transmitindo máxima sobriedade e liderança."
+            estilo["dica_estilo"] = "Alinhe os fios com o Pente de Madeira Antiestático e finalize com pouca Pomada Matte para brilho acetinado natural."
+        elif vibe == "ousado":
+            mapa_nomes = {
+                "quadrado": "Razor Crop Assimétrico + Freestyles na Navalha",
+                "redondo": "Burst Fade Moicano Urbano (V-Neck)",
+                "oval": "Modern Mullet Fade / Wolf Cut Masculino",
+                "diamante": "High Razor Fade + Textura Desconectada"
+            }
+            estilo["corte"] = mapa_nomes.get(rosto, estilo["corte"])
+            estilo["barbeiro_slug"] = "lucas"
+            estilo["barbeiro_nome"] = "Lucas Degradê"
+            estilo["produto_slug"] = "pomada-matte" if cabelo in ["liso", "ondulado"] else "tonico-capilar"
+            estilo["explicacao"] += " Calibrado para a Vibe Ousada/Streetwear: contraste intenso entre navalha zero (Skin Fade), risco lateral (Hard Part) e topo com textura desconectada."
+            estilo["dica_estilo"] = "Texturize com as pontas dos dedos usando Pomada Matte para destacar as mechas desconectadas e o contraste do degradê."
+        elif vibe == "pratico":
+            mapa_nomes = {
+                "quadrado": "Crew Cut Militar com Fade Limpo",
+                "redondo": "Short Caesar Cut com High Fade",
+                "oval": "Buzz Cut Fade Minimalista",
+                "diamante": "Short French Crop de Baixa Manutenção"
+            }
+            estilo["corte"] = mapa_nomes.get(rosto, estilo["corte"])
+            estilo["barbeiro_slug"] = "carlos"
+            estilo["barbeiro_nome"] = "Carlos Navalha"
+            estilo["produto_slug"] = "shampoo-3em1"
+            estilo["explicacao"] += " Otimizado para a Vibe Prática do Dia a Dia: comprimento curto autoportante que não exige secador e fica pronto em 30 segundos após o banho."
+            estilo["dica_estilo"] = "Lave diariamente com o Shampoo Mentolado 3 em 1 e seque apenas com a toalha — zero esforço pela manhã."
+        else:
+            # moderno
+            if barba == "barba_cheia":
+                estilo["produto_slug"] = "oleo-barba"
+            elif barba == "cavanhaque":
+                estilo["produto_slug"] = "balm-barba"
+
+        return estilo
+
+    def gerar_ficha_tecnica(self, rosto: str, cabelo: str, vibe: str, barba: str) -> Dict[str, str]:
+        """Gera a Ficha Técnica profissional para execução na cadeira do barbeiro."""
+        laterais_map = {
+            "quadrado": "Mid Fade (Pente #0.5 ao #2 com conexão em 45°)",
+            "redondo": "High Skin Fade (Navalha zero alta subindo até #1.5)",
+            "oval": "Taper / Mid Drop Fade (Pente #0.5 na têmpora e nuca)",
+            "diamante": "Low Fade (Pente #1 ao #2.5 preservando as têmporas)"
+        }
+        if vibe == "classico":
+            laterais = "Pente #2 nas laterais com conexão na tesoura dentada (sem zero)"
+        elif vibe == "ousado":
+            laterais = "Razor Skin Fade (Zero navalhado alto + risco opcional na sobrancelha)"
+        elif vibe == "pratico":
+            laterais = "Zero alto (#0 ao #1) para maior durabilidade entre cortes"
+        else:
+            laterais = laterais_map.get(rosto, laterais_map["quadrado"])
+
+        topo_map = {
+            "liso": "5 a 7 cm na tesoura com desfiado interno (Point Cutting)",
+            "ondulado": "4 a 6 cm texturizado em camadas para realçar as ondas",
+            "cacheado": "5 a 8 cm com corte a seco respeitando o fator encolhimento",
+            "crespo": "2 a 4 cm nivelado na máquina + acabamento esponja Nudred"
+        }
+        if vibe == "pratico":
+            topo = "Pente #3 ou #4 no topo (1,2 cm a 1,5 cm) sem necessidade de pentear"
+        else:
+            topo = topo_map.get(cabelo, topo_map["liso"])
+
+        pezinho = "Contorno reto angulado na navalha + acabamento quadrado na nuca" if rosto in ["redondo", "oval"] else "Contorno natural anatômico nas têmporas com navalhete suave"
+
+        barba_spec = {
+            "sem_barba": "Rosto limpo escanhoado com toalha quente e navalha",
+            "barba_curta": "Degradê na costeleta (#0.5 ao #2) + linha da bochecha alta na navalha",
+            "barba_cheia": "Fade lateral progressivo + base quadrada alongada na tesoura",
+            "cavanhaque": "Bigode conectado ao queixo no pente #2 + laterais totalmente limpas"
+        }.get(barba, "Alinhamento geométrico na navalha com toalha quente")
+
+        ciclo = "10 a 12 dias" if vibe in ["ousado", "pratico"] else ("18 a 21 dias" if vibe == "classico" else "12 a 15 dias")
+
+        return {
+            "maquina_laterais": laterais,
+            "topo_tesoura": topo,
+            "acabamento_pezinho": pezinho,
+            "barba_ajuste": barba_spec,
+            "ciclo_manutencao": ciclo
+        }
+
     def detectar_formato_rosto_imagem(self, base64_str: str) -> str:
         """Processa imagem via Visão Computacional ou cálculo de entropia/proporção."""
-        if PIL_AVAILABLE:
-            try:
-                if "," in base64_str:
-                    base64_str = base64_str.split(",")[1]
-                img_bytes = base64.b64decode(base64_str)
-                img = Image.open(io.BytesIO(img_bytes))
-                w, h = img.size
-                ratio = h / float(w)
-                if ratio > 1.3:
-                    return "oval"
-                elif ratio < 1.05:
-                    return "redondo"
-                elif 1.05 <= ratio <= 1.2:
-                    return "quadrado"
-                else:
-                    return "diamante"
-            except Exception:
-                pass
+        try:
+            from PIL import Image
+            import io
+            if "," in base64_str:
+                base64_str = base64_str.split(",")[1]
+            img_bytes = base64.b64decode(base64_str)
+            img = Image.open(io.BytesIO(img_bytes))
+            w, h = img.size
+            ratio = h / float(w)
+            if ratio > 1.3:
+                return "oval"
+            elif ratio < 1.05:
+                return "redondo"
+            elif 1.05 <= ratio <= 1.2:
+                return "quadrado"
+            else:
+                return "diamante"
+        except Exception:
+            pass
 
         # Algoritmo de hash geométrico determinístico
         h = hashlib.sha256(base64_str[:150].encode("utf-8")).hexdigest()
@@ -324,30 +416,75 @@ class MotorIaBarbearia:
     def recomendar_barba(self, rosto: str, barba: str) -> Dict[str, str]:
         if barba in ["sem_barba", "none"]:
             return {
-                "estilo": "Rosto Limpo com Linhas Definidas",
-                "explicacao": "Para rostos sem barba, a navalha afiada delineia as costeletas e o contorno da nuca, destacando a jovialidade e a expressão facial.",
+                "estilo": "Rosto Limpo com Linhas Definidas (Clean Shave)",
+                "explicacao": "Para rostos sem barba, a navalha afiada delineia as costeletas em degradê e limpa o contorno do pescoço, destacando a linha mandibular natural.",
                 "servico": "Corte de Cabelo"
             }
 
-        mapa_barbas = {
+        if barba == "cavanhaque":
+            mapa_cavanhaque = {
+                "redondo": {
+                    "estilo": "Cavanhaque Van Dyke Alongado",
+                    "explicacao": "O bigode desconectado com cavanhaque pontiagudo no queixo cria um eixo vertical central que afina instantaneamente as bochechas do rosto redondo."
+                },
+                "quadrado": {
+                    "estilo": "Cavanhaque Anchor (Âncora) com Contorno Suave",
+                    "explicacao": "Destaca o centro do queixo sem adicionar largura às extremidades do maxilar quadrado, mantendo uma estética moderna e imponente."
+                },
+                "oval": {
+                    "estilo": "Cavanhaque Clássico Conectado (Circle Beard)",
+                    "explicacao": "Acompanha a simetria natural do rosto oval, emoldurando o sorriso com acabamento milimétrico na navalha."
+                },
+                "diamante": {
+                    "estilo": "Cavanhaque Royale + Bigode Encorpado",
+                    "explicacao": "Adiciona presença estrutural ao queixo afilado do rosto diamante sem sobrecarregar as maçãs do rosto."
+                }
+            }
+            esc = mapa_cavanhaque.get(rosto, mapa_cavanhaque["quadrado"])
+            return {"estilo": esc["estilo"], "explicacao": esc["explicacao"], "servico": "Corte e Barba"}
+
+        if barba == "barba_cheia":
+            mapa_cheia = {
+                "redondo": {
+                    "estilo": "Barba Ducktail (Lenhador Alongada em V)",
+                    "explicacao": "Laterais aparadas em degradê com comprimento denso na ponta do queixo para alongar a silhueta facial e projetar o maxilar para a frente."
+                },
+                "quadrado": {
+                    "estilo": "Barba Spartan / Lenhador com Base Arredondada",
+                    "explicacao": "Volume imponente com cantos inferiores levemente suavizados na tesoura para harmonizar a força do maxilar quadrado."
+                },
+                "oval": {
+                    "estilo": "Full Beard Executiva com Fade nas Costeletas",
+                    "explicacao": "Densidade completa e uniforme em toda a extensão mandibular, finalizada com toalha quente e Óleo Nobre Amadeirado."
+                },
+                "diamante": {
+                    "estilo": "Barba Garibaldi com Preenchimento Mandibular",
+                    "explicacao": "Volume mais largo na base do maxilar para compensar o queixo estreito e equilibrar os ossos zigomáticos."
+                }
+            }
+            esc = mapa_cheia.get(rosto, mapa_cheia["quadrado"])
+            return {"estilo": esc["estilo"], "explicacao": esc["explicacao"], "servico": "Corte e Barba"}
+
+        # Default: barba_curta
+        mapa_curta = {
             "redondo": {
-                "estilo": "Barba Alinhada em Bico (Fade Beard Alongada)",
-                "explicacao": "Laterais da barba baixas com degradê e maior comprimento na ponta do queixo. Essa geometria cria um ângulo em V que afina o rosto redondo."
+                "estilo": "Short Boxed Beard com Costeleta em Fade",
+                "explicacao": "Laterais baixas no pente #1 com linha da bochecha angulada na navalha, criando definição geométrica que reduz a largura visual do rosto."
             },
             "quadrado": {
-                "estilo": "Barba Cerrada ou Lenhador com Contornos Arredondados",
-                "explicacao": "Acompanha a linha forte do maxilar natural sem exagerar nos ângulos laterais para equilibrar a virilidade."
+                "estilo": "Barba Cerrada Desenhada (Heavy Stubble 3mm)",
+                "explicacao": "Acompanha a angulação natural de 90° do maxilar com degradê limpo nas têmporas e pescoço."
             },
             "oval": {
-                "estilo": "Barba Completa Contornada / Barboterapia",
-                "explicacao": "Harmoniza perfeitamente com a simetria oval, mantendo densidade homogênea em todo o desenho facial."
+                "estilo": "Barba Curta Italiana com Barboterapia",
+                "explicacao": "Harmoniza perfeitamente com a proporção áurea do rosto oval, mantendo fios alinhados no pente #1.5 e contorno nítido."
             },
             "diamante": {
-                "estilo": "Barba Cheia nas Laterais para Preenchimento",
-                "explicacao": "Preenche a região das maçãs e da mandíbula inferior, compensando a largura dos ossos zigomáticos."
+                "estilo": "Barba Curta Contornada com Base Cheia",
+                "explicacao": "Mantém densidade suave nas laterais da mandíbula inferior para suavizar o queixo em V."
             }
         }
-        escolhida = mapa_barbas.get(rosto, mapa_barbas["quadrado"])
+        escolhida = mapa_curta.get(rosto, mapa_curta["quadrado"])
         return {
             "estilo": escolhida["estilo"],
             "explicacao": escolhida["explicacao"],

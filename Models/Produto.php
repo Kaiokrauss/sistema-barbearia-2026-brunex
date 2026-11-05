@@ -14,6 +14,40 @@ class Produto {
     }
 
     /**
+     * Garante que qualquer produto sem foto ou com link antigo do Unsplash utilize a foto real masculina da barbearia.
+     */
+    private function normalizarImagem(array $row): array {
+        $mapa = [
+            'pomada-matte'   => 'icons/produtos/pomada-matte.jpg',
+            'oleo-barba'     => 'icons/produtos/oleo-barba.jpg',
+            'balm-barba'     => 'icons/produtos/balm-barba.jpg',
+            'shampoo-3em1'   => 'icons/produtos/shampoo-3em1.jpg',
+            'tonico-capilar' => 'icons/produtos/tonico-capilar.jpg',
+            'pente-madeira'  => 'icons/produtos/pente-madeira.jpg',
+        ];
+        $img = trim((string)($row['imagem'] ?? ''));
+        $slug = strtolower(trim((string)($row['slug'] ?? '')));
+        $cat = strtolower(trim((string)($row['categoria'] ?? '')));
+
+        if ($img === '' || str_contains($img, 'unsplash.com')) {
+            if (isset($mapa[$slug])) {
+                $row['imagem'] = $mapa[$slug];
+            } elseif (str_contains($cat, 'barba')) {
+                $row['imagem'] = 'icons/produtos/oleo-barba.jpg';
+            } elseif (str_contains($cat, 'cuidado')) {
+                $row['imagem'] = 'icons/produtos/shampoo-3em1.jpg';
+            } elseif (str_contains($cat, 'tratamento')) {
+                $row['imagem'] = 'icons/produtos/tonico-capilar.jpg';
+            } elseif (str_contains($cat, 'acess')) {
+                $row['imagem'] = 'icons/produtos/pente-madeira.jpg';
+            } else {
+                $row['imagem'] = 'icons/produtos/pomada-matte.jpg';
+            }
+        }
+        return $row;
+    }
+
+    /**
      * Retorna a lista de produtos com filtros opcionais.
      */
     public function lerTodos(?string $categoria = null, bool $apenasAtivos = true, ?bool $destaque = null): array {
@@ -37,7 +71,8 @@ class Produto {
         $sql .= " ORDER BY `destaque` DESC, `nome` ASC";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return array_map([$this, 'normalizarImagem'], $rows);
     }
 
     /**
@@ -47,7 +82,7 @@ class Produto {
         $stmt = $this->conn->prepare("SELECT * FROM `produtos` WHERE `id` = :id LIMIT 1");
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ?: null;
+        return $row ? $this->normalizarImagem($row) : null;
     }
 
     /**
@@ -57,7 +92,7 @@ class Produto {
         $stmt = $this->conn->prepare("SELECT * FROM `produtos` WHERE `slug` = :slug LIMIT 1");
         $stmt->execute([':slug' => $slug]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ?: null;
+        return $row ? $this->normalizarImagem($row) : null;
     }
 
     /**

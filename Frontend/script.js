@@ -1447,7 +1447,17 @@ function renderizarProdutosAdmin(produtos) {
     tbody.innerHTML = produtos.map(p => {
         const precoFmt = `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}`;
         const estoque = Number(p.estoque);
-        const imgUrl = p.imagem || 'https://images.unsplash.com/photo-1598452963314-b09f397a5c48?w=100&auto=format&fit=crop&q=80';
+        const mapaImgAdmin = {
+            'pomada-matte': 'icons/produtos/pomada-matte.jpg',
+            'oleo-barba': 'icons/produtos/oleo-barba.jpg',
+            'balm-barba': 'icons/produtos/balm-barba.jpg',
+            'shampoo-3em1': 'icons/produtos/shampoo-3em1.jpg',
+            'tonico-capilar': 'icons/produtos/tonico-capilar.jpg',
+            'pente-madeira': 'icons/produtos/pente-madeira.jpg'
+        };
+        const imgUrl = (!p.imagem || String(p.imagem).includes('unsplash.com'))
+            ? (mapaImgAdmin[p.slug] || 'icons/produtos/pomada-matte.jpg')
+            : p.imagem;
 
         let badgeEstoque = '';
         if (estoque <= 0) {

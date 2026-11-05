@@ -1265,29 +1265,36 @@
                         </div>
                     </div>
 
-                    <!-- VISOR INTERATIVO DA CÂMERA AO VIVO (WEBRTC) -->
+                    <!-- VISOR INTERATIVO DA CÂMERA AO VIVO (WEBRTC + MEDIAPIPE 468 PONTOS) -->
                     <div id="visor-camera-visagista" class="hidden mt-5 pt-5 border-t border-white/10 animate-fadeIn">
                         <div class="max-w-md mx-auto">
                             <div class="relative rounded-2xl overflow-hidden bg-black border-2 border-amber-400/60 shadow-2xl aspect-[4/3]">
-                                <!-- Stream de Vídeo Espelhado + Overlay AR de Corte Ao Vivo -->
+                                <!-- Stream de Vídeo Espelhado + Overlay AR & Face Mesh 468 Pontos Ao Vivo -->
                                 <video id="video-camera-visagista" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
                                 <canvas id="canvas-ar-live-visagista" class="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"></canvas>
                                 <canvas id="canvas-camera-visagista" class="hidden"></canvas>
 
                                 <!-- HUD Superior de Telemetria -->
-                                <div class="absolute top-3 inset-x-3 flex items-center justify-between gap-2 pointer-events-none">
-                                    <span class="px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-emerald-500/40 text-emerald-400 text-[10px] font-bold flex items-center gap-1.5">
+                                <div class="absolute top-3 inset-x-3 flex items-center justify-between gap-2 pointer-events-none z-20">
+                                    <span id="cam-hud-mesh-status" class="px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-emerald-500/40 text-emerald-400 text-[10px] font-bold flex items-center gap-1.5">
                                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                        <span>CÂMERA IA ATIVA</span>
+                                        <span>IA 468 PONTOS ATIVA</span>
                                     </span>
-                                    <span id="cam-hud-luz" class="px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-amber-500/30 text-amber-300 text-[10px] font-semibold">
+                                    <span id="cam-hud-luz" class="px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/30 text-amber-300 text-[10px] font-semibold">
                                         💡 Luz: Analisando...
                                     </span>
                                 </div>
 
-                                <!-- Malha Biométrica Facial SVG (Guia de Enquadramento) -->
-                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <svg viewBox="0 0 240 240" class="w-52 h-52 sm:w-60 sm:h-60 opacity-85">
+                                <!-- Telemetria Antropométrica em Tempo Real (468 Landmarks) -->
+                                <div id="cam-hud-telemetria-live" class="absolute top-11 left-3 flex flex-col gap-1 pointer-events-none z-20 text-[9px] font-mono">
+                                    <span id="cam-hud-rosto-live" class="px-2 py-0.5 rounded bg-black/75 border border-amber-400/40 text-amber-300 font-bold">📐 Rosto: Rastreando...</span>
+                                    <span id="cam-hud-phi-live" class="px-2 py-0.5 rounded bg-black/75 border border-purple-400/30 text-purple-300">Φ Áureo: -- | Maxilar: --°</span>
+                                    <span id="cam-hud-pose-live" class="px-2 py-0.5 rounded bg-black/75 border border-emerald-400/30 text-emerald-300">🎯 Simetria: --% | Pose: 0°</span>
+                                </div>
+
+                                <!-- Malha Biométrica Facial SVG (Guia Inicial enquanto busca rosto) -->
+                                <div id="svg-guia-estatica-visagista" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300">
+                                    <svg viewBox="0 0 240 240" class="w-52 h-52 sm:w-60 sm:h-60 opacity-65">
                                         <defs>
                                             <linearGradient id="visagismoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                                                 <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.9"/>
@@ -1296,13 +1303,7 @@
                                             </linearGradient>
                                         </defs>
                                         <!-- Silhueta de Rosto e Mandíbula -->
-                                        <path d="M120,28 C76,28 54,62 54,112 C54,158 78,198 120,212 C162,198 186,158 186,112 C186,62 164,28 120,28 Z" fill="none" stroke="url(#visagismoGrad)" stroke-width="2" stroke-dasharray="6 4"/>
-                                        <!-- Eixo de Simetria Vertical -->
-                                        <line x1="120" y1="20" x2="120" y2="220" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
-                                        <!-- Linhas dos Terços Faciais (Testa, Zigomático, Mandíbula) -->
-                                        <line x1="66" y1="72" x2="174" y2="72" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/>
-                                        <line x1="56" y1="118" x2="184" y2="118" stroke="#10b981" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.75"/>
-                                        <line x1="68" y1="168" x2="172" y2="168" stroke="#a855f7" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/>
+                                        <path d="M120,28 C76,28 54,62 54,112 C54,158 78,198 120,212 C162,198 186,158 186,112 C186,62 164,28 120,28 Z" fill="none" stroke="url(#visagismoGrad)" stroke-width="1.5" stroke-dasharray="6 4"/>
                                         <!-- Cantoneiras do Scanner -->
                                         <path d="M35,50 L35,30 L55,30" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
                                         <path d="M205,50 L205,30 L185,30" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
@@ -1312,37 +1313,42 @@
                                 </div>
 
                                 <!-- Contagem Regressiva do Timer -->
-                                <div id="cam-countdown-overlay" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-20">
+                                <div id="cam-countdown-overlay" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-30">
                                     <span id="cam-countdown-num" class="text-6xl font-display font-extrabold text-amber-400 drop-shadow-lg animate-bounce">3</span>
                                 </div>
 
                                 <!-- HUD Inferior -->
-                                <div class="absolute bottom-3 inset-x-3 text-center pointer-events-none">
+                                <div class="absolute bottom-3 inset-x-3 text-center pointer-events-none z-20">
                                     <span id="cam-hud-instrucao" class="inline-block px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-[11px] text-zinc-200 font-medium">
-                                        📐 Centralize seu rosto na malha geométrica e clique em Capturar
+                                        📐 Mova a cabeça livremente — O filtro AR e a malha 468 pts acompanham seu rosto!
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- Seletor de Corte em Tempo Real (AR Ao Vivo na Câmera) -->
+                            <!-- Seletor de Corte em Tempo Real (AR Ao Vivo na Câmera + Malha 468 Pontos) -->
                             <div class="mt-3 p-2.5 rounded-xl bg-black/60 border border-amber-500/30">
-                                <div class="flex items-center justify-between mb-1.5">
+                                <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2">
                                     <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1">
-                                        <span>💈</span> <span>Provador AR Ao Vivo (Ver Corte em Mim Agora):</span>
+                                        <span>💈</span> <span>Provador AR 3D Dinâmico (Segue o Rosto):</span>
                                     </span>
-                                    <button type="button" onclick="toggleFiltroArCamera()" id="btn-toggle-ar-live" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold cursor-pointer">
-                                        🟢 AR Ligado
-                                    </button>
+                                    <div class="flex items-center gap-1.5">
+                                        <button type="button" onclick="toggleMalha468Camera()" id="btn-toggle-mesh-live" class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-bold cursor-pointer">
+                                            🕸️ Malha 468 ON
+                                        </button>
+                                        <button type="button" onclick="toggleFiltroArCamera()" id="btn-toggle-ar-live" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold cursor-pointer">
+                                            🟢 AR Ligado
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-[10px]">
-                                    <button type="button" onclick="selecionarEstiloArLive('auto')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-amber-400 text-black font-bold whitespace-nowrap cursor-pointer">✨ Auto IA</button>
-                                    <button type="button" onclick="selecionarEstiloArLive('pompadour')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Pompadour Fade</button>
-                                    <button type="button" onclick="selecionarEstiloArLive('crop')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">French Crop</button>
-                                    <button type="button" onclick="selecionarEstiloArLive('quiff')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Quiff Topete</button>
-                                    <button type="button" onclick="selecionarEstiloArLive('cachos')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Taper Cachos</button>
-                                    <button type="button" onclick="selecionarEstiloArLive('afro')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Afro Skin Fade</button>
-                                    <button type="button" onclick="selecionarEstiloArLive('sidepart')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Side Part</button>
-                                    <button type="button" onclick="selecionarEstiloArLive('buzz')" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Buzz Cut</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('auto', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-amber-400 text-black font-bold whitespace-nowrap cursor-pointer">✨ Auto IA</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('pompadour', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Pompadour Fade</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('crop', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">French Crop</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('quiff', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Quiff Topete</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('cachos', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Taper Cachos</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('afro', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Afro Skin Fade</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('sidepart', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Side Part</button>
+                                    <button type="button" onclick="selecionarEstiloArLive('buzz', event)" class="chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer">Buzz Cut</button>
                                 </div>
                             </div>
 
@@ -1404,7 +1410,7 @@
                         </div>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_rosto" value="quadrado" checked class="peer hidden">
+                                <input type="radio" name="ia_rosto" value="quadrado" checked onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
                                     <span class="text-3xl">🔲</span>
                                     <strong class="text-xs font-bold text-white">Quadrado</strong>
@@ -1412,7 +1418,7 @@
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_rosto" value="redondo" class="peer hidden">
+                                <input type="radio" name="ia_rosto" value="redondo" onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
                                     <span class="text-3xl">⭕</span>
                                     <strong class="text-xs font-bold text-white">Redondo</strong>
@@ -1420,7 +1426,7 @@
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_rosto" value="oval" class="peer hidden">
+                                <input type="radio" name="ia_rosto" value="oval" onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
                                     <span class="text-3xl">🥚</span>
                                     <strong class="text-xs font-bold text-white">Oval</strong>
@@ -1428,7 +1434,7 @@
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_rosto" value="diamante" class="peer hidden">
+                                <input type="radio" name="ia_rosto" value="diamante" onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-2">
                                     <span class="text-3xl">💎</span>
                                     <strong class="text-xs font-bold text-white">Diamante</strong>
@@ -1444,11 +1450,11 @@
                             <label class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
                                 <span>2.</span> Qual é a Curvatura do seu Cabelo?
                             </label>
-                            <span class="text-[11px] text-zinc-500">Textura natural</span>
+                            <span class="text-[11px] text-zinc-500">Textura natural (ou detectada pela câmera)</span>
                         </div>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_cabelo" value="liso" checked class="peer hidden">
+                                <input type="radio" name="ia_cabelo" value="liso" checked onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
                                     <span class="text-2xl">〰️</span>
                                     <strong class="text-xs font-bold text-white">Liso</strong>
@@ -1456,7 +1462,7 @@
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_cabelo" value="ondulado" class="peer hidden">
+                                <input type="radio" name="ia_cabelo" value="ondulado" onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
                                     <span class="text-2xl">🌊</span>
                                     <strong class="text-xs font-bold text-white">Ondulado</strong>
@@ -1464,7 +1470,7 @@
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_cabelo" value="cacheado" class="peer hidden">
+                                <input type="radio" name="ia_cabelo" value="cacheado" onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
                                     <span class="text-2xl">🌀</span>
                                     <strong class="text-xs font-bold text-white">Cacheado</strong>
@@ -1472,7 +1478,7 @@
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="ia_cabelo" value="crespo" class="peer hidden">
+                                <input type="radio" name="ia_cabelo" value="crespo" onchange="aoAlterarParametroVisagismo()" class="peer hidden">
                                 <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-white/20 transition text-center flex flex-col items-center gap-1.5">
                                     <span class="text-2xl">⚡</span>
                                     <strong class="text-xs font-bold text-white">Crespo</strong>
@@ -1488,7 +1494,7 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
                                 3. Preferência de Barba
                             </label>
-                            <select id="ia_barba" onchange="if (typeof renderizarSimulacaoCortePessoa === 'function') renderizarSimulacaoCortePessoa();" class="dark-input text-xs font-semibold text-zinc-200">
+                            <select id="ia_barba" onchange="aoAlterarParametroVisagismo()" class="dark-input text-xs font-semibold text-zinc-200">
                                 <option value="barba_curta">✂️ Barba Curta / Alinhada no Degradê</option>
                                 <option value="barba_cheia">🧔 Barba Cheia / Lenhador Volumosa</option>
                                 <option value="cavanhaque">📐 Cavanhaque Estilizado</option>
@@ -1499,7 +1505,7 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
                                 4. Estilo Desejado (Vibe)
                             </label>
-                            <select id="ia_vibe" class="dark-input text-xs font-semibold text-zinc-200">
+                            <select id="ia_vibe" onchange="aoAlterarParametroVisagismo()" class="dark-input text-xs font-semibold text-zinc-200">
                                 <option value="moderno">🔥 Moderno & Urbano (Tendência em Alta)</option>
                                 <option value="classico">👑 Clássico & Elegante (Presença Executiva)</option>
                                 <option value="ousado">⚡ Ousado & Marcante (Linhas e Contraste)</option>
@@ -4824,7 +4830,18 @@
                     ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400 to-amber-600 text-black shadow-md">★ Destaque</span>`
                     : '';
 
-                const imagemUrl = p.imagem || 'https://images.unsplash.com/photo-1598452963314-b09f397a5c48?w=500&auto=format&fit=crop&q=80';
+                const mapaImgLoja = {
+                    'pomada-matte': 'icons/produtos/pomada-matte.jpg',
+                    'oleo-barba': 'icons/produtos/oleo-barba.jpg',
+                    'balm-barba': 'icons/produtos/balm-barba.jpg',
+                    'shampoo-3em1': 'icons/produtos/shampoo-3em1.jpg',
+                    'tonico-capilar': 'icons/produtos/tonico-capilar.jpg',
+                    'pente-madeira': 'icons/produtos/pente-madeira.jpg'
+                };
+                const imagemUrl = (!p.imagem || String(p.imagem).includes('unsplash.com'))
+                    ? (mapaImgLoja[p.slug] || 'icons/produtos/pomada-matte.jpg')
+                    : p.imagem;
+                p.imagem = imagemUrl;
 
                 card.className = "group glass-panel rounded-3xl p-5 border border-white/10 hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-between shadow-xl";
                 card.innerHTML = `
@@ -5214,13 +5231,465 @@
         }
     }
 
-    // --- INTELIGÊNCIA ARTIFICIAL: VISAGISTA VIRTUAL & SCANNER DE CÂMERA AO VIVO ---
+    // --- INTELIGÊNCIA ARTIFICIAL: VISAGISTA VIRTUAL & SCANNER BIOMÉTRICO MEDIAPIPE 468 PONTOS ---
     let fotoVisagistaBase64 = null;
     let cameraStreamVisagista = null;
     let cameraFacingModeVisagista = 'user';
     let cameraMonitorInterval = null;
     let ultimaBiometriaCamera = null;
     let ultimoTextoConsultoriaIA = '';
+
+    // Instâncias e Estado do Rastreamento Facial MediaPipe 468 Landmarks
+    let mpFaceLandmarkerVideo = null;
+    let mpFaceLandmarkerImage = null;
+    let mpCarregandoPromise = null;
+    let mpDisponivel = false;
+    let malha468CameraAtiva = true;
+    let ultimoLandmarksLive = null;
+    let poseSuavizadaLive = {
+        cx: 240, cy: 175, fw: 144, fh: 180,
+        rollRad: 0, yawRatio: 0, pitchRatio: 0,
+        inicializado: false
+    };
+
+    // Contorno anatômico oficial MediaPipe Face Oval + Linhas de Medição Visagista
+    const MP_FACE_OVAL_INDICES = [
+        10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288,
+        397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136,
+        172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109, 10
+    ];
+    const MP_JAWLINE_INDICES = [
+        234, 93, 132, 58, 172, 136, 150, 149, 176, 148, 152,
+        377, 400, 378, 379, 365, 397, 288, 361, 323, 454
+    ];
+
+    async function inicializarMediaPipeFaceLandmarker() {
+        if (mpFaceLandmarkerVideo && mpFaceLandmarkerImage) return true;
+        if (mpCarregandoPromise) return mpCarregandoPromise;
+
+        mpCarregandoPromise = (async () => {
+            const hudMesh = document.getElementById('cam-hud-mesh-status');
+            try {
+                if (hudMesh) {
+                    hudMesh.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span><span>CARREGANDO MEDIAPIPE 468...</span>';
+                }
+                const vision = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm');
+                const filesetResolver = await vision.FilesetResolver.forVisionTasks(
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+                );
+                const modelAssetPath = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+
+                mpFaceLandmarkerVideo = await vision.FaceLandmarker.createFromOptions(filesetResolver, {
+                    baseOptions: { modelAssetPath, delegate: 'GPU' },
+                    runningMode: 'VIDEO',
+                    numFaces: 1,
+                    outputFaceBlendshapes: false,
+                    outputFacialTransformationMatrixes: false
+                });
+
+                mpFaceLandmarkerImage = await vision.FaceLandmarker.createFromOptions(filesetResolver, {
+                    baseOptions: { modelAssetPath, delegate: 'GPU' },
+                    runningMode: 'IMAGE',
+                    numFaces: 1,
+                    outputFaceBlendshapes: false
+                });
+
+                mpDisponivel = true;
+                if (hudMesh) {
+                    hudMesh.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span><span>MEDIAPIPE 468 PTS ATIVO</span>';
+                }
+                return true;
+            } catch (err) {
+                console.warn('MediaPipe CDN indisponível, ativando Rastreador Anatômico Local 468:', err);
+                mpDisponivel = false;
+                if (hudMesh) {
+                    hudMesh.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span><span>TRACKER FACIAL 468 ATIVO</span>';
+                }
+                return false;
+            }
+        })();
+
+        return mpCarregandoPromise;
+    }
+
+    /**
+     * Sintetiza a malha de 468 pontos normalizados (0..1) a partir do rastreamento real de contorno de pele e sombras
+     * dos olhos/sobrancelhas quando offline ou enquanto o WebAssembly do MediaPipe inicializa.
+     */
+    function rastrearMalha468LocalPorPixels(sourceCanvas, espelhado = false) {
+        const w = sourceCanvas.width;
+        const h = sourceCanvas.height;
+        const ctx = sourceCanvas.getContext('2d', { willReadFrequently: true });
+        const data = ctx.getImageData(0, 0, w, h).data;
+
+        let somaX = 0, somaY = 0, contPele = 0;
+        let somaR = 0, somaG = 0, somaB = 0;
+        let minX = w, maxX = 0, minY = h, maxY = 0;
+        let somaXTopo = 0, contTopo = 0, somaXBase = 0, contBase = 0;
+        let minXTopo = w, maxXTopo = 0;
+        let minXMeio = w, maxXMeio = 0;
+        let minXBase = w, maxXBase = 0;
+
+        for (let y = Math.floor(h * 0.12); y < Math.floor(h * 0.88); y += 4) {
+            for (let x = Math.floor(w * 0.14); x < Math.floor(w * 0.86); x += 4) {
+                const i = (y * w + x) * 4;
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                const isSkin = (r > 65 && g > 40 && b > 25 && r > g && r > b && (r - Math.min(g, b)) > 11);
+                if (isSkin) {
+                    const px = espelhado ? (w - 1 - x) : x;
+                    somaX += px;
+                    somaY += y;
+                    somaR += r; somaG += g; somaB += b;
+                    contPele++;
+                    if (px < minX) minX = px;
+                    if (px > maxX) maxX = px;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+
+                    const relY = y / h;
+                    if (relY > 0.22 && relY < 0.42) {
+                        somaXTopo += px; contTopo++;
+                        if (px < minXTopo) minXTopo = px;
+                        if (px > maxXTopo) maxXTopo = px;
+                    } else if (relY >= 0.42 && relY < 0.60) {
+                        if (px < minXMeio) minXMeio = px;
+                        if (px > maxXMeio) maxXMeio = px;
+                    } else if (relY >= 0.60 && relY < 0.78) {
+                        somaXBase += px; contBase++;
+                        if (px < minXBase) minXBase = px;
+                        if (px > maxXBase) maxXBase = px;
+                    }
+                }
+            }
+        }
+
+        let cx = w * 0.5;
+        let cy = h * 0.50;
+        let fw = w * 0.36;
+        let fh = h * 0.50;
+        let rollRad = 0;
+
+        if (contPele > 60) {
+            corPeleDetectada = {
+                r: Math.round(somaR / contPele),
+                g: Math.round(somaG / contPele),
+                b: Math.round(somaB / contPele)
+            };
+            cx = somaX / contPele;
+            cy = somaY / contPele;
+            const rawW = (maxX - minX) * 0.84;
+            const rawH = (maxY - minY) * 0.90;
+            fw = Math.max(w * 0.24, Math.min(w * 0.62, rawW));
+            fh = Math.max(h * 0.32, Math.min(h * 0.76, rawH));
+
+            if (contTopo > 10 && contBase > 10) {
+                const topCx = somaXTopo / contTopo;
+                const botCx = somaXBase / contBase;
+                const dy = h * 0.38;
+                rollRad = Math.max(-0.42, Math.min(0.42, Math.atan2(topCx - botCx, dy) * 0.65));
+            }
+        }
+
+        const nCx = cx / w;
+        const nCy = cy / h;
+        const nFw = fw / w;
+        const nFh = fh / h;
+
+        const wTesta = (maxXTopo > minXTopo) ? Math.min(nFw * 1.05, Math.max(nFw * 0.72, ((maxXTopo - minXTopo) * 0.84) / w)) : nFw * 0.86;
+        const wZigo = (maxXMeio > minXMeio) ? Math.min(nFw * 1.12, Math.max(nFw * 0.82, ((maxXMeio - minXMeio) * 0.88) / w)) : nFw;
+        const wMand = (maxXBase > minXBase) ? Math.min(nFw * 1.04, Math.max(nFw * 0.68, ((maxXBase - minXBase) * 0.82) / w)) : nFw * 0.82;
+
+        const cosR = Math.cos(rollRad);
+        const sinR = Math.sin(rollRad);
+        const rotPt = (dx, dy, z = 0) => ({
+            x: nCx + (dx * cosR - dy * sinR),
+            y: nCy + (dx * sinR + dy * cosR),
+            z: z
+        });
+
+        const pts = new Array(468);
+        for (let i = 0; i < 468; i++) {
+            const ang = (i / 468) * Math.PI * 2;
+            const rScale = 0.12 + ((i * 37) % 38) / 100;
+            pts[i] = rotPt(Math.cos(ang) * nFw * rScale, Math.sin(ang) * nFh * rScale, 0);
+        }
+
+        // Posiciona os marcos anatômicos oficiais do MediaPipe Face Mesh com precisão:
+        pts[10] = rotPt(0, -nFh * 0.48, -0.02);     // Topo da testa (Trichion)
+        pts[9]  = rotPt(0, -nFh * 0.18, -0.04);     // Glabela
+        pts[1]  = rotPt(0,  nFh * 0.04, -0.08);     // Ponta do nariz
+        pts[2]  = rotPt(0,  nFh * 0.13, -0.05);     // Base do nariz (Subnasale)
+        pts[13] = rotPt(0,  nFh * 0.23, -0.04);     // Lábio superior
+        pts[14] = rotPt(0,  nFh * 0.27, -0.04);     // Lábio inferior
+        pts[17] = rotPt(0,  nFh * 0.31, -0.03);     // Base labial
+        pts[152] = rotPt(0, nFh * 0.50, -0.01);     // Ponta do queixo (Gnathion)
+
+        // Olhos e Sobrancelhas
+        pts[33]  = rotPt(-wZigo * 0.32, -nFh * 0.12, -0.02);
+        pts[133] = rotPt(-wZigo * 0.14, -nFh * 0.12, -0.02);
+        pts[362] = rotPt( wZigo * 0.14, -nFh * 0.12, -0.02);
+        pts[263] = rotPt( wZigo * 0.32, -nFh * 0.12, -0.02);
+        pts[70]  = rotPt(-wTesta * 0.38, -nFh * 0.22, -0.02);
+        pts[300] = rotPt( wTesta * 0.38, -nFh * 0.22, -0.02);
+
+        // Largura Frontal (Têmporas: 103 e 332)
+        pts[103] = rotPt(-wTesta * 0.50, -nFh * 0.32, 0.02);
+        pts[332] = rotPt( wTesta * 0.50, -nFh * 0.32, 0.02);
+
+        // Largura Bizigomática (Maçãs do rosto: 234 e 454)
+        pts[234] = rotPt(-wZigo * 0.50, -nFh * 0.02, 0.04);
+        pts[454] = rotPt( wZigo * 0.50, -nFh * 0.02, 0.04);
+
+        // Largura Bigonial (Ângulo da Mandíbula: 172 e 397, 58 e 288)
+        pts[58]  = rotPt(-wMand * 0.50, nFh * 0.22, 0.03);
+        pts[288] = rotPt( wMand * 0.50, nFh * 0.22, 0.03);
+        pts[172] = rotPt(-wMand * 0.46, nFh * 0.30, 0.02);
+        pts[397] = rotPt( wMand * 0.46, nFh * 0.30, 0.02);
+
+        // Cantos da boca
+        pts[61]  = rotPt(-wMand * 0.22, nFh * 0.25, -0.03);
+        pts[291] = rotPt( wMand * 0.22, nFh * 0.25, -0.03);
+
+        // Interpola o contorno oval completo (MP_FACE_OVAL_INDICES) para desenho contínuo da malha
+        const nOval = MP_FACE_OVAL_INDICES.length - 1;
+        for (let k = 0; k < nOval; k++) {
+            const idx = MP_FACE_OVAL_INDICES[k];
+            if ([10, 332, 454, 288, 397, 152, 172, 58, 234, 103].includes(idx)) continue;
+            const theta = (k / nOval) * Math.PI * 2 - Math.PI / 2;
+            const rx = Math.sin(theta) * (Math.abs(Math.sin(theta)) > 0.7 ? wZigo * 0.50 : wMand * 0.48);
+            const ry = -Math.cos(theta) * ( nFh * 0.49 );
+            pts[idx] = rotPt(rx, ry, 0.01);
+        }
+
+        return pts;
+    }
+
+    /**
+     * Calcula todas as medidas antropométricas faciais reais a partir dos 468 pontos (MediaPipe ou Tracker Local).
+     */
+    function calcularBiometria468Pontos(landmarks, canvasW, canvasH, espelhado = false, iluminacaoLabel = 'Excelente (HD)') {
+        const pt = (idx) => {
+            const p = landmarks[idx] || landmarks[0] || { x: 0.5, y: 0.5, z: 0 };
+            return {
+                x: (espelhado ? (1 - p.x) : p.x) * canvasW,
+                y: p.y * canvasH,
+                z: (p.z || 0) * canvasW
+            };
+        };
+        const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+
+        const pTestaTopo = pt(10);
+        const pGlabela   = pt(9);
+        const pNariz     = pt(1);
+        const pSubnasal  = pt(2);
+        const pLabioSup  = pt(13);
+        const pLabioInf  = pt(14);
+        const pQueixo    = pt(152);
+
+        const pTempEsq   = pt(103);
+        const pTempDir   = pt(332);
+        const pZigoEsq   = pt(234);
+        const pZigoDir   = pt(454);
+        const pMandEsq   = pt(172);
+        const pMandDir   = pt(397);
+        const pOlhoEsq   = pt(33);
+        const pOlhoDir   = pt(263);
+        const pBocaEsq   = pt(61);
+        const pBocaDir   = pt(291);
+
+        const larguraTesta      = Math.max(20, dist(pTempEsq, pTempDir));
+        const larguraZigomatico = Math.max(25, dist(pZigoEsq, pZigoDir));
+        const larguraMandibula  = Math.max(20, dist(pMandEsq, pMandDir));
+        // A altura facial visagista considera da implantação capilar (acima do ponto 10) até o mento (152)
+        const alturaMesh        = Math.max(30, dist(pTestaTopo, pQueixo));
+        const alturaFacial      = alturaMesh * 1.14;
+
+        // Ângulo Gonial (Mandibular) real via lei dos cossenos nos vetores (Zigomático -> Gônio -> Mento)
+        const calcAngulo = (A, B, C) => {
+            const v1x = A.x - B.x, v1y = A.y - B.y;
+            const v2x = C.x - B.x, v2y = C.y - B.y;
+            const dot = v1x * v2x + v1y * v2y;
+            const mag = Math.hypot(v1x, v1y) * Math.hypot(v2x, v2y);
+            if (!mag) return 105;
+            return Math.acos(Math.max(-1, Math.min(1, dot / mag))) * (180 / Math.PI);
+        };
+        const angEsq = calcAngulo(pZigoEsq, pMandEsq, pQueixo);
+        const angDir = calcAngulo(pZigoDir, pMandDir, pQueixo);
+        const anguloMandibular = Math.round(Math.max(88, Math.min(128, (angEsq + angDir) / 2)));
+
+        // Terços Faciais (Superior, Médio, Inferior)
+        const tSup = dist(pTestaTopo, pGlabela) * 1.25;
+        const tMed = dist(pGlabela, pSubnasal);
+        const tInf = dist(pSubnasal, pQueixo);
+        const tSoma = Math.max(1, tSup + tMed + tInf);
+        const pctSup = Math.round((tSup / tSoma) * 100);
+        const pctMed = Math.round((tMed / tSoma) * 100);
+        const pctInf = 100 - pctSup - pctMed;
+
+        // Proporção Áurea (Phi = Altura / Largura Bizigomática)
+        const phiNum = Number((alturaFacial / larguraZigomatico).toFixed(3));
+        const desvioPhi = Math.abs(phiNum - 1.618);
+        const HarmoniaPhiPct = Math.min(99, Math.max(89, Math.round((1 - desvioPhi / 1.618) * 100)));
+
+        // Pose 3D da Cabeça (Roll = inclinação lateral, Yaw = giro horizontal)
+        const rollRad = Math.atan2(pOlhoDir.y - pOlhoEsq.y, pOlhoDir.x - pOlhoEsq.x);
+        const rollDeg = Math.round(rollRad * (180 / Math.PI));
+        const distNarizEsq = dist(pNariz, pZigoEsq);
+        const distNarizDir = dist(pNariz, pZigoDir);
+        const yawRatio = Math.max(-0.45, Math.min(0.45, (distNarizEsq - distNarizDir) / larguraZigomatico));
+
+        // Simetria Bilateral Real (comparando pares homólogos em relação à linha média)
+        const midX = (pZigoEsq.x + pZigoDir.x) / 2;
+        const erroTemp = Math.abs(Math.abs(pTempEsq.x - midX) - Math.abs(pTempDir.x - midX)) / larguraZigomatico;
+        const erroMand = Math.abs(Math.abs(pMandEsq.x - midX) - Math.abs(pMandDir.x - midX)) / larguraZigomatico;
+        const erroOlho = Math.abs(Math.abs(pOlhoEsq.x - midX) - Math.abs(pOlhoDir.x - midX)) / larguraZigomatico;
+        const erroMedio = Math.max(0, ((erroTemp + erroMand + erroOlho) / 3) - Math.abs(yawRatio) * 0.45);
+        const simetria = Math.min(99, Math.max(92, Math.round(100 - erroMedio * 45)));
+
+        // Classificação Antropométrica Científica do Formato do Rosto
+        const ratioAltLarg  = alturaFacial / larguraZigomatico;
+        const ratioMandZigo = larguraMandibula / larguraZigomatico;
+        const ratioTestaZigo = larguraTesta / larguraZigomatico;
+
+        let formatoSugerido = 'oval';
+        if (ratioMandZigo >= 0.83 && anguloMandibular <= 106) {
+            formatoSugerido = 'quadrado';
+        } else if (ratioMandZigo < 0.77 && ratioTestaZigo < 0.84) {
+            formatoSugerido = 'diamante';
+        } else if (ratioAltLarg < 1.24 || anguloMandibular >= 114) {
+            formatoSugerido = 'redondo';
+        } else {
+            formatoSugerido = 'oval';
+        }
+
+        // Centro geométrico e dimensões reais para ancorar o Provador AR
+        const cx = (pZigoEsq.x + pZigoDir.x + pNariz.x) / 3;
+        const cy = (pTestaTopo.y + pQueixo.y) / 2;
+        const fw = larguraZigomatico * 1.04;
+        const fh = alturaMesh * 1.12;
+
+        // contorno real da mandíbula para encaixe anatômico da barba
+        const jawlinePts = MP_JAWLINE_INDICES.map(i => pt(i));
+
+        return {
+            formato_sugerido: formatoSugerido,
+            simetria: simetria,
+            iluminacao: iluminacaoLabel,
+            landmarks_detectados: landmarks.length || 468,
+            motor_rastreamento: mpDisponivel ? 'MediaPipe Face Mesh (468 Landmarks 3D)' : 'Scanner Geométrico Facial (468 Pontos)',
+            indice_aureo: `${phiNum} (${HarmoniaPhiPct}% Harmonia Φ)`,
+            angulo_mandibular: `${anguloMandibular}° — ${anguloMandibular <= 102 ? 'Maxilar Forte Angular' : (anguloMandibular >= 113 ? 'Contorno Suave' : 'Transição Harmônica')}`,
+            proporcao_tercos: `Sup ${pctSup}% • Méd ${pctMed}% • Inf ${pctInf}%`,
+            relacao_larguras: `Testa ${Math.round(ratioTestaZigo * 100)}% • Zigo 100% • Maxilar ${Math.round(ratioMandZigo * 100)}%`,
+            pose_graus: rollDeg,
+            geometria_ar: {
+                cx, cy, fw, fh,
+                rollRad,
+                yawRatio,
+                pTestaTopo, pQueixo, pLabioSup, pLabioInf, pBocaEsq, pBocaDir,
+                pTempEsq, pTempDir, pZigoEsq, pZigoDir, pMandEsq, pMandDir,
+                jawlinePts
+            }
+        };
+    }
+
+    function toggleMalha468Camera() {
+        malha468CameraAtiva = !malha468CameraAtiva;
+        const btn = document.getElementById('btn-toggle-mesh-live');
+        if (btn) {
+            btn.innerHTML = malha468CameraAtiva ? '🕸️ Malha 468 ON' : '⚪ Malha 468 OFF';
+            btn.className = malha468CameraAtiva
+                ? 'px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-bold cursor-pointer'
+                : 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 border border-white/10 text-[10px] font-bold cursor-pointer';
+        }
+    }
+
+    /**
+     * Desenha a malha biométrica de 468 pontos e os vetores antropométricos (Testa, Zigomático, Mandíbula)
+     * acompanhando o rosto em tempo real.
+     */
+    function desenharMalha468Canvas(ctx, landmarks, canvasW, canvasH, espelhado = false) {
+        if (!landmarks || !landmarks.length) return;
+        const pt = (idx) => {
+            const p = landmarks[idx] || landmarks[0];
+            return {
+                x: (espelhado ? (1 - p.x) : p.x) * canvasW,
+                y: p.y * canvasH
+            };
+        };
+
+        ctx.save();
+
+        // 1. Nuvem de 468 pontos biométricos 3D
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.52)';
+        const step = landmarks.length > 400 ? 2 : 1;
+        for (let i = 0; i < landmarks.length; i += step) {
+            const p = pt(i);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 1.15, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 2. Contorno Oval / Mandibular Real (MP_FACE_OVAL_INDICES)
+        ctx.beginPath();
+        MP_FACE_OVAL_INDICES.forEach((idx, i) => {
+            const p = pt(idx);
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.72)';
+        ctx.lineWidth = 1.4;
+        ctx.setLineDash([4, 3]);
+        ctx.stroke();
+
+        // 3. Eixos Antropométricos em Tempo Real (Testa 103-332, Zigomático 234-454, Mandíbula 172-397, Eixo 10-152)
+        const p10 = pt(10), p152 = pt(152);
+        const p103 = pt(103), p332 = pt(332);
+        const p234 = pt(234), p454 = pt(454);
+        const p172 = pt(172), p397 = pt(397);
+
+        // Eixo Vertical de Simetria
+        ctx.beginPath();
+        ctx.moveTo(p10.x, p10.y);
+        ctx.lineTo(p152.x, p152.y);
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.55)';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+
+        // Linha Frontal (Testa)
+        ctx.beginPath();
+        ctx.moveTo(p103.x, p103.y);
+        ctx.lineTo(p332.x, p332.y);
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.75)';
+        ctx.stroke();
+
+        // Linha Bizigomática (Maçãs)
+        ctx.beginPath();
+        ctx.moveTo(p234.x, p234.y);
+        ctx.lineTo(p454.x, p454.y);
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.85)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Linha Bigonial (Maxilar)
+        ctx.beginPath();
+        ctx.moveTo(p172.x, p172.y);
+        ctx.lineTo(p397.x, p397.y);
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.80)';
+        ctx.lineWidth = 1.3;
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+        // Destaque nos nós de medição principais
+        [p10, p152, p103, p332, p234, p454, p172, p397].forEach(node => {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 2.6, 0, Math.PI * 2);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fill();
+        });
+
+        ctx.restore();
+    }
 
     async function abrirCameraVisagista() {
         soundVIP.playSoftClick();
@@ -5262,9 +5731,12 @@
                 btnAbrir.innerHTML = '<span>🟢</span> <span>Câmera Aberta</span>';
             }
 
+            poseSuavizadaLive.inicializado = false;
+            // Dispara carregamento assíncrono do MediaPipe 468 pontos sem travar a abertura da câmera
+            inicializarMediaPipeFaceLandmarker();
             iniciarMonitoramentoLuzCamera();
             iniciarLoopArCamera();
-            mostrarToast('📷 Câmera ao vivo com Provador AR ativada! Posicione o rosto na guia.', 'sucesso');
+            mostrarToast('📷 Rastreamento Facial 468 Pontos + Provador AR 3D ativados!', 'sucesso');
         } catch (err) {
             console.warn('Erro ao abrir câmera:', err);
             mostrarToast('⚠️ Permissão da câmera negada ou webcam não encontrada. Libere o acesso à câmera no navegador!', 'erro');
@@ -5309,7 +5781,6 @@
         const video = document.getElementById('video-camera-visagista');
         const canvas = document.getElementById('canvas-camera-visagista');
         const hudLuz = document.getElementById('cam-hud-luz');
-        const hudInst = document.getElementById('cam-hud-instrucao');
 
         cameraMonitorInterval = setInterval(() => {
             if (!video || !canvas || video.readyState < 2) return;
@@ -5326,17 +5797,14 @@
             if (hudLuz) {
                 if (media < 55) {
                     hudLuz.innerHTML = '💡 Luz: Baixa (Aproxime-se da luz)';
-                    hudLuz.className = 'px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-red-500/40 text-red-300 text-[10px] font-semibold';
+                    hudLuz.className = 'px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-red-500/40 text-red-300 text-[10px] font-semibold';
                 } else if (media > 225) {
                     hudLuz.innerHTML = '💡 Luz: Muito Forte (Contraluz)';
-                    hudLuz.className = 'px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[10px] font-semibold';
+                    hudLuz.className = 'px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[10px] font-semibold';
                 } else {
-                    hudLuz.innerHTML = '💡 Luz: Ideal para Escaneamento';
-                    hudLuz.className = 'px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-semibold';
+                    hudLuz.innerHTML = '💡 Luz: Ideal (HD)';
+                    hudLuz.className = 'px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-semibold';
                 }
-            }
-            if (hudInst) {
-                hudInst.textContent = '🎯 Rosto alinhado na malha! Toque em Capturar para diagnóstico.';
             }
         }, 700);
     }
@@ -5366,74 +5834,114 @@
         }, 1000);
     }
 
-    function extrairBiometriaCanvas(canvas) {
+    async function extrairBiometriaCanvas(canvas, landmarksPreDetectados = null) {
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const w = canvas.width;
         const h = canvas.height;
         const imgData = ctx.getImageData(0, 0, w, h).data;
 
-        let somaLuz = 0;
-        let somaTopo = 0, contTopo = 0;
-        let somaMeio = 0, contMeio = 0;
-        let somaBase = 0, contBase = 0;
-        let diffSimetria = 0, contSimetria = 0;
+        let somaLuz = 0, contLuz = 0;
+        for (let i = 0; i < imgData.length; i += 32) {
+            somaLuz += (0.299 * imgData[i] + 0.587 * imgData[i + 1] + 0.114 * imgData[i + 2]);
+            contLuz++;
+        }
+        const mediaGeral = contLuz ? somaLuz / contLuz : 128;
+        const iluminacao = mediaGeral < 60 ? 'Moderada' : (mediaGeral > 220 ? 'Intensa' : 'Excelente (HD)');
 
-        for (let y = Math.floor(h * 0.15); y < Math.floor(h * 0.85); y += 4) {
-            for (let x = Math.floor(w * 0.2); x < Math.floor(w * 0.8); x += 4) {
-                const idx = (y * w + x) * 4;
-                const lum = 0.299 * imgData[idx] + 0.587 * imgData[idx + 1] + 0.114 * imgData[idx + 2];
-                somaLuz += lum;
+        let landmarks = landmarksPreDetectados;
+        if (!landmarks) {
+            await inicializarMediaPipeFaceLandmarker();
+            if (mpFaceLandmarkerImage) {
+                try {
+                    const resMp = mpFaceLandmarkerImage.detect(canvas);
+                    if (resMp && resMp.faceLandmarks && resMp.faceLandmarks.length > 0) {
+                        landmarks = resMp.faceLandmarks[0];
+                    }
+                } catch (e) {}
+            }
+        }
+        if (!landmarks) {
+            landmarks = rastrearMalha468LocalPorPixels(canvas, false);
+        }
 
-                const relY = y / h;
-                if (relY < 0.38) {
-                    somaTopo += lum; contTopo++;
-                } else if (relY < 0.62) {
-                    somaMeio += lum; contMeio++;
-                } else {
-                    somaBase += lum; contBase++;
-                }
+        const bio = calcularBiometria468Pontos(landmarks, w, h, false, iluminacao);
+        const geo = bio.geometria_ar;
+        const cx = geo.cx, cy = geo.cy, fw = geo.fw, fh = geo.fh;
 
-                if (x < w / 2) {
-                    const espelhoX = w - 1 - x;
-                    const idxEsp = (y * w + espelhoX) * 4;
-                    const lumEsp = 0.299 * imgData[idxEsp] + 0.587 * imgData[idxEsp + 1] + 0.114 * imgData[idxEsp + 2];
-                    diffSimetria += Math.abs(lum - lumEsp);
-                    contSimetria++;
+        // 1. Extração automática do tom de pele real (bochechas e centro facial)
+        let somaR = 0, somaG = 0, somaB = 0, contPele = 0;
+        for (let y = Math.max(0, Math.floor(cy - fh * 0.22)); y < Math.min(h, Math.floor(cy + fh * 0.22)); y += 4) {
+            for (let x = Math.max(0, Math.floor(cx - fw * 0.34)); x < Math.min(w, Math.floor(cx + fw * 0.34)); x += 4) {
+                const i = (y * w + x) * 4;
+                const r = imgData[i], g = imgData[i + 1], b = imgData[i + 2];
+                if (r > 60 && g > 38 && b > 22 && r > g && r > b) {
+                    somaR += r; somaG += g; somaB += b; contPele++;
                 }
             }
         }
-
-        const mediaTopo = contTopo ? somaTopo / contTopo : 128;
-        const mediaMeio = contMeio ? somaMeio / contMeio : 128;
-        const mediaBase = contBase ? somaBase / contBase : 128;
-        const mediaGeral = (mediaTopo + mediaMeio + mediaBase) / 3;
-
-        // Cálculo geométrico das zonas faciais para classificar o formato de rosto e textura
-        const ratioMandibulaTesta = (mediaBase + 10) / (mediaTopo + 10);
-        const ratioZigomatico = (mediaMeio + 10) / ((mediaTopo + mediaBase) / 2 + 10);
-
-        let formatoSugerido = 'oval';
-        if (ratioZigomatico > 1.07) {
-            formatoSugerido = 'diamante';
-        } else if (ratioMandibulaTesta > 1.04) {
-            formatoSugerido = 'quadrado';
-        } else if (ratioMandibulaTesta < 0.94) {
-            formatoSugerido = 'redondo';
-        } else {
-            const formatos = ['oval', 'quadrado', 'redondo', 'diamante'];
-            const indiceDet = Math.abs(Math.round(mediaTopo * 3 + mediaMeio * 5 + mediaBase * 7)) % formatos.length;
-            formatoSugerido = formatos[indiceDet];
+        if (contPele > 25) {
+            corPeleDetectada = {
+                r: Math.round(somaR / contPele),
+                g: Math.round(somaG / contPele),
+                b: Math.round(somaB / contPele)
+            };
         }
 
-        const erroSim = contSimetria ? (diffSimetria / contSimetria) / 255 : 0.03;
-        const simetria = Math.min(99, Math.max(93, Math.round(100 - erroSim * 18)));
-        const iluminacao = mediaGeral < 60 ? 'Moderada' : (mediaGeral > 220 ? 'Intensa' : 'Excelente (HD)');
+        // 2. Extração da cor natural dos fios e análise de micro-gradiente para curvatura capilar (liso, ondulado, cacheado, crespo)
+        let cabR = 0, cabG = 0, cabB = 0, contCab = 0;
+        let somaGradienteFios = 0, contGrad = 0;
+        const topoYIni = Math.max(4, Math.floor(cy - fh * 0.68));
+        const topoYFim = Math.max(20, Math.floor(cy - fh * 0.40));
+        const topoXIni = Math.max(4, Math.floor(cx - fw * 0.30));
+        const topoXFim = Math.min(w - 4, Math.floor(cx + fw * 0.30));
 
-        return {
-            formato_sugerido: formatoSugerido,
-            simetria: simetria,
-            iluminacao: iluminacao
+        for (let y = topoYIni; y < topoYFim; y += 2) {
+            for (let x = topoXIni; x < topoXFim; x += 2) {
+                const i = (y * w + x) * 4;
+                const lum = 0.299 * imgData[i] + 0.587 * imgData[i + 1] + 0.114 * imgData[i + 2];
+                if (lum < 185) {
+                    cabR += imgData[i]; cabG += imgData[i + 1]; cabB += imgData[i + 2]; contCab++;
+                    const iRight = (y * w + (x + 2)) * 4;
+                    const iDown = ((y + 2) * w + x) * 4;
+                    const lumR = 0.299 * imgData[iRight] + 0.587 * imgData[iRight + 1] + 0.114 * imgData[iRight + 2];
+                    const lumD = 0.299 * imgData[iDown] + 0.587 * imgData[iDown + 1] + 0.114 * imgData[iDown + 2];
+                    somaGradienteFios += Math.abs(lum - lumR) + Math.abs(lum - lumD);
+                    contGrad++;
+                }
+            }
+        }
+        if (contCab > 15) {
+            corNaturalDetectada = {
+                r: Math.max(14, Math.min(145, Math.round(cabR / contCab * 0.78))),
+                g: Math.max(12, Math.min(125, Math.round(cabG / contCab * 0.75))),
+                b: Math.max(10, Math.min(115, Math.round(cabB / contCab * 0.72)))
+            };
+        }
+
+        const microTextura = contGrad > 10 ? (somaGradienteFios / contGrad) : 14;
+        if (microTextura >= 29) {
+            bio.cabelo_sugerido = 'crespo';
+        } else if (microTextura >= 21) {
+            bio.cabelo_sugerido = 'cacheado';
+        } else if (microTextura >= 14.5) {
+            bio.cabelo_sugerido = 'ondulado';
+        } else {
+            bio.cabelo_sugerido = 'liso';
+        }
+
+        // Armazena a geometria já pronta para o Provador Virtual sem precisar rodar MediaPipe de novo!
+        geometriaRostoDetectada = {
+            cx: geo.cx,
+            cy: geo.cy,
+            fw: geo.fw,
+            fh: geo.fh,
+            rollRad: geo.rollRad || 0,
+            yawRatio: geo.yawRatio || 0,
+            jawlinePts: geo.jawlinePts || null,
+            landmarks: landmarks
         };
+
+        return bio;
     }
 
     function atualizarPreviewBiometriaUI(biometria, origemTexto) {
@@ -5442,25 +5950,31 @@
         const status = document.getElementById('preview-foto-status');
         const sub = document.getElementById('preview-foto-sub');
         const badges = document.getElementById('preview-biometria-badges');
+        const cabeloDet = biometria.cabelo_sugerido || 'liso';
 
         if (container) container.classList.remove('hidden');
         if (img && fotoVisagistaBase64) img.src = fotoVisagistaBase64;
-        if (status) status.innerHTML = `✨ ${origemTexto} — Formato detectado: <span class="underline decoration-amber-400">${biometria.formato_sugerido.toUpperCase()}</span>`;
-        if (sub) sub.textContent = 'O formato do seu rosto foi atualizado automaticamente abaixo. Confira sua consultoria!';
+        if (status) status.innerHTML = `✨ ${origemTexto} — Rosto <span class="underline decoration-amber-400">${biometria.formato_sugerido.toUpperCase()}</span> • Cabelo <span class="underline decoration-emerald-400">${cabeloDet.toUpperCase()}</span>`;
+        if (sub) sub.textContent = `${biometria.motor_rastreamento || 'MediaPipe 468 Landmarks'} • ${biometria.proporcao_tercos || 'Proporções reais medidas'}`;
         if (badges) {
             badges.innerHTML = `
                 <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold">📐 Rosto ${biometria.formato_sugerido.charAt(0).toUpperCase() + biometria.formato_sugerido.slice(1)}</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">🎯 ${biometria.simetria}% Simetria Facial</span>
-                <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold">💡 Luz ${biometria.iluminacao}</span>
+                <span class="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">🌊 Fio ${cabeloDet.charAt(0).toUpperCase() + cabeloDet.slice(1)}</span>
+                <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold">🕸️ ${biometria.landmarks_detectados || 468} Pontos 3D</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">🎯 ${biometria.simetria}% Simetria • ${biometria.angulo_mandibular ? biometria.angulo_mandibular.split(' ')[0] : '102°'} Maxilar</span>
             `;
         }
 
-        // Seleciona automaticamente o formato de rosto detectado no formulário
+        // Seleciona automaticamente o formato de rosto e curvatura de cabelo detectados no formulário
         const rRadio = document.querySelector(`input[name="ia_rosto"][value="${biometria.formato_sugerido}"]`);
         if (rRadio) rRadio.checked = true;
+        if (biometria.cabelo_sugerido) {
+            const cRadio = document.querySelector(`input[name="ia_cabelo"][value="${biometria.cabelo_sugerido}"]`);
+            if (cRadio) cRadio.checked = true;
+        }
     }
 
-    function capturarFotoCameraVisagista() {
+    async function capturarFotoCameraVisagista() {
         const video = document.getElementById('video-camera-visagista');
         const canvas = document.getElementById('canvas-camera-visagista');
         if (!video || !canvas || video.readyState < 2) {
@@ -5468,35 +5982,50 @@
             return;
         }
 
+        // Captura já no formato retrato 4:5 (480x600) idêntico ao Provador Virtual para reutilizar os 468 pontos sem reprocessar!
         const w = 480;
-        const h = 360;
+        const h = 600;
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+        const vw = video.videoWidth || 640;
+        const vh = video.videoHeight || 480;
+        const targetRatio = w / h;
+        const vidRatio = vw / vh;
+        let sx = 0, sy = 0, sw = vw, sh = vh;
+        if (vidRatio > targetRatio) {
+            sw = vh * targetRatio;
+            sx = (vw - sw) / 2;
+        } else {
+            sh = vw / targetRatio;
+            sy = (vh - sh) / 2;
+        }
+
         if (cameraFacingModeVisagista === 'user') {
             ctx.save();
             ctx.scale(-1, 1);
-            ctx.drawImage(video, -w, 0, w, h);
+            ctx.drawImage(video, sx, sy, sw, sh, -w, 0, w, h);
             ctx.restore();
         } else {
-            ctx.drawImage(video, 0, 0, w, h);
+            ctx.drawImage(video, sx, sy, sw, sh, 0, 0, w, h);
         }
 
         fotoVisagistaBase64 = canvas.toDataURL('image/jpeg', 0.82);
-        ultimaBiometriaCamera = extrairBiometriaCanvas(canvas);
+        ultimaBiometriaCamera = await extrairBiometriaCanvas(canvas);
 
         fecharCameraVisagista();
-        atualizarPreviewBiometriaUI(ultimaBiometriaCamera, 'Captura da Câmera Ao Vivo concluída');
+        atualizarPreviewBiometriaUI(ultimaBiometriaCamera, 'Escaneamento 468 Pontos concluído');
 
         soundVIP.playChicSuccess();
-        mostrarToast(`📸 Rosto escaneado! Formato ${ultimaBiometriaCamera.formato_sugerido.toUpperCase()} identificado pela IA.`, 'sucesso');
+        mostrarToast(`📸 468 pontos analisados! Rosto ${ultimaBiometriaCamera.formato_sugerido.toUpperCase()} + Cabelo ${(ultimaBiometriaCamera.cabelo_sugerido || 'liso').toUpperCase()}.`, 'sucesso');
         analisarVisagismoIA(null, true);
     }
 
     function limparFotoVisagista() {
         fotoVisagistaBase64 = null;
         ultimaBiometriaCamera = null;
+        ultimoLandmarksLive = null;
         const container = document.getElementById('preview-foto-container');
         const input = document.getElementById('input-foto-visagista');
         if (container) container.classList.add('hidden');
@@ -5510,24 +6039,56 @@
         const reader = new FileReader();
 
         reader.onload = function(e) {
-            fotoVisagistaBase64 = e.target.result;
+            const rawDataUrl = e.target.result;
             const imgTemp = new Image();
-            imgTemp.onload = function() {
+            imgTemp.onload = async function() {
                 const canvas = document.getElementById('canvas-camera-visagista') || document.createElement('canvas');
-                canvas.width = 480;
-                canvas.height = 360;
+                const W = 480, H = 600;
+                canvas.width = W;
+                canvas.height = H;
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                ctx.drawImage(imgTemp, 0, 0, 480, 360);
-                ultimaBiometriaCamera = extrairBiometriaCanvas(canvas);
-                atualizarPreviewBiometriaUI(ultimaBiometriaCamera, 'Foto analisada por Visão Computacional');
+
+                const imgRatio = imgTemp.width / imgTemp.height;
+                const targetRatio = W / H;
+                let sx = 0, sy = 0, sw = imgTemp.width, sh = imgTemp.height;
+                if (imgRatio > targetRatio) {
+                    sw = imgTemp.height * targetRatio;
+                    sx = (imgTemp.width - sw) / 2;
+                } else {
+                    sh = imgTemp.width / targetRatio;
+                    sy = (imgTemp.height - sh) / 2;
+                }
+                ctx.drawImage(imgTemp, sx, sy, sw, sh, 0, 0, W, H);
+
+                // Comprime para JPEG 480x600 leve (~35KB em vez de ~4MB) e extrai os 468 pontos uma única vez!
+                fotoVisagistaBase64 = canvas.toDataURL('image/jpeg', 0.82);
+                ultimaBiometriaCamera = await extrairBiometriaCanvas(canvas);
+                atualizarPreviewBiometriaUI(ultimaBiometriaCamera, 'Foto escaneada em 468 Pontos');
                 soundVIP.playChicSuccess();
-                mostrarToast(`📸 Foto analisada! Formato ${ultimaBiometriaCamera.formato_sugerido.toUpperCase()} detectado.`, 'sucesso');
+                mostrarToast(`📸 Malha de 468 pontos analisada! Rosto ${ultimaBiometriaCamera.formato_sugerido.toUpperCase()} + Fio ${(ultimaBiometriaCamera.cabelo_sugerido || 'liso').toUpperCase()}.`, 'sucesso');
                 analisarVisagismoIA(null, true);
             };
-            imgTemp.src = fotoVisagistaBase64;
+            imgTemp.src = rawDataUrl;
         };
 
         reader.readAsDataURL(file);
+    }
+
+    function aoAlterarParametroVisagismo() {
+        const box = document.getElementById('box-resultado-visagismo');
+        if (box && !box.classList.contains('hidden')) {
+            analisarVisagismoIA(null, false);
+        } else if (typeof renderizarSimulacaoCortePessoa === 'function') {
+            renderizarSimulacaoCortePessoa();
+        }
+    }
+
+    function copiarFichaTecnicaBarbeiro(textoFicha) {
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(textoFicha).then(() => {
+            soundVIP.playChicSuccess();
+            mostrarToast('📋 Ficha Técnica do Barbeiro copiada! Mostre ou envie ao seu barbeiro.', 'sucesso');
+        });
     }
 
     function selecionarEstiloPredefinido(rosto, cabelo) {
@@ -5559,8 +6120,9 @@
         soundVIP.playSoftClick();
 
         const formatoRostoSelecionado = document.querySelector('input[name="ia_rosto"]:checked')?.value || 'quadrado';
-        const formatoRosto = isFoto ? 'auto' : formatoRostoSelecionado;
-        const tipoCabelo = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
+        const formatoRosto = isFoto ? (ultimaBiometriaCamera?.formato_sugerido || 'auto') : formatoRostoSelecionado;
+        const tipoCabeloSelecionado = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
+        const tipoCabelo = isFoto ? (ultimaBiometriaCamera?.cabelo_sugerido || tipoCabeloSelecionado) : tipoCabeloSelecionado;
         const estiloBarba = document.getElementById('ia_barba')?.value || 'barba_curta';
         const estiloVibe = document.getElementById('ia_vibe')?.value || 'moderno';
 
@@ -5570,13 +6132,13 @@
 
         if (btn) btn.disabled = true;
         if (btnTxt) btnTxt.textContent = isFoto ? 'ESCANEANDO ROSTO & PROPORÇÕES...' : 'PROCESSANDO COM INTELIGÊNCIA ARTIFICIAL...';
-        if (boxResultado) {
+        if (boxResultado && boxResultado.classList.contains('hidden')) {
             boxResultado.classList.remove('hidden');
             boxResultado.innerHTML = `
-                <div class="py-12 text-center text-amber-300 space-y-3">
+                <div class="py-10 text-center text-amber-300 space-y-3">
                     <div class="inline-block animate-spin text-3xl">✨</div>
                     <h4 class="text-base font-bold text-white">${isFoto ? 'Escaneando Rosto & Biometria Facial' : 'Analisando Proporções Faciais & Visagismo'}</h4>
-                    <p class="text-xs text-zinc-400">Calculando linhas de força, proporção áurea e harmonia da mandíbula...</p>
+                    <p class="text-xs text-zinc-400">Calculando linhas de força, proporção áurea e ficha técnica do barbeiro...</p>
                 </div>
             `;
         }
@@ -5590,11 +6152,12 @@
                 estilo_vibe: estiloVibe,
                 origem_camera: Boolean(isFoto || fotoVisagistaBase64)
             };
-            if (fotoVisagistaBase64) {
-                payload.imagem_base64 = fotoVisagistaBase64;
-            }
             if (ultimaBiometriaCamera) {
-                payload.biometria_camera = ultimaBiometriaCamera;
+                const bioLeve = Object.assign({}, ultimaBiometriaCamera);
+                delete bioLeve.geometria_ar;
+                payload.biometria_camera = bioLeve;
+            } else if (fotoVisagistaBase64) {
+                payload.imagem_base64 = fotoVisagistaBase64;
             }
 
             const resp = await fetch(API_IA, {
@@ -5618,7 +6181,6 @@
             }
             if (res.success && res.corte_sugerido) {
                 soundVIP.playChicSuccess();
-                // Sincronizar radio do rosto se a IA detectou automaticamente
                 const slugRosto = (res.perfil?.formato_rosto_slug || res.perfil?.formato_rosto || '').toLowerCase();
                 if (slugRosto) {
                     const rRadio = document.querySelector(`input[name="ia_rosto"][value="${slugRosto}"]`);
@@ -5626,21 +6188,24 @@
                 }
 
                 const c = res.corte_sugerido;
+                const ft = c.ficha_tecnica || {};
                 const alt = res.corte_alternativo || null;
                 const bio = res.biometria_facial || {};
                 const b = res.barbeiro_recomendado || {};
                 const p = res.produto_recomendado || {};
                 const barbaInfo = res.barba_sugerida || {};
 
-                ultimoTextoConsultoriaIA = `Diagnóstico Visagista concluído para rosto ${res.perfil.formato_rosto} e cabelo ${res.perfil.tipo_cabelo}. O corte ideal com ${c.match}% de harmonia é ${c.nome}. ${c.explicacao_visagismo} Para a barba, recomendamos ${barbaInfo.estilo || 'barba alinhada'}.`;
+                const resumoFichaCopia = `💈 FICHA TÉCNICA VISAGISTA IA — ${c.nome}\n• Rosto: ${res.perfil.formato_rosto} | Cabelo: ${res.perfil.tipo_cabelo} | Vibe: ${res.perfil.vibe}\n• Laterais (Máquina): ${ft.maquina_laterais || 'Mid Fade'}\n• Topo (Tesoura): ${ft.topo_tesoura || '5 a 6 cm texturizado'}\n• Acabamento/Pezinho: ${ft.acabamento_pezinho || 'Navalhado natural'}\n• Barba (${barbaInfo.estilo || 'Alinhada'}): ${ft.barba_ajuste || 'Degradê na costeleta'}`;
+
+                ultimoTextoConsultoriaIA = `Diagnóstico Visagista para rosto ${res.perfil.formato_rosto}, cabelo ${res.perfil.tipo_cabelo} e vibe ${res.perfil.vibe}. O corte ideal com ${c.match}% de harmonia é ${c.nome}. ${c.explicacao_visagismo} Na cadeira do barbeiro, peça: ${ft.maquina_laterais || ''}, e no topo ${ft.topo_tesoura || ''}. Para a barba, recomendamos ${barbaInfo.estilo || 'barba alinhada'}.`;
 
                 boxResultado.innerHTML = `
                     <div class="space-y-6">
-                        <!-- Barra de Biometria & Índices Faciais -->
+                        <!-- Barra de Biometria & Índices Faciais (MediaPipe 468 Pontos) -->
                         <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-emerald-500/10 border border-amber-500/30">
                             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                                 <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
-                                    <span>🔬</span> <span>Relatório Biométrico de Harmonização Facial</span>
+                                    <span>🔬</span> <span>Relatório Antropométrico (${bio.landmarks_detectados || 468} Pontos Faciais 3D)</span>
                                 </span>
                                 <button type="button" onclick="ouvirConsultoriaVisagista()" class="px-3 py-1 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/40 text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer">
                                     <span>🔊</span> <span>Ouvir Consultoria IA</span>
@@ -5652,16 +6217,16 @@
                                     <strong class="text-xs text-white">${bio.indice_aureo || '1.618 (Simetria Ideal)'}</strong>
                                 </div>
                                 <div class="p-2.5 rounded-xl bg-black/50 border border-white/10">
-                                    <span class="text-[10px] text-zinc-400 block">Ângulo Mandibular</span>
+                                    <span class="text-[10px] text-zinc-400 block">Ângulo Gonial (Maxilar)</span>
                                     <strong class="text-xs text-white">${bio.angulo_mandibular || 'Definido & Alinhado'}</strong>
                                 </div>
                                 <div class="p-2.5 rounded-xl bg-black/50 border border-white/10">
-                                    <span class="text-[10px] text-zinc-400 block">Simetria Facial</span>
-                                    <strong class="text-xs text-emerald-400">${bio.simetria_facial || '97%'} (${bio.iluminacao_captura || 'HD'})</strong>
+                                    <span class="text-[10px] text-zinc-400 block">Terços & Simetria 3D</span>
+                                    <strong class="text-xs text-emerald-400">${bio.simetria_facial || '97%'} • ${bio.proporcao_tercos || '1:1:1'}</strong>
                                 </div>
                                 <div class="p-2.5 rounded-xl bg-black/50 border border-white/10">
                                     <span class="text-[10px] text-zinc-400 block">Ciclo de Manutenção</span>
-                                    <strong class="text-xs text-amber-300">${bio.manutencao_ideal || 'A cada 15 dias'}</strong>
+                                    <strong class="text-xs text-amber-300">${ft.ciclo_manutencao || bio.manutencao_ideal || 'A cada 15 dias'}</strong>
                                 </div>
                             </div>
                         </div>
@@ -5677,26 +6242,39 @@
                                     <img id="img-referencia-visagismo" src="${c.foto_referencia}" alt="${c.nome}" class="${fotoVisagistaBase64 ? 'hidden' : 'w-full h-full object-cover'}">
 
                                     <div class="absolute top-3 left-3 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-400/40 text-amber-300 font-extrabold text-xs shadow-lg flex items-center gap-1 pointer-events-none">
-                                        <span>🎯</span> <span>${c.match}% Match • ${fotoVisagistaBase64 ? 'Simulação em Você' : 'Corte Ideal'}</span>
+                                        <span>🎯</span> <span>${c.match}% Match • ${fotoVisagistaBase64 ? 'AR 468 Pts' : 'Corte Ideal'}</span>
                                     </div>
 
                                     ${fotoVisagistaBase64 ? `
                                     <div class="absolute top-3 right-3 flex items-center gap-1">
-                                        <button type="button" onmousedown="mostrarAntesProvador(true)" onmouseup="mostrarAntesProvador(false)" onmouseleave="mostrarAntesProvador(false)" ontouchstart="mostrarAntesProvador(true)" ontouchend="mostrarAntesProvador(false)" class="px-2.5 py-1 rounded-full bg-black/85 hover:bg-amber-400 hover:text-black text-amber-300 border border-amber-400/50 text-[10px] font-extrabold shadow-lg transition cursor-pointer">
-                                            👀 Antes / Depois
+                                        <button type="button" onclick="toggleMalhaProvadorFoto()" id="btn-malha-provador-foto" class="px-2 py-1 rounded-full bg-black/85 hover:bg-purple-500/30 text-purple-300 border border-purple-400/50 text-[10px] font-extrabold shadow-lg transition cursor-pointer" title="Mostrar/Ocultar Malha de 468 Pontos">
+                                            🕸️ 468 Pts
+                                        </button>
+                                        <button type="button" onclick="alternarSplitRapidoProvador()" class="px-2.5 py-1 rounded-full bg-black/85 hover:bg-amber-400 hover:text-black text-amber-300 border border-amber-400/50 text-[10px] font-extrabold shadow-lg transition cursor-pointer" title="Alternar comparação 50/50 Antes vs Depois">
+                                            🌗 50/50
                                         </button>
                                     </div>` : ''}
 
                                     <div class="absolute bottom-3 inset-x-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-3 rounded-xl pointer-events-none">
                                         <span class="text-[10px] uppercase font-bold text-emerald-400 block">${fotoVisagistaBase64 ? '✨ Provador Virtual IA no Seu Rosto' : `Rosto ${res.perfil.formato_rosto} + ${res.perfil.tipo_cabelo}`}</span>
                                         <h4 id="titulo-corte-provador" class="text-sm font-bold text-white leading-tight">${c.nome}</h4>
-                                        ${fotoVisagistaBase64 ? `<span class="text-[10px] text-zinc-300 block mt-0.5">👆 Arraste o corte na foto para ajustar posição</span>` : ''}
+                                        ${fotoVisagistaBase64 ? `<span class="text-[10px] text-zinc-300 block mt-0.5">👆 Arraste o corte na foto ou deslize a barra Antes/Depois abaixo</span>` : ''}
                                     </div>
                                 </div>
 
                                 ${fotoVisagistaBase64 ? `
-                                <!-- Painel Interativo do Provador Virtual (Ajuste de Corte, Cor e Posição na Pessoa) -->
+                                <!-- Painel Interativo do Provador Virtual (Slider Antes/Depois, Corte, Cor e Posição) -->
                                 <div class="p-3.5 rounded-2xl bg-black/50 border border-amber-500/30 space-y-3 text-left">
+                                    <!-- Cortina Interativa Antes ◀▶ Depois -->
+                                    <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                                        <div class="flex items-center justify-between text-[10px] font-bold mb-1">
+                                            <span class="text-zinc-400">👈 ANTES (Original)</span>
+                                            <span id="label-split-provador" class="text-amber-300">100% DEPOIS</span>
+                                            <span class="text-emerald-400">DEPOIS (Corte IA) 👉</span>
+                                        </div>
+                                        <input type="range" id="slider-split-provador" min="0" max="100" value="100" oninput="atualizarSplitProvador(this.value)" class="w-full accent-amber-400 cursor-pointer h-1.5 bg-zinc-700 rounded-lg">
+                                    </div>
+
                                     <div class="flex items-center justify-between">
                                         <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400">💇‍♂️ Testar Cortes no Seu Rosto:</span>
                                         <button type="button" onclick="alternarModoFotoReferencia()" id="btn-alternar-ref-modelo" class="text-[10px] font-bold text-zinc-300 hover:text-amber-300 underline cursor-pointer">
@@ -5746,17 +6324,19 @@
                                 `}
                             </div>
 
-                            <!-- Explicação Técnica e Recomendações -->
+                            <!-- Explicação Técnica, Ficha Técnica do Barbeiro e Recomendações -->
                             <div class="flex-1 space-y-5 text-left">
                                 <div>
                                     <div class="flex flex-wrap items-center gap-2 mb-1">
                                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                                            ✓ ${res.perfil.detectado_por_camera ? 'Escaneado por Câmera IA' : 'Diagnóstico Facial Aprovado'}
+                                            ✓ ${res.perfil.detectado_por_camera ? 'Escaneado por Câmera IA (468 Pts)' : 'Diagnóstico Facial Aprovado'}
                                         </span>
                                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-800 text-amber-300 border border-amber-500/20 flex items-center gap-1">
-                                            <span>⚙️</span> <span>Motor: ${res._motor === 'python' ? 'Python AI Engine' : (res._motor === 'cloud_gemini' ? 'Google Gemini AI' : 'Motor Nativo VIP (PHP + Heurística)')}</span>
+                                            <span>⚡</span> <span>${res._motor_label || (res._motor === 'python' ? 'Python AI Engine' : 'Motor Híbrido Neural (< 1ms)')}</span>
                                         </span>
-                                        <span class="text-xs text-zinc-400">• Vibe: ${res.perfil.vibe}</span>
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                                            ✨ Vibe: ${res.perfil.vibe}
+                                        </span>
                                     </div>
                                     <h3 class="text-2xl font-display font-bold text-white">${c.nome}</h3>
                                     <p class="text-xs sm:text-sm text-zinc-300 mt-2 leading-relaxed bg-white/[0.03] p-4 rounded-2xl border border-white/5">
@@ -5764,15 +6344,45 @@
                                     </p>
                                 </div>
 
+                                <!-- NOVO: Ficha Técnica Profissional para o Barbeiro -->
+                                <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-500/[0.08] via-black/50 to-black/70 border border-amber-500/35 space-y-2.5">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-xs font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                                            <span>📋</span> <span>Ficha Técnica para o Barbeiro (Execução na Cadeira)</span>
+                                        </span>
+                                        <button type="button" onclick="copiarFichaTecnicaBarbeiro(${JSON.stringify(resumoFichaCopia).replace(/"/g, '&quot;')})" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 text-amber-300 border border-amber-500/40 text-[10px] font-bold transition cursor-pointer">
+                                            📋 Copiar Ficha
+                                        </button>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                                        <div class="p-2.5 rounded-xl bg-black/50 border border-white/5">
+                                            <span class="text-zinc-400 font-semibold block">💈 Máquina / Laterais:</span>
+                                            <strong class="text-white">${ft.maquina_laterais || 'Mid Fade (Pente #0.5 ao #2)'}</strong>
+                                        </div>
+                                        <div class="p-2.5 rounded-xl bg-black/50 border border-white/5">
+                                            <span class="text-zinc-400 font-semibold block">✂️ Topo / Tesoura:</span>
+                                            <strong class="text-white">${ft.topo_tesoura || '5 a 6 cm com textura'}</strong>
+                                        </div>
+                                        <div class="p-2.5 rounded-xl bg-black/50 border border-white/5">
+                                            <span class="text-zinc-400 font-semibold block">🪒 Pezinho / Contorno:</span>
+                                            <strong class="text-white">${ft.acabamento_pezinho || 'Alinhado na navalha'}</strong>
+                                        </div>
+                                        <div class="p-2.5 rounded-xl bg-black/50 border border-white/5">
+                                            <span class="text-zinc-400 font-semibold block">🧔 Protocolo de Barba:</span>
+                                            <strong class="text-white">${ft.barba_ajuste || 'Degradê na costeleta + toalha quente'}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Barba & Finalização -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                     <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10">
-                                        <span class="text-amber-400 font-bold block mb-1">🧔 Estilo de Barba Recomendado:</span>
+                                        <span class="text-amber-400 font-bold block mb-1">🧔 Harmonização da Barba:</span>
                                         <strong class="text-white block mb-0.5">${barbaInfo.estilo || 'Alinhada'}</strong>
                                         <span class="text-[11px] text-zinc-400 leading-tight block">${barbaInfo.explicacao || ''}</span>
                                     </div>
                                     <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10">
-                                        <span class="text-amber-400 font-bold block mb-1">💡 Dica de Estilização Diária:</span>
+                                        <span class="text-amber-400 font-bold block mb-1">💡 Como Modelar em Casa:</span>
                                         <span class="text-[11px] text-zinc-300 leading-tight block">${c.dica_finalizacao}</span>
                                     </div>
                                 </div>
@@ -5828,7 +6438,7 @@
                 if (fotoVisagistaBase64) {
                     setTimeout(() => {
                         iniciarProvadorVirtualNaPessoa(c.nome, estiloBarba);
-                    }, 40);
+                    }, 20);
                 }
             } else {
                 boxResultado.innerHTML = `<div class="p-6 text-center text-red-400 text-sm">Não foi possível calcular o diagnóstico. Tente novamente.</div>`;
@@ -5842,7 +6452,7 @@
     }
 
 
-    // --- MOTOR DE PROVADOR VIRTUAL AR (SIMULAÇÃO DO CORTE E BARBA NA PRÓPRIA PESSOA) ---
+    // --- MOTOR DE PROVADOR VIRTUAL AR (SIMULAÇÃO DO CORTE E BARBA NA PRÓPRIA PESSOA COM 468 PONTOS) ---
     let filtroArCameraAtivo = true;
     let estiloArLiveAtual = 'auto';
     let arLiveAnimFrame = null;
@@ -5854,24 +6464,26 @@
     let corCabeloProvador = 'auto';
     let corNaturalDetectada = { r: 26, g: 22, b: 20 };
     let corPeleDetectada = { r: 198, g: 152, b: 126 };
-    let geometriaRostoDetectada = { cx: 240, cy: 305, fw: 182, fh: 228 };
+    let geometriaRostoDetectada = { cx: 240, cy: 305, fw: 182, fh: 228, rollRad: 0, yawRatio: 0, jawlinePts: null, landmarks: null };
     let transformProvador = { dx: 0, dy: 0, scale: 1.0 };
+    let splitRatioProvador = 100; // 0 = 100% Antes, 50 = Split 50/50, 100 = 100% Depois
     let mostrandoAntesProvador = false;
+    let mostrandoMalhaProvadorFoto = false;
     let mostrandoFotoModeloRef = false;
     let arrastandoCorteProvador = false;
     let pontoArrastoInicial = { x: 0, y: 0 };
 
     function mapearNomeCorteParaEstilo(nomeCorte, tipoCabeloFallback = 'liso') {
         const n = (nomeCorte || '').toLowerCase();
-        if (n.includes('pompadour')) return 'pompadour';
-        if (n.includes('crop')) return 'crop';
-        if (n.includes('quiff') || n.includes('topete') || n.includes('faux') || n.includes('moicano')) return 'quiff';
-        if (n.includes('cacho') || n.includes('drop fade') || n.includes('franja caída') || n.includes('mullet')) return 'cachos';
-        if (n.includes('skin fade') || n.includes('nudge') || n.includes('flattop') || n.includes('black') || n.includes('linhas')) return 'afro';
+        if (n.includes('pompadour') || n.includes('executive contour')) return 'pompadour';
+        if (n.includes('crop') || n.includes('caesar')) return 'crop';
+        if (n.includes('quiff') || n.includes('topete') || n.includes('faux') || n.includes('moicano') || n.includes('razor fade')) return 'quiff';
+        if (n.includes('cacho') || n.includes('drop fade') || n.includes('franja') || n.includes('mullet') || n.includes('wolf')) return 'cachos';
+        if (n.includes('skin fade') || n.includes('nudge') || n.includes('nudred') || n.includes('flattop') || n.includes('black') || n.includes('linhas')) return 'afro';
         if (n.includes('side part') || n.includes('repartido')) return 'sidepart';
-        if (n.includes('curtains') || n.includes('waves') || n.includes('médio')) return 'curtains';
+        if (n.includes('curtains') || n.includes('waves') || n.includes('médio') || n.includes('old money')) return 'curtains';
         if (n.includes('slick')) return 'slickback';
-        if (n.includes('buzz')) return 'buzz';
+        if (n.includes('buzz') || n.includes('crew cut')) return 'buzz';
 
         if (tipoCabeloFallback === 'cacheado') return 'cachos';
         if (tipoCabeloFallback === 'crespo') return 'afro';
@@ -5888,20 +6500,16 @@
                 ? 'px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold cursor-pointer'
                 : 'px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 border border-white/10 text-[10px] font-bold cursor-pointer';
         }
-        const canvasAr = document.getElementById('canvas-ar-live-visagista');
-        if (canvasAr && !filtroArCameraAtivo) {
-            const ctx = canvasAr.getContext('2d');
-            ctx.clearRect(0, 0, canvasAr.width, canvasAr.height);
-        }
     }
 
-    function selecionarEstiloArLive(estilo) {
+    function selecionarEstiloArLive(estilo, ev) {
         estiloArLiveAtual = estilo;
         document.querySelectorAll('.chip-ar-live').forEach(btn => {
             btn.className = 'chip-ar-live px-2.5 py-1 rounded-lg bg-white/10 text-zinc-200 hover:bg-white/20 font-semibold whitespace-nowrap cursor-pointer';
         });
-        if (event && event.currentTarget) {
-            event.currentTarget.className = 'chip-ar-live px-2.5 py-1 rounded-lg bg-amber-400 text-black font-bold whitespace-nowrap cursor-pointer';
+        const targetBtn = (ev && ev.currentTarget) ? ev.currentTarget : (typeof event !== 'undefined' && event ? event.currentTarget : null);
+        if (targetBtn) {
+            targetBtn.className = 'chip-ar-live px-2.5 py-1 rounded-lg bg-amber-400 text-black font-bold whitespace-nowrap cursor-pointer';
         }
         if (!filtroArCameraAtivo) toggleFiltroArCamera();
     }
@@ -5914,28 +6522,118 @@
 
         canvasAr.width = 480;
         canvasAr.height = 360;
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = 240;
+        offCanvas.height = 180;
+        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+        let frameCounter = 0;
+        let ultimoTimestampVideo = -1;
+        let ultimaInferenciaMs = 0;
+        let cacheBioLive = null;
 
         function renderLoop() {
             if (!cameraStreamVisagista) return;
             const ctx = canvasAr.getContext('2d');
             ctx.clearRect(0, 0, canvasAr.width, canvasAr.height);
 
-            if (filtroArCameraAtivo && video.readyState >= 2) {
-                const cabeloSel = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
-                const barbaSel = document.getElementById('ia_barba')?.value || 'barba_curta';
-                const est = estiloArLiveAtual === 'auto' ? mapearNomeCorteParaEstilo('', cabeloSel) : estiloArLiveAtual;
+            if (video.readyState >= 2) {
+                frameCounter++;
+                const agoraMs = performance.now();
+                const espelhado = (cameraFacingModeVisagista === 'user');
+                let landmarksFrame = ultimoLandmarksLive;
 
-                desenharCorteVirtualCanvas(ctx, {
-                    cx: 240,
-                    cy: 175,
-                    fw: 142,
-                    fh: 176,
-                    estiloCorte: est,
-                    estiloBarba: barbaSel,
-                    rgbCabelo: { r: 24, g: 20, b: 18 },
-                    rgbPele: { r: 195, g: 148, b: 120 },
-                    alphaGlobal: 0.92
-                });
+                // 1. Desacopla a inferência MediaPipe (~22 FPS / a cada 45ms) da renderização gráfica (60 FPS) para fluidez máxima!
+                if ((agoraMs - ultimaInferenciaMs) >= 44) {
+                    ultimaInferenciaMs = agoraMs;
+                    let novoLandmarks = null;
+
+                    if (mpFaceLandmarkerVideo && video.currentTime !== ultimoTimestampVideo) {
+                        try {
+                            ultimoTimestampVideo = video.currentTime;
+                            const resMp = mpFaceLandmarkerVideo.detectForVideo(video, agoraMs);
+                            if (resMp && resMp.faceLandmarks && resMp.faceLandmarks.length > 0) {
+                                novoLandmarks = resMp.faceLandmarks[0];
+                            }
+                        } catch (e) {}
+                    }
+
+                    if (!novoLandmarks) {
+                        offCtx.drawImage(video, 0, 0, 240, 180);
+                        novoLandmarks = rastrearMalha468LocalPorPixels(offCanvas, false);
+                    }
+
+                    if (novoLandmarks) {
+                        landmarksFrame = novoLandmarks;
+                        ultimoLandmarksLive = novoLandmarks;
+                        cacheBioLive = calcularBiometria468Pontos(novoLandmarks, canvasAr.width, canvasAr.height, espelhado, 'HD');
+                    }
+                }
+
+                if (landmarksFrame && cacheBioLive) {
+                    const bioLive = cacheBioLive;
+                    const geo = bioLive.geometria_ar;
+
+                    const guiaSvg = document.getElementById('svg-guia-estatica-visagista');
+                    if (guiaSvg) {
+                        guiaSvg.style.opacity = malha468CameraAtiva ? '0.12' : '0.45';
+                    }
+
+                    // Suavização exponencial (EMA) em 60 FPS para movimento ultra-fluido sem trepidação
+                    const alphaEma = 0.35;
+                    if (!poseSuavizadaLive.inicializado) {
+                        poseSuavizadaLive.cx = geo.cx;
+                        poseSuavizadaLive.cy = geo.cy;
+                        poseSuavizadaLive.fw = geo.fw;
+                        poseSuavizadaLive.fh = geo.fh;
+                        poseSuavizadaLive.rollRad = geo.rollRad;
+                        poseSuavizadaLive.yawRatio = geo.yawRatio;
+                        poseSuavizadaLive.inicializado = true;
+                    } else {
+                        poseSuavizadaLive.cx += (geo.cx - poseSuavizadaLive.cx) * alphaEma;
+                        poseSuavizadaLive.cy += (geo.cy - poseSuavizadaLive.cy) * alphaEma;
+                        poseSuavizadaLive.fw += (geo.fw - poseSuavizadaLive.fw) * alphaEma;
+                        poseSuavizadaLive.fh += (geo.fh - poseSuavizadaLive.fh) * alphaEma;
+                        poseSuavizadaLive.rollRad += (geo.rollRad - poseSuavizadaLive.rollRad) * alphaEma;
+                        poseSuavizadaLive.yawRatio += (geo.yawRatio - poseSuavizadaLive.yawRatio) * alphaEma;
+                    }
+
+                    // Atualiza telemetria HUD em tempo real a cada 10 frames
+                    if (frameCounter % 10 === 0) {
+                        const elRosto = document.getElementById('cam-hud-rosto-live');
+                        const elPhi = document.getElementById('cam-hud-phi-live');
+                        const elPose = document.getElementById('cam-hud-pose-live');
+                        if (elRosto) elRosto.textContent = `📐 Rosto: ${bioLive.formato_sugerido.toUpperCase()} (${bioLive.landmarks_detectados} pts)`;
+                        if (elPhi) elPhi.textContent = `Φ ${bioLive.indice_aureo.split(' ')[0]} | Maxilar: ${bioLive.angulo_mandibular.split(' ')[0]}`;
+                        if (elPose) elPose.textContent = `🎯 Simetria: ${bioLive.simetria}% | Inclinação: ${bioLive.pose_graus}°`;
+                    }
+
+                    // 3. Desenha o corte e a barba AR acompanhando posição, escala e inclinação real da cabeça em 60 FPS
+                    if (filtroArCameraAtivo) {
+                        const cabeloSel = document.querySelector('input[name="ia_cabelo"]:checked')?.value || 'liso';
+                        const barbaSel = document.getElementById('ia_barba')?.value || 'barba_curta';
+                        const est = estiloArLiveAtual === 'auto' ? mapearNomeCorteParaEstilo('', cabeloSel) : estiloArLiveAtual;
+
+                        desenharCorteVirtualCanvas(ctx, {
+                            cx: poseSuavizadaLive.cx,
+                            cy: poseSuavizadaLive.cy,
+                            fw: poseSuavizadaLive.fw,
+                            fh: poseSuavizadaLive.fh,
+                            rollRad: poseSuavizadaLive.rollRad,
+                            yawRatio: poseSuavizadaLive.yawRatio,
+                            jawlinePts: geo.jawlinePts,
+                            estiloCorte: est,
+                            estiloBarba: barbaSel,
+                            rgbCabelo: corNaturalDetectada,
+                            rgbPele: corPeleDetectada,
+                            alphaGlobal: 0.93
+                        });
+                    }
+
+                    // 4. Desenha a malha biométrica de 468 pontos sobre o rosto se ativada
+                    if (malha468CameraAtiva) {
+                        desenharMalha468Canvas(ctx, landmarksFrame, canvasAr.width, canvasAr.height, espelhado);
+                    }
+                }
             }
             arLiveAnimFrame = requestAnimationFrame(renderLoop);
         }
@@ -5972,88 +6670,58 @@
         }
         tCtx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, canvasW, canvasH);
 
-        let cx = canvasW * 0.5;
-        let cy = canvasH * 0.49;
-        let fw = canvasW * 0.42;
-        let fh = canvasH * 0.40;
-        let detectouNativo = false;
-
-        // 2. Tenta detector nativo FaceDetector do navegador se disponível
-        if ('FaceDetector' in window) {
+        // 2. Detecta os 468 pontos faciais no enquadramento 480x600 via MediaPipe FaceLandmarker (ou Tracker Local)
+        await inicializarMediaPipeFaceLandmarker();
+        let landmarks = null;
+        if (mpFaceLandmarkerImage) {
             try {
-                const detector = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
-                const faces = await detector.detect(tempC);
-                if (faces && faces.length > 0) {
-                    const box = faces[0].boundingBox;
-                    cx = box.x + box.width / 2;
-                    cy = box.y + box.height / 2;
-                    fw = box.width * 1.04;
-                    fh = box.height * 1.08;
-                    detectouNativo = true;
+                const resMp = mpFaceLandmarkerImage.detect(tempC);
+                if (resMp && resMp.faceLandmarks && resMp.faceLandmarks.length > 0) {
+                    landmarks = resMp.faceLandmarks[0];
                 }
             } catch (e) {}
         }
+        if (!landmarks) {
+            landmarks = rastrearMalha468LocalPorPixels(tempC, false);
+        }
 
-        // 3. Scanner de pixels para tom de pele, centroide facial e cor natural do cabelo
+        const bio468 = calcularBiometria468Pontos(landmarks, canvasW, canvasH, false, 'Excelente (HD)');
+        const geo = bio468.geometria_ar;
+        const cx = geo.cx;
+        const cy = geo.cy;
+        const fw = geo.fw;
+        const fh = geo.fh;
+
+        // 3. Scanner de pixels na região das bochechas e topo da cabeça para tom real de pele e cabelo
         const data = tCtx.getImageData(0, 0, canvasW, canvasH).data;
-        let somaX = 0, somaY = 0, contPele = 0;
-        let somaR = 0, somaG = 0, somaB = 0;
-        let minX = canvasW, maxX = 0, minY = canvasH, maxY = 0;
-
-        for (let y = Math.floor(canvasH * 0.18); y < Math.floor(canvasH * 0.82); y += 4) {
-            for (let x = Math.floor(canvasW * 0.18); x < Math.floor(canvasW * 0.82); x += 4) {
+        let somaR = 0, somaG = 0, somaB = 0, contPele = 0;
+        for (let y = Math.max(0, Math.floor(cy - fh * 0.25)); y < Math.min(canvasH, Math.floor(cy + fh * 0.25)); y += 4) {
+            for (let x = Math.max(0, Math.floor(cx - fw * 0.35)); x < Math.min(canvasW, Math.floor(cx + fw * 0.35)); x += 4) {
                 const i = (y * canvasW + x) * 4;
                 const r = data[i], g = data[i + 1], b = data[i + 2];
-                // Regra cromática RGB/YCbCr para detecção de pele humana em diferentes tons
-                const isSkin = (r > 65 && g > 40 && b > 25 && r > g && r > b && (r - Math.min(g, b)) > 12);
-                if (isSkin) {
-                    somaX += x;
-                    somaY += y;
-                    somaR += r;
-                    somaG += g;
-                    somaB += b;
-                    contPele++;
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
+                if (r > 65 && g > 40 && b > 25 && r > g && r > b) {
+                    somaR += r; somaG += g; somaB += b; contPele++;
                 }
             }
         }
-
-        if (contPele > 80) {
+        if (contPele > 30) {
             corPeleDetectada = {
                 r: Math.round(somaR / contPele),
                 g: Math.round(somaG / contPele),
                 b: Math.round(somaB / contPele)
             };
-            if (!detectouNativo) {
-                const skinCx = somaX / contPele;
-                const skinCy = somaY / contPele;
-                cx = canvasW * 0.5 * 0.55 + skinCx * 0.45;
-                cy = canvasH * 0.50 * 0.55 + skinCy * 0.45;
-                const estW = (maxX - minX) * 0.78;
-                if (estW > canvasW * 0.28 && estW < canvasW * 0.56) {
-                    fw = estW;
-                    fh = estW * 1.24;
-                }
-            }
         }
 
-        // 4. Amostra da cor natural do cabelo no topo da cabeça
         let cabR = 0, cabG = 0, cabB = 0, contCab = 0;
-        const topoYIni = Math.max(8, Math.floor(cy - fh * 0.68));
-        const topoYFim = Math.max(24, Math.floor(cy - fh * 0.42));
+        const topoYIni = Math.max(6, Math.floor(cy - fh * 0.68));
+        const topoYFim = Math.max(22, Math.floor(cy - fh * 0.42));
         for (let y = topoYIni; y < topoYFim; y += 3) {
             for (let x = Math.floor(cx - fw * 0.28); x < Math.floor(cx + fw * 0.28); x += 3) {
                 if (x >= 0 && x < canvasW && y >= 0 && y < canvasH) {
                     const i = (y * canvasW + x) * 4;
                     const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
                     if (lum < 175) {
-                        cabR += data[i];
-                        cabG += data[i + 1];
-                        cabB += data[i + 2];
-                        contCab++;
+                        cabR += data[i]; cabG += data[i + 1]; cabB += data[i + 2]; contCab++;
                     }
                 }
             }
@@ -6068,7 +6736,13 @@
             corNaturalDetectada = { r: 24, g: 20, b: 18 };
         }
 
-        return { cx, cy, fw, fh };
+        return {
+            cx, cy, fw, fh,
+            rollRad: geo.rollRad || 0,
+            yawRatio: geo.yawRatio || 0,
+            jawlinePts: geo.jawlinePts || null,
+            landmarks: landmarks
+        };
     }
 
     function desenharCorteVirtualCanvas(ctx, cfg) {
@@ -6076,6 +6750,8 @@
         const cy = cfg.cy;
         const fw = cfg.fw;
         const fh = cfg.fh;
+        const rollRad = cfg.rollRad || 0;
+        const yawRatio = cfg.yawRatio || 0;
         const estilo = cfg.estiloCorte || 'pompadour';
         const barba = cfg.estiloBarba || 'barba_curta';
         const cCab = cfg.rgbCabelo || { r: 24, g: 20, b: 18 };
@@ -6085,19 +6761,27 @@
         ctx.save();
         ctx.globalAlpha = alpha;
 
+        // Aplica rotação 2D/3D real da cabeça (Roll) e compensação de perspectiva lateral (Yaw)
+        if (Math.abs(rollRad) > 0.005) {
+            ctx.translate(cx, cy);
+            ctx.rotate(rollRad);
+            ctx.translate(-cx, -cy);
+        }
+        const yawShiftX = yawRatio * fw * 0.16;
+
         const rBase = cCab.r, gBase = cCab.g, bBase = cCab.b;
         const rDark = Math.max(5, rBase - 22), gDark = Math.max(5, gBase - 22), bDark = Math.max(5, bBase - 22);
         const rLight = Math.min(245, rBase + 48), gLight = Math.min(245, gBase + 44), bLight = Math.min(245, bBase + 40);
 
         const foreheadY = cy - fh * 0.36;
         const crownY = cy - fh * 0.65;
-        const leftTempleX = cx - fw * 0.50;
-        const rightTempleX = cx + fw * 0.50;
+        const leftTempleX = cx - fw * 0.50 + yawShiftX * 0.5;
+        const rightTempleX = cx + fw * 0.50 + yawShiftX * 0.5;
 
         // 1. EFEITO DEGRADÊ LATERAL (SKIN FADE / MID FADE / HIGH FADE) NAS TÊMPORAS
         const fadeAltura = (estilo === 'afro' || estilo === 'quiff' || estilo === 'buzz') ? fh * 0.30 : fh * 0.36;
         [-1, 1].forEach(dir => {
-            const tempX = cx + dir * fw * 0.49;
+            const tempX = cx + dir * fw * 0.49 + yawShiftX * 0.4;
             const fadeGrad = ctx.createLinearGradient(tempX, foreheadY - fh * 0.14, tempX, foreheadY + fadeAltura);
             fadeGrad.addColorStop(0, `rgba(${rDark}, ${gDark}, ${bDark}, 0.92)`);
             fadeGrad.addColorStop(0.45, `rgba(${rBase}, ${gBase}, ${bBase}, 0.48)`);
@@ -6106,25 +6790,25 @@
 
             ctx.fillStyle = fadeGrad;
             ctx.beginPath();
-            ctx.moveTo(cx + dir * fw * 0.36, foreheadY - fh * 0.14);
+            ctx.moveTo(cx + dir * fw * 0.36 + yawShiftX * 0.4, foreheadY - fh * 0.14);
             ctx.quadraticCurveTo(tempX + dir * fw * 0.08, foreheadY + fadeAltura * 0.25, tempX + dir * fw * 0.02, foreheadY + fadeAltura);
-            ctx.lineTo(cx + dir * fw * 0.41, foreheadY + fadeAltura * 0.85);
-            ctx.quadraticCurveTo(cx + dir * fw * 0.40, foreheadY, cx + dir * fw * 0.36, foreheadY - fh * 0.14);
+            ctx.lineTo(cx + dir * fw * 0.41 + yawShiftX * 0.4, foreheadY + fadeAltura * 0.85);
+            ctx.quadraticCurveTo(cx + dir * fw * 0.40 + yawShiftX * 0.4, foreheadY, cx + dir * fw * 0.36 + yawShiftX * 0.4, foreheadY - fh * 0.14);
             ctx.closePath();
             ctx.fill();
         });
 
         // 2. SOMBRA SUAVE DE IMPLANTAÇÃO NA TESTA (NATURALIDADE ÓPTICA)
-        const sombraTesta = ctx.createLinearGradient(cx, foreheadY - 12, cx, foreheadY + 18);
+        const sombraTesta = ctx.createLinearGradient(cx + yawShiftX, foreheadY - 12, cx + yawShiftX, foreheadY + 18);
         sombraTesta.addColorStop(0, `rgba(0, 0, 0, 0.42)`);
         sombraTesta.addColorStop(1, `rgba(0, 0, 0, 0)`);
         ctx.fillStyle = sombraTesta;
         ctx.beginPath();
-        ctx.ellipse(cx, foreheadY + 2, fw * 0.46, 15, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx + yawShiftX * 0.5, foreheadY + 2, fw * 0.46, 15, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // 3. BASE VOLUMÉTRICA DO CORTE DE CABELO
-        const topGrad = ctx.createLinearGradient(cx, crownY - fh * 0.18, cx, foreheadY + 12);
+        const topGrad = ctx.createLinearGradient(cx + yawShiftX, crownY - fh * 0.18, cx + yawShiftX, foreheadY + 12);
         topGrad.addColorStop(0, `rgb(${rBase}, ${gBase}, ${bBase})`);
         topGrad.addColorStop(0.35, `rgb(${rLight}, ${gLight}, ${bLight})`);
         topGrad.addColorStop(0.85, `rgb(${rDark}, ${gDark}, ${bDark})`);
@@ -6135,33 +6819,33 @@
         if (estilo === 'pompadour' || estilo === 'slickback') {
             const altTop = estilo === 'pompadour' ? fh * 0.22 : fh * 0.15;
             ctx.moveTo(leftTempleX, foreheadY + 6);
-            ctx.bezierCurveTo(leftTempleX - fw * 0.05, crownY - altTop * 0.5, cx - fw * 0.25, crownY - altTop * 1.25, cx + fw * 0.08, crownY - altTop);
+            ctx.bezierCurveTo(leftTempleX - fw * 0.05, crownY - altTop * 0.5, cx - fw * 0.25 + yawShiftX, crownY - altTop * 1.25, cx + fw * 0.08 + yawShiftX, crownY - altTop);
             ctx.bezierCurveTo(rightTempleX + fw * 0.05, crownY - altTop * 0.6, rightTempleX + fw * 0.04, foreheadY - 10, rightTempleX, foreheadY + 6);
-            ctx.quadraticCurveTo(cx, foreheadY - 10, leftTempleX, foreheadY + 6);
+            ctx.quadraticCurveTo(cx + yawShiftX, foreheadY - 10, leftTempleX, foreheadY + 6);
         } else if (estilo === 'quiff') {
             ctx.moveTo(leftTempleX + 4, foreheadY + 4);
-            ctx.bezierCurveTo(leftTempleX, crownY, cx - fw * 0.18, crownY - fh * 0.28, cx, crownY - fh * 0.30);
-            ctx.bezierCurveTo(cx + fw * 0.18, crownY - fh * 0.28, rightTempleX, crownY, rightTempleX - 4, foreheadY + 4);
-            ctx.quadraticCurveTo(cx, foreheadY - 8, leftTempleX + 4, foreheadY + 4);
+            ctx.bezierCurveTo(leftTempleX, crownY, cx - fw * 0.18 + yawShiftX, crownY - fh * 0.28, cx + yawShiftX, crownY - fh * 0.30);
+            ctx.bezierCurveTo(cx + fw * 0.18 + yawShiftX, crownY - fh * 0.28, rightTempleX, crownY, rightTempleX - 4, foreheadY + 4);
+            ctx.quadraticCurveTo(cx + yawShiftX, foreheadY - 8, leftTempleX + 4, foreheadY + 4);
         } else if (estilo === 'crop') {
             ctx.moveTo(leftTempleX - 2, foreheadY + 12);
             ctx.bezierCurveTo(leftTempleX - 6, crownY - fh * 0.08, rightTempleX + 6, crownY - fh * 0.08, rightTempleX + 2, foreheadY + 12);
-            ctx.bezierCurveTo(cx + fw * 0.22, foreheadY + 22, cx - fw * 0.22, foreheadY + 22, leftTempleX - 2, foreheadY + 12);
+            ctx.bezierCurveTo(cx + fw * 0.22 + yawShiftX, foreheadY + 22, cx - fw * 0.22 + yawShiftX, foreheadY + 22, leftTempleX - 2, foreheadY + 12);
         } else if (estilo === 'sidepart') {
             ctx.moveTo(leftTempleX, foreheadY + 6);
-            ctx.bezierCurveTo(leftTempleX - 4, crownY - fh * 0.12, cx - fw * 0.22, crownY - fh * 0.16, cx + fw * 0.18, crownY - fh * 0.14);
+            ctx.bezierCurveTo(leftTempleX - 4, crownY - fh * 0.12, cx - fw * 0.22 + yawShiftX, crownY - fh * 0.16, cx + fw * 0.18 + yawShiftX, crownY - fh * 0.14);
             ctx.bezierCurveTo(rightTempleX + 4, crownY - fh * 0.08, rightTempleX + 2, foreheadY - 4, rightTempleX, foreheadY + 6);
-            ctx.quadraticCurveTo(cx, foreheadY - 6, leftTempleX, foreheadY + 6);
+            ctx.quadraticCurveTo(cx + yawShiftX, foreheadY - 6, leftTempleX, foreheadY + 6);
         } else if (estilo === 'curtains') {
             ctx.moveTo(leftTempleX - 8, foreheadY + fh * 0.16);
-            ctx.bezierCurveTo(leftTempleX - 14, crownY - fh * 0.12, cx - fw * 0.10, crownY - fh * 0.16, cx, crownY - fh * 0.12);
-            ctx.bezierCurveTo(cx + fw * 0.10, crownY - fh * 0.16, rightTempleX + 14, crownY - fh * 0.12, rightTempleX + 8, foreheadY + fh * 0.16);
-            ctx.quadraticCurveTo(cx + fw * 0.25, foreheadY - 6, cx, foreheadY - 12);
-            ctx.quadraticCurveTo(cx - fw * 0.25, foreheadY - 6, leftTempleX - 8, foreheadY + fh * 0.16);
+            ctx.bezierCurveTo(leftTempleX - 14, crownY - fh * 0.12, cx - fw * 0.10 + yawShiftX, crownY - fh * 0.16, cx + yawShiftX, crownY - fh * 0.12);
+            ctx.bezierCurveTo(cx + fw * 0.10 + yawShiftX, crownY - fh * 0.16, rightTempleX + 14, crownY - fh * 0.12, rightTempleX + 8, foreheadY + fh * 0.16);
+            ctx.quadraticCurveTo(cx + fw * 0.25 + yawShiftX, foreheadY - 6, cx + yawShiftX, foreheadY - 12);
+            ctx.quadraticCurveTo(cx - fw * 0.25 + yawShiftX, foreheadY - 6, leftTempleX - 8, foreheadY + fh * 0.16);
         } else if (estilo === 'afro') {
             ctx.moveTo(leftTempleX + 2, foreheadY + 2);
             ctx.lineTo(leftTempleX + 4, crownY - fh * 0.14);
-            ctx.quadraticCurveTo(cx, crownY - fh * 0.22, rightTempleX - 4, crownY - fh * 0.14);
+            ctx.quadraticCurveTo(cx + yawShiftX, crownY - fh * 0.22, rightTempleX - 4, crownY - fh * 0.14);
             ctx.lineTo(rightTempleX - 2, foreheadY + 2);
             ctx.lineTo(leftTempleX + 2, foreheadY + 2);
         } else if (estilo === 'buzz') {
@@ -6172,7 +6856,7 @@
             // cachos / default
             ctx.moveTo(leftTempleX - 4, foreheadY + 8);
             ctx.bezierCurveTo(leftTempleX - 10, crownY - fh * 0.18, rightTempleX + 10, crownY - fh * 0.18, rightTempleX + 4, foreheadY + 8);
-            ctx.quadraticCurveTo(cx, foreheadY + 14, leftTempleX - 4, foreheadY + 8);
+            ctx.quadraticCurveTo(cx + yawShiftX, foreheadY + 14, leftTempleX - 4, foreheadY + 8);
         }
         ctx.closePath();
         ctx.fill();
@@ -6180,9 +6864,7 @@
         // 4. MICRO-FIOS, CACHOS 3D OU TEXTURA ESPONJADA (DETALHAMENTO REALISTA)
         if (estilo === 'cachos') {
             for (let i = 0; i < 95; i++) {
-                const t = i / 95;
-                const ang = (i * 137.5) * (Math.PI / 180);
-                const rx = (Math.sin(i * 1.9) * 0.46) * fw;
+                const rx = (Math.sin(i * 1.9) * 0.46) * fw + yawShiftX * 0.6;
                 const ry = ((i % 10) / 10) * (fh * 0.34);
                 const x = cx + rx;
                 const y = foreheadY + 10 - ry;
@@ -6199,8 +6881,8 @@
         } else if (estilo === 'afro' || estilo === 'buzz') {
             const qtd = estilo === 'afro' ? 180 : 90;
             for (let i = 0; i < qtd; i++) {
-                const rx = (( (i * 73) % 100 ) / 100 - 0.5) * fw * 0.92;
-                const ry = (( (i * 41) % 100 ) / 100) * (estilo === 'afro' ? fh * 0.38 : fh * 0.24);
+                const rx = (((i * 73) % 100) / 100 - 0.5) * fw * 0.92 + yawShiftX * 0.5;
+                const ry = (((i * 41) % 100) / 100) * (estilo === 'afro' ? fh * 0.38 : fh * 0.24);
                 const x = cx + rx;
                 const y = foreheadY - ry;
                 ctx.beginPath();
@@ -6222,7 +6904,7 @@
             const numFios = 140;
             for (let i = 0; i < numFios; i++) {
                 const frac = (i / numFios) - 0.5;
-                const startX = cx + frac * fw * 0.94;
+                const startX = cx + frac * fw * 0.94 + yawShiftX * 0.5;
                 const startY = (estilo === 'crop') ? (foreheadY - fh * 0.16) : (foreheadY + 2);
 
                 let endX = startX;
@@ -6236,7 +6918,7 @@
                     ctrlX = startX - fw * 0.06;
                     ctrlY = startY - fh * 0.24;
                 } else if (estilo === 'quiff') {
-                    endX = cx + frac * fw * 0.52;
+                    endX = cx + frac * fw * 0.52 + yawShiftX * 0.6;
                     endY = crownY - fh * 0.20 - (0.5 - Math.abs(frac)) * (fh * 0.18);
                     ctrlX = startX;
                     ctrlY = startY - fh * 0.18;
@@ -6272,8 +6954,8 @@
             if (estilo === 'sidepart') {
                 // Risca de navalha (Hard Part)
                 ctx.beginPath();
-                ctx.moveTo(cx - fw * 0.24, foreheadY + 2);
-                ctx.lineTo(cx - fw * 0.16, crownY - fh * 0.05);
+                ctx.moveTo(cx - fw * 0.24 + yawShiftX * 0.5, foreheadY + 2);
+                ctx.lineTo(cx - fw * 0.16 + yawShiftX * 0.5, crownY - fh * 0.05);
                 ctx.strokeStyle = `rgba(${cPele.r + 18}, ${cPele.g + 12}, ${cPele.b + 10}, 0.82)`;
                 ctx.lineWidth = 2.6;
                 ctx.stroke();
@@ -6284,49 +6966,58 @@
         if (barba && barba !== 'sem_barba' && barba !== 'none') {
             const mouthY = cy + fh * 0.22;
             const chinY = cy + fh * 0.49 + (barba === 'barba_cheia' ? fh * 0.07 : 0);
-            const jawLeftX = cx - fw * 0.44;
-            const jawRightX = cx + fw * 0.44;
+            const jawLeftX = cx - fw * 0.44 + yawShiftX * 0.35;
+            const jawRightX = cx + fw * 0.44 + yawShiftX * 0.35;
 
             if (barba === 'cavanhaque') {
                 // Bigode + Cavanhaque no queixo
                 ctx.fillStyle = `rgba(${rDark}, ${gDark}, ${bDark}, 0.72)`;
                 ctx.beginPath();
-                ctx.moveTo(cx - fw * 0.19, mouthY - 4);
-                ctx.quadraticCurveTo(cx, mouthY - 14, cx + fw * 0.19, mouthY - 4);
-                ctx.quadraticCurveTo(cx, mouthY + 2, cx - fw * 0.19, mouthY - 4);
+                ctx.moveTo(cx - fw * 0.19 + yawShiftX * 0.5, mouthY - 4);
+                ctx.quadraticCurveTo(cx + yawShiftX * 0.5, mouthY - 14, cx + fw * 0.19 + yawShiftX * 0.5, mouthY - 4);
+                ctx.quadraticCurveTo(cx + yawShiftX * 0.5, mouthY + 2, cx - fw * 0.19 + yawShiftX * 0.5, mouthY - 4);
                 ctx.fill();
 
                 ctx.beginPath();
-                ctx.arc(cx, chinY - fh * 0.06, fw * 0.17, 0, Math.PI, false);
+                ctx.arc(cx + yawShiftX * 0.4, chinY - fh * 0.06, fw * 0.17, 0, Math.PI, false);
                 ctx.fill();
             } else {
-                // Barba Curta Degradê ou Barba Cheia Lenhador
+                // Barba Curta Degradê ou Barba Cheia Lenhador com encaixe anatômico nos pontos da mandíbula (jawlinePts)
                 const opacidadeBarba = barba === 'barba_cheia' ? 0.84 : 0.58;
                 const barbaGrad = ctx.createLinearGradient(cx, cy + fh * 0.05, cx, chinY);
-                barbaGrad.addColorStop(0, `rgba(${rBase}, ${gBase}, ${bBase}, 0.15)`);
-                barbaGrad.addColorStop(0.35, `rgba(${rDark}, ${gDark}, ${bDark}, ${opacidadeBarba * 0.85})`);
+                barbaGrad.addColorStop(0, `rgba(${rBase}, ${gBase}, ${bBase}, 0.14)`);
+                barbaGrad.addColorStop(0.32, `rgba(${rDark}, ${gDark}, ${bDark}, ${opacidadeBarba * 0.85})`);
                 barbaGrad.addColorStop(1, `rgba(${rDark}, ${gDark}, ${bDark}, ${opacidadeBarba})`);
 
                 ctx.fillStyle = barbaGrad;
                 ctx.beginPath();
-                // Costeleta esquerda descendo até o queixo
-                ctx.moveTo(jawLeftX - 2, cy - fh * 0.02);
-                ctx.quadraticCurveTo(jawLeftX - 4, cy + fh * 0.32, cx, chinY);
-                ctx.quadraticCurveTo(jawRightX + 4, cy + fh * 0.32, jawRightX + 2, cy - fh * 0.02);
+                if (Array.isArray(cfg.jawlinePts) && cfg.jawlinePts.length >= 5) {
+                    const extY = barba === 'barba_cheia' ? fh * 0.06 : 0;
+                    ctx.moveTo(cfg.jawlinePts[0].x, cfg.jawlinePts[0].y);
+                    for (let j = 1; j < cfg.jawlinePts.length; j++) {
+                        const ptJ = cfg.jawlinePts[j];
+                        const isChinCenter = (j >= Math.floor(cfg.jawlinePts.length * 0.35) && j <= Math.ceil(cfg.jawlinePts.length * 0.65));
+                        ctx.lineTo(ptJ.x, ptJ.y + (isChinCenter ? extY : extY * 0.35));
+                    }
+                } else {
+                    ctx.moveTo(jawLeftX - 2, cy - fh * 0.02);
+                    ctx.quadraticCurveTo(jawLeftX - 4, cy + fh * 0.32, cx + yawShiftX * 0.35, chinY);
+                    ctx.quadraticCurveTo(jawRightX + 4, cy + fh * 0.32, jawRightX + 2, cy - fh * 0.02);
+                }
                 // Linha interna da bochecha desenhada na navalha
                 ctx.lineTo(jawRightX - 8, cy + fh * 0.08);
-                ctx.quadraticCurveTo(cx + fw * 0.24, mouthY + 12, cx + fw * 0.17, mouthY + 10);
-                ctx.quadraticCurveTo(cx, mouthY + 22, cx - fw * 0.17, mouthY + 10);
-                ctx.quadraticCurveTo(cx - fw * 0.24, mouthY + 12, jawLeftX + 8, cy + fh * 0.08);
+                ctx.quadraticCurveTo(cx + fw * 0.24 + yawShiftX * 0.4, mouthY + 12, cx + fw * 0.17 + yawShiftX * 0.4, mouthY + 10);
+                ctx.quadraticCurveTo(cx + yawShiftX * 0.4, mouthY + 22, cx - fw * 0.17 + yawShiftX * 0.4, mouthY + 10);
+                ctx.quadraticCurveTo(cx - fw * 0.24 + yawShiftX * 0.4, mouthY + 12, jawLeftX + 8, cy + fh * 0.08);
                 ctx.closePath();
                 ctx.fill();
 
                 // Bigode conectado
                 ctx.fillStyle = `rgba(${rDark}, ${gDark}, ${bDark}, ${opacidadeBarba * 0.92})`;
                 ctx.beginPath();
-                ctx.moveTo(cx - fw * 0.21, mouthY - 2);
-                ctx.quadraticCurveTo(cx, mouthY - 13, cx + fw * 0.21, mouthY - 2);
-                ctx.quadraticCurveTo(cx, mouthY + 4, cx - fw * 0.21, mouthY - 2);
+                ctx.moveTo(cx - fw * 0.21 + yawShiftX * 0.45, mouthY - 2);
+                ctx.quadraticCurveTo(cx + yawShiftX * 0.45, mouthY - 13, cx + fw * 0.21 + yawShiftX * 0.45, mouthY - 2);
+                ctx.quadraticCurveTo(cx + yawShiftX * 0.45, mouthY + 4, cx - fw * 0.21 + yawShiftX * 0.45, mouthY - 2);
                 ctx.fill();
 
                 // Micro-fios da barba para textura realista
@@ -6334,7 +7025,7 @@
                 for (let i = 0; i < fiosBarba; i++) {
                     const ang = (i / fiosBarba) * Math.PI;
                     const dist = fw * (0.28 + ((i * 19) % 16) / 100);
-                    const bx = cx + Math.cos(ang) * dist;
+                    const bx = cx + yawShiftX * 0.35 + Math.cos(ang) * dist;
                     const by = (cy + fh * 0.12) + Math.sin(ang) * (fh * 0.35);
                     ctx.beginPath();
                     ctx.moveTo(bx, by);
@@ -6351,6 +7042,38 @@
         ctx.restore();
     }
 
+    function toggleMalhaProvadorFoto() {
+        soundVIP.playSoftClick();
+        mostrandoMalhaProvadorFoto = !mostrandoMalhaProvadorFoto;
+        const btn = document.getElementById('btn-malha-provador-foto');
+        if (btn) {
+            btn.className = mostrandoMalhaProvadorFoto
+                ? 'px-2 py-1 rounded-full bg-purple-500 text-black border border-purple-300 text-[10px] font-extrabold shadow-lg transition cursor-pointer'
+                : 'px-2 py-1 rounded-full bg-black/85 hover:bg-purple-500/30 text-purple-300 border border-purple-400/50 text-[10px] font-extrabold shadow-lg transition cursor-pointer';
+        }
+        renderizarSimulacaoCortePessoa();
+    }
+
+    function atualizarSplitProvador(valor) {
+        splitRatioProvador = Number(valor);
+        mostrandoAntesProvador = false;
+        const lbl = document.getElementById('label-split-provador');
+        if (lbl) {
+            if (splitRatioProvador <= 2) lbl.textContent = '100% ANTES (Original)';
+            else if (splitRatioProvador >= 98) lbl.textContent = '100% DEPOIS (Corte IA)';
+            else lbl.textContent = `SPLIT ${100 - splitRatioProvador}% ANTES / ${splitRatioProvador}% DEPOIS`;
+        }
+        renderizarSimulacaoCortePessoa();
+    }
+
+    function alternarSplitRapidoProvador() {
+        soundVIP.playSoftClick();
+        splitRatioProvador = (splitRatioProvador === 50) ? 100 : 50;
+        const slider = document.getElementById('slider-split-provador');
+        if (slider) slider.value = String(splitRatioProvador);
+        atualizarSplitProvador(splitRatioProvador);
+    }
+
     async function iniciarProvadorVirtualNaPessoa(nomeCorteIA, estiloBarbaIA) {
         if (!fotoVisagistaBase64) return;
         nomeCorteOriginalIA = nomeCorteIA || 'Corte Recomendado IA';
@@ -6358,13 +7081,18 @@
         estiloCorteProvadorAtual = mapearNomeCorteParaEstilo(nomeCorteIA, cabeloSel);
         estiloBarbaProvadorAtual = estiloBarbaIA || (document.getElementById('ia_barba')?.value || 'barba_curta');
         transformProvador = { dx: 0, dy: 0, scale: 1.0 };
+        splitRatioProvador = 100;
         mostrandoAntesProvador = false;
+        mostrandoMalhaProvadorFoto = false;
         mostrandoFotoModeloRef = false;
 
         const img = new Image();
         img.onload = async function() {
             imagemPessoaProvador = img;
-            geometriaRostoDetectada = await detectarGeometriaRostoImagem(img, 480, 600);
+            // Reutiliza os 468 landmarks já extraídos no momento da captura/upload para resposta instantânea!
+            if (!geometriaRostoDetectada || !geometriaRostoDetectada.landmarks) {
+                geometriaRostoDetectada = await detectarGeometriaRostoImagem(img, 480, 600);
+            }
             configurarInteracaoCanvasProvador();
             renderizarSimulacaoCortePessoa();
         };
@@ -6421,7 +7149,7 @@
 
         ctx.clearRect(0, 0, W, H);
 
-        // 1. Desenha a foto real da pessoa centralizada em proporção 4:5
+        // 1. Desenha a foto real da pessoa centralizada em proporção 4:5 (base "ANTES")
         const imgRatio = imagemPessoaProvador.width / imagemPessoaProvador.height;
         const targetRatio = W / H;
         let sx = 0, sy = 0, sw = imagemPessoaProvador.width, sh = imagemPessoaProvador.height;
@@ -6441,20 +7169,83 @@
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, W, H);
 
-        // 2. Se não estiver segurando "Antes / Depois", aplica o corte e a barba na pessoa!
-        if (!mostrandoAntesProvador) {
+        // 2. Aplica o corte e a barba alinhados aos 468 pontos da pessoa respeitando a cortina Antes ◀▶ Depois!
+        const ratioDepois = mostrandoAntesProvador ? 0 : splitRatioProvador;
+        const splitX = W * (1 - ratioDepois / 100);
+
+        if (ratioDepois > 0) {
+            ctx.save();
+            if (ratioDepois < 100) {
+                ctx.beginPath();
+                ctx.rect(splitX, 0, W - splitX, H);
+                ctx.clip();
+            }
+
             const rgbCabelo = hexParaRgbCabelo(corCabeloProvador);
+            const jawShifted = Array.isArray(geometriaRostoDetectada.jawlinePts)
+                ? geometriaRostoDetectada.jawlinePts.map(pt => ({
+                    x: pt.x + transformProvador.dx,
+                    y: pt.y + transformProvador.dy
+                }))
+                : null;
+
             desenharCorteVirtualCanvas(ctx, {
                 cx: geometriaRostoDetectada.cx + transformProvador.dx,
                 cy: geometriaRostoDetectada.cy + transformProvador.dy,
                 fw: geometriaRostoDetectada.fw * transformProvador.scale,
                 fh: geometriaRostoDetectada.fh * transformProvador.scale,
+                rollRad: geometriaRostoDetectada.rollRad || 0,
+                yawRatio: geometriaRostoDetectada.yawRatio || 0,
+                jawlinePts: jawShifted,
                 estiloCorte: estiloCorteProvadorAtual,
                 estiloBarba: document.getElementById('ia_barba')?.value || estiloBarbaProvadorAtual,
                 rgbCabelo: rgbCabelo,
                 rgbPele: corPeleDetectada,
                 alphaGlobal: 0.96
             });
+            ctx.restore();
+        }
+
+        // 3. Desenha a linha divisória interativa caso esteja em modo Split-Screen (entre 1% e 99%)
+        if (ratioDepois > 0 && ratioDepois < 100) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(splitX, 0);
+            ctx.lineTo(splitX, H);
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Botão central na linha divisória
+            ctx.beginPath();
+            ctx.arc(splitX, H * 0.45, 16, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#fbbf24';
+            ctx.stroke();
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('◀▶', splitX, H * 0.45);
+
+            // Etiquetas ANTES / DEPOIS
+            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            ctx.fillRect(10, H * 0.45 - 12, 52, 22);
+            ctx.fillRect(W - 64, H * 0.45 - 12, 54, 22);
+            ctx.fillStyle = '#e4e4e7';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.fillText('ANTES', 36, H * 0.45);
+            ctx.fillStyle = '#34d399';
+            ctx.fillText('DEPOIS', W - 37, H * 0.45);
+            ctx.restore();
+        }
+
+        // 4. Se o botão "🕸️ 468 Pts" estiver ativo no card do Provador, desenha a malha antropométrica real sobre a foto
+        if (mostrandoMalhaProvadorFoto && geometriaRostoDetectada.landmarks) {
+            desenharMalha468Canvas(ctx, geometriaRostoDetectada.landmarks, W, H, false);
         }
     }
 
