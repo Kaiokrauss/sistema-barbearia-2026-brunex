@@ -94,6 +94,14 @@ try {
             responderJson($res);
         }
 
+        if ($acao === 'concierge') {
+            require_once __DIR__ . '/../Models/ConciergeService.php';
+            $concierge = new ConciergeService();
+            $msg = (string)($dados['mensagem'] ?? '');
+            $ctx = isset($dados['contexto']) && is_array($dados['contexto']) ? $dados['contexto'] : [];
+            responderJson($concierge->processarMensagem($msg, $ctx));
+        }
+
         responderJson(['success' => false, 'erro' => 'Ação POST não especificada.'], 400);
     }
 

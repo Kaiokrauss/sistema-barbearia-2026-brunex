@@ -195,6 +195,9 @@ $tituloPainel = $isMasterAdmin ? '👑 Painel do Administrador' : ($isBarbeiro ?
                         <a href="index.html" class="block w-full text-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 py-3 text-xs font-semibold text-white transition">
                             🏠 Ir para Página Inicial da Barbearia
                         </a>
+                        <a href="index.html?concierge=1" class="block w-full text-center rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 py-3 text-xs font-bold text-amber-300 transition">
+                            🎙️ Abrir Concierge IA 24h (Agendar por Voz & Chat)
+                        </a>
                         <?php if ($isAdmin): ?>
                             <a href="admin.html" class="block w-full text-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 py-3 text-xs font-semibold text-white transition">
                                 📈 Abrir Painel com Gráficos Dedicado (admin.html)
